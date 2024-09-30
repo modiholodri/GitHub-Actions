@@ -18,29 +18,29 @@ jobs:
         with:
           script: |
             const issue = context.payload.issue;
-            const keyword = 'match';
             const label = 'match';
-            console.log(`Issue Title: ${issue.title}`);
-            console.log(`Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
+            console.log('Issue Title: ${issue.title}'');
+            console.log('Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
             if (issue.labels.some(l => l.name === label)) {
-              console.log(`Returning Title: ${issue.title}`);
+              console.log('Returning Title: ${issue.title}');
               return { title: issue.title };
             }
-            console.log(`Returning Title: -`);
+            console.log('Returning Title: -');
             return { title: '-' };
   
       - name: Append title to file
         if: steps.issue.outputs.title != '-'
         run: |
-          echo "Append Title ${{ steps.issue.outputs.title }}"
-          echo "${{ steps.issue.outputs.title }}" >> "Match List.md"
+          const nl = '\r\n'
+          echo "Append Title " ${{ steps.issue.outputs.title }}
+          echo ${{nl}}${{ steps.issue.outputs.title }} >> "Match List.md"
   
       - name: Commit changes
         if: steps.issue.outputs.title != '-'
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          echo "Commit Changes ${{ steps.issue.outputs.title }}"
+          echo "Commit Changes " ${{ steps.issue.outputs.title }}
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add "Match List.md"
