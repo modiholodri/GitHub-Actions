@@ -30,7 +30,8 @@ jobs:
             return { title: '-' };
   
       - name: Debug issue title
-         run: echo "Cleaned Issue Title: ${{ steps.issue.outputs.title }}"
+        run: |
+          echo "Cleaned Issue Title: ${{ steps.issue.outputs.title }}"
   
       - name: Append title to file
         if: steps.issue.outputs.title != '-'
