@@ -29,10 +29,6 @@ jobs:
             console.log(`Returning Title: -`);
             return { title: '-' };
   
-      - name: Debug issue title
-        run: |
-          echo "Cleaned Issue Title: ${{ steps.issue.outputs.title }}"
-  
       - name: Append title to file
         if: steps.issue.outputs.title != '-'
         run: |
@@ -42,11 +38,11 @@ jobs:
       - name: Commit changes
         if: steps.issue.outputs.title != '-'
         env:
-          GH_ACTION: ${{ secrets.GH_ACTION }}
+          GH_ACTIONS: ${{ secrets.GH_ACTIONS }}
         run: |
           echo "Commit Changes ${{ steps.issue.outputs.title }}"
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add "Match List.md"
           git commit -m "Append match ${{ steps.issue.outputs.title }}"
-          git push https://x-access-token:${{ secrets.GH_ACTION }}@github.com/${{ github.repository }}.git HEAD:main
+          git push https://x-access-token:${{ secrets.GH_ACTIONS }}@github.com/${{ github.repository }}.git HEAD:main
