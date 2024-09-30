@@ -1,15 +1,11 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Process Issues Match
 
 on:
   issues:
     types: [opened, edited]
 
-  workflow_dispatch:
-
 jobs:
-  build:
+  process_issue:
     runs-on: ubuntu-latest
 
     steps:
