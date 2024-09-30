@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
   
       - name: Read issue details
-        id: match_issue
+        id: issue
         uses: actions/github-script@v6
         with:
           script: |
@@ -29,19 +29,19 @@ jobs:
             return { title: '-' };
   
       - name: Append title to file
-        if: steps.match_issue.outputs.title != '-'
+        if: steps.issue.outputs.title != '-'
         run: |
-          echo "Append Title " ${{ steps.match_issue.outputs.title }}
-          echo ${{ steps.match_issue.outputs.title }} >> "Match List.md"
+          echo 'Append Title ' ${{ steps.issue.outputs.title }}
+          echo ${{ steps.issue.outputs.title }} >> "Match List.md"
   
       - name: Commit changes
-        if: steps.match_issue.outputs.title != '-'
+        if: steps.issue.outputs.title != '-'
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
-          echo "Commit Changes " ${{ steps.match_issue.outputs.title }}
+          echo 'Commit Changes ' ${{ steps.issue.outputs.title }}
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add "Match List.md"
-          git commit -m "Append match ${{ steps.match_issue.outputs.title }}"
+          git commit -m 'Append match ${{ steps.issue.outputs.title }}'
           git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git HEAD:main
