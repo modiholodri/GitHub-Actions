@@ -31,7 +31,7 @@ jobs:
       - name: Append title to file
         if: steps.issue.outputs.title != '-'
         run: |
-          echo ("Append Title " ${{ steps.issue.outputs.title }})
+          echo "Append Title " ${{ steps.issue.outputs.title }}
           echo ${{ steps.issue.outputs.title }} >> "Match List.md"
   
       - name: Commit changes
