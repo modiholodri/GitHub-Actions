@@ -26,17 +26,23 @@ jobs:
             return { title: '' };
 
       - name: Debug issue title
-        run: echo "Cleaned Issue Title ${{ steps.issue.outputs.title }}"
+        env:
+          MATCH_INFO: ${{ steps.issue.outputs.title }}
+        run: echo "Cleaned Issue Title $MATCH_INFO"
   
       - name: Append to text file
         if: steps.issue.outputs.title != ''
-        run: echo "${{ steps.issue.outputs.title }}" >> issues.txt
+        env:
+          MATCH_INFO: ${{ steps.issue.outputs.title }}
+        run: echo "$MATCH_INFO" >> "Match List.md"
 
       - name: Commit changes
         if: steps.issue.outputs.title != ''
+        env:
+          MATCH_INFO: ${{ steps.issue.outputs.title }}
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add issues.txt
-          git commit -m "Add issue title to issues.txt"
+          git add 'Match List.md'
+          git commit -m 'Add ${{ steps.issue.outputs.title }} to Match List.md'
           git push
