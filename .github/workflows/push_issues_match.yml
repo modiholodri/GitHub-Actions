@@ -15,7 +15,6 @@ jobs:
         id: get_match
         uses: actions/github-script@v7
         with:
-          result-encoding: string
           script: |
             const issue = context.payload.issue;
             const label = 'match';
@@ -27,7 +26,7 @@ jobs:
             return { title: `${issue.title}` };
           
       - name: Debug match info
-        run: echo "${{steps.get_match.outputs.result}}"
+        run: echo echo "${{ steps.get_match.outputs.result.title }}"
   
       - name: Append to text file
         if: steps.get_match.outputs.result != ''
