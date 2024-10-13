@@ -35,7 +35,7 @@ jobs:
   
       - name: Append to text file
         if: steps.get_match.outputs.result != ''
-        run: echo "${{steps.get_match.outputs.result}}" >> "Match List.md"
+        run: echo ${{steps.get_match.outputs.result}} >> "Match List.md"
 
       - name: Commit changes
         if: steps.get_match.outputs.result != ''
