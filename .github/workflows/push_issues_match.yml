@@ -11,9 +11,9 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
-      - name: Read issue details
-        id: issue
-        uses: actions/github-script@v6
+      - name: Get Match
+        id: get_match
+        uses: actions/github-script@v7
         with:
           script: |
             const issue = context.payload.issue;
@@ -24,25 +24,21 @@ jobs:
               return { title: issue.title };
             }
             return { title: issue.title };
-
-      - name: Debug issue title
-        env:
-          MATCH_INFO: ${{ steps.issue.outputs.title }}
-        run: echo "Cleaned Issue Title $MATCH_INFO"
+          result-encoding: string
+          
+      - name: Debug match info
+        run: echo "${{steps.get_match.outputs.result}}"
   
       - name: Append to text file
-        if: steps.issue.outputs.title != ''
-        env:
-          MATCH_INFO: ${{ steps.issue.outputs.title }}
-        run: echo "$MATCH_INFO" >> "Match List.md"
+        if: steps.get_match.outputs.title != ''
+
+        run: echo "${{steps.get_match.outputs.result}}" >> "Match List.md"
 
       - name: Commit changes
-        if: steps.issue.outputs.title != ''
-        env:
-          MATCH_INFO: ${{ steps.issue.outputs.title }}
+        if: false
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add 'Match List.md'
-          git commit -m 'Add ${{ steps.issue.outputs.title }} to Match List.md'
+          git commit -m 'Add ${{ steps.get_match.outputs.title }} to Match List.md'
           git push
