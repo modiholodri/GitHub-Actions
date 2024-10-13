@@ -21,12 +21,12 @@ jobs:
             console.log(`Issue Title: ${issue.title}`);
             console.log(`Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
             if (issue.labels.some(l => l.name === label)) {
-              return { title: `${issue.title}` };
+              return `${issue.title}`;
             }
-            return { title: `${issue.title}` };
+            return `${issue.title}`;
           
       - name: Debug match info
-        run: echo echo "${{ steps.get_match.outputs.result.title }}"
+        run: echo "${{steps.get_match.outputs.result}}"
   
       - name: Append to text file
         if: steps.get_match.outputs.result != ''
