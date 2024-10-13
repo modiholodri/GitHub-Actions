@@ -18,18 +18,20 @@ jobs:
           script: |
             const issue = context.payload.issue;
             const label = 'match';
-            console.log(`Issue Title: ${issue.title}`);
-            console.log(`Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
             const date = new Date();
             const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
             const issuesTitle = issue.title.replace(' ','|');
+            const matchInfo = `|${formattedDate}|${issuesTitle}|`;
+            console.log(`Issue Title: ${issue.title}`);
+            console.log(`Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
+            console.log('Match Info: ${matchInfo}');
             if (issue.labels.some(l => l.name === label)) {
-              return `|${formatedDate}|${issuesTitle}|`;
+              return matchInfo;
             }
             return ``;
           
       - name: Debug match info
-        run: echo "${{steps.get_match.outputs.result}}"
+        run: echo ${{steps.get_match.outputs.result}}
   
       - name: Append to text file
         if: steps.get_match.outputs.result != ''
@@ -41,5 +43,5 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add 'Match List.md'
-          git commit -m 'Add ${{ steps.get_match.outputs.title }} to Match List.md'
+          git commit -m 'Add ${{ steps.get_match.outputs.result }} to Match List.md'
           git push
