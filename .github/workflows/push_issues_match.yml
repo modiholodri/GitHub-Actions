@@ -20,10 +20,13 @@ jobs:
             const label = 'match';
             console.log(`Issue Title: ${issue.title}`);
             console.log(`Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
+            const date = new Date();
+            const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            const issuesTitle = issue.title.replace(' ','|');
             if (issue.labels.some(l => l.name === label)) {
-              return `${issue.title}`;
+              return `|${formatedDate}|${issuesTitle}|`;
             }
-            return `${issue.title}`;
+            return ``;
           
       - name: Debug match info
         run: echo "${{steps.get_match.outputs.result}}"
