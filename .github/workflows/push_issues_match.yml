@@ -6,7 +6,7 @@ on:
 
 jobs:
   process_issue:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
@@ -43,5 +43,5 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add 'Match List.md'
-          git commit -m 'Add ${{ steps.get_match.outputs.result }} to Match List.md'
+          git commit -m '${{ steps.get_match.outputs.result }} -> Match List.md'
           git push
