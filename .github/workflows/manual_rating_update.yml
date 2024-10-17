@@ -1,0 +1,24 @@
+name: Manual Rating Update
+
+on: workflow_dispatch
+
+jobs:
+  manual_rating_update:
+    runs-on: windows-latest
+    steps:
+      - name: Check Out Repository
+        uses: actions/checkout@v3
+
+      - name: Update Rating List
+        run: |
+          echo "Updateing Rating List..."
+          ./Bigelo.exe -JustRateIt
+          echo "Updated Rating List!"
+
+      - name: Commit Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add 'README.md'
+          git commit -m 'Manual Rating Update'
+          git push
