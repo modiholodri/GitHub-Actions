@@ -38,29 +38,12 @@ jobs:
         run: |
           echo ${{steps.get_match.outputs.result}} >> "Match List.md"
 
-      - name: Append Match Info to Match List
+      - name: Update Rating List
         if: steps.get_match.outputs.result != 'No Match Info'
         run: |
           echo "Updateing Rating List..."
           ./Bigelo.exe -JustRateIt
           echo "Updated Rating List!"
-
-      - name: Close Issue
-        uses: actions/github-script@v7
-        if: steps.get_match.outputs.result != 'No Match Info'
-        with:
-          script: |
-            const issue_number = context.issue.number;
-            const issue_title = context.payload.issue.title;
-            const actions_github = require('@actions/github');
-            const octokit = actions_github.getOctokit(process.env.GITHUB_TOKEN);
-
-            await octokit.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issue_number,
-              state: 'closed'
-            });
 
       - name: Commit Changes
         if: steps.get_match.outputs.result != 'No Match Info'
