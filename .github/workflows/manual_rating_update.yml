@@ -9,9 +9,14 @@ jobs:
       - name: Check Out Repository
         uses: actions/checkout@v3
 
+      - name: Set Up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '4.8'  # Specify your .NET version here
+
       - name: Update Rating List
         run: |
-          echo "Updateing Rating List..."
+          echo "Updating Rating List..."
           ./Bigelo.exe -JustRateIt
           echo "Updated Rating List!"
 
