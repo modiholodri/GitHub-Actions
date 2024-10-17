@@ -24,7 +24,7 @@ jobs:
             const matchInfo = `|${formattedDate}|${issuesTitle}|`;
             console.log(`Issue Title: ${issue.title}`);
             console.log(`Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
-            console.log('Match Info: ${matchInfo}');
+            console.log(`Match Info: ${matchInfo}`);
             if (issue.labels.some(l => l.name === label)) {
               return matchInfo;
             }
@@ -34,14 +34,17 @@ jobs:
         run: echo ${{steps.get_match.outputs.result}}
   
       - name: Append to text file
-        if: steps.get_match.outputs.result != ''
-        run: echo ${{steps.get_match.outputs.result}} >> "Match List.md"
+        if: steps.get_match.outputs.result != ``
+        run: |
+          echo ${{steps.get_match.outputs.result}} >> "Match List.md"
+          Bigelo.exe -JustRateIt
 
       - name: Commit changes
-        if: steps.get_match.outputs.result != ''
+        if: steps.get_match.outputs.result != ``
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add 'Match List.md'
+          git add 'README.md'
           git commit -m '${{ steps.get_match.outputs.result }} -> Match List.md'
           git push
