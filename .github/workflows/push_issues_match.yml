@@ -52,8 +52,8 @@ jobs:
           script: |
             const issue_number = context.issue.number;
             const issue_title = context.payload.issue.title;
-            const github = require('@actions/github');
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            const actions_github = require('@actions/github');
+            const octokit = actions_github.getOctokit(process.env.GITHUB_TOKEN);
 
             await octokit.rest.issues.update({
               owner: context.repo.owner,
