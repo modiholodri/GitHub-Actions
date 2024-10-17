@@ -5,13 +5,13 @@ on:
     types: [opened, edited]
 
 jobs:
-  process_issue:
+  process_issues_match:
     runs-on: windows-latest
     steps:
-      - name: Check out the repository
+      - name: Check Out Repository
         uses: actions/checkout@v3
 
-      - name: Get Match
+      - name: Get Match Info
         id: get_match
         uses: actions/github-script@v7
         with:
@@ -30,16 +30,19 @@ jobs:
             }
             return `No Match Info`;
           
-      - name: Debug match info
-        run: echo ${{steps.get_match.outputs.result}}
-  
-      - name: Append to text file
+      - name: Append Match Info to Match List
         if: steps.get_match.outputs.result != 'No Match Info'
         run: |
           echo ${{steps.get_match.outputs.result}} >> "Match List.md"
-          ./Bigelo.exe -JustRateIt
 
-      - name: Commit changes
+      - name: Append Match Info to Match List
+        if: steps.get_match.outputs.result != 'No Match Info'
+        run: |
+          echo "Updateing Rating List..."
+          ./Bigelo.exe -JustRateIt
+          echo "Updated Rating List!"
+
+      - name: Commit Changes
         if: steps.get_match.outputs.result != 'No Match Info'
         run: |
           git config --global user.name 'github-actions[bot]'
