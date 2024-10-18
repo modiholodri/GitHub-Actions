@@ -12,7 +12,7 @@ jobs:
       - name: Set Up .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '4.7.2'  # Specify your .NET version here
+          dotnet-version: '8.0'  # Specify your .NET version here
 
       - name: Update Rating List
         run: |
