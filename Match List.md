@@ -23,17 +23,8 @@
 |2024-10-17|Hello|World|13|
 |2024-10-17|Just|Testing|11|
 |2024-10-17|Henk|Jack|11|
-No Match Info
-No Match Info
-No Match Info
-|2024-10-18|Walter|Modi|77|
 |2024-10-18|Walter|modi|11|
-No Match Info
 |2024-10-18|Walter|modi|15|
 |2024-10-18|Löwe|Hölle|15|
-No Match Info
-No Match Info
 |2024-10-18|ปกถ|มยยั|111|
-No Match Info
-No Match Info
 |2024-10-19|Walter|VAN|11|
