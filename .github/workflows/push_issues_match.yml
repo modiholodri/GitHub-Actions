@@ -61,6 +61,8 @@ jobs:
 
       - name: Commit Changes
         if: steps.get_match.outputs.result != '"No Match Info"'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
