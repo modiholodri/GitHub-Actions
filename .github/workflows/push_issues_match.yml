@@ -29,10 +29,10 @@ jobs:
             
             if (issue.labels.some(l => l.name === label)) {
               if (issue.title.indexOf(',') > 0) {
-                const titleParts = issue.title.split(',').trim();
+                const titleParts = issue.title.split(',');
                 matchInfo = "";
                 for (let i = 0; i < titleParts.length; i++) {
-                  matchInfo += titleParts[i];
+                  matchInfo += titleParts[i].trim();
                   if (i < titleParts.length - 1) {
                     matchInfo += '|';
                   }
