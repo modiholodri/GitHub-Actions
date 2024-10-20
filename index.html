@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backgammon Match Submission</title>
+    <title>BKK-BG Match Result</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -21,7 +21,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>BKKBG Match Result</h1>
+        <h1>BKK-BG Match Result</h1>
         <form id="matchForm">
             <div class="form-group">
                 <label for="winnerName">Winner Name</label>
@@ -48,16 +48,30 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
         <h2>Rating List</h2>
-        <pre id="ratingList"></pre>
+        <div id="ratingList"></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         // Fetch the rating list from README.md
-        fetch('./README.md')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('ratingList').textContent = data;
-            });
+
+        async function loadRatingList() {
+            try {
+                const response = await fetch('README.md');
+                if (response.ok) {
+                    const data = await response.text();
+                    // document.getElementById('ratingList').textContent = data;
+                    document.getElementById('ratingList').innerHTML =
+                    marked.parse(data);
+                } else {
+                    console.error('Failed to fetch README.md:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching README.md:', error);
+            }
+        }
+
+        loadRatingList();
 
         document.getElementById('matchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -67,8 +81,8 @@
             const issueTitle = `${winnerName}, ${loserName}, ${matchLength}`;
 
             // Your GitHub repository details
-            const repoOwner = 'YOUR_GITHUB_USERNAME';
-            const repoName = 'YOUR_REPO_NAME';
+            const repoOwner = 'modiholodri';
+            const repoName = 'GitHub-Actions';
             const githubToken = 'YOUR_GITHUB_TOKEN';
 
             const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
@@ -88,5 +102,4 @@
             }
         });
     </script>
-</body>
 </html>
