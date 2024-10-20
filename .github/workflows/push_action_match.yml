@@ -53,23 +53,23 @@ jobs:
       - name: Check Out Repository
         uses: actions/checkout@v3
 
-      - name: Get Date
-        id: get_date
+        - name: Get Match Info
+        id: get_match
         uses: actions/github-script@v7
         with:
           script: |
             const date = new Date();
             const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
             console.log(`Match Date: ${formattedDate}`);
-            return formattedDate;
+            return `|${formattedDate}|${{ github.event.inputs.winner }}|${{ github.event.inputs.loser }}|${{ github.event.inputs.match_length }}|`;
           
       - name: Append Match Info to Match List
         run: |
-          echo "${{ steps.get_date.outputs.result }}|${{ github.event.inputs.winner }}|${{ github.event.inputs.loser }}|${{ github.event.inputs.match_length }}" >> "Match List.md"
+          echo "${{ steps.get_match.outputs.result }}" >> "Match List.md"
         
       - name: Update Rating List
         run: |
-          echo "Updateing Rating List on " ${{ steps.get_date.outputs.result }}
+          echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
           ./bigeloCLI.exe
           echo "Updated Rating List!"
 
