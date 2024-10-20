@@ -68,4 +68,4 @@ jobs:
           git add 'README.md'
           git commit -m '${{ steps.get_match.outputs.result }} -> Rating'
           git push
-          gh issue close ${{ github.issue.number }}
+          gh issue close "44"
