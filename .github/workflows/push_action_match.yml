@@ -53,15 +53,18 @@ jobs:
       - name: Check Out Repository
         uses: actions/checkout@v3
 
-        - name: Get Match Info
+      - name: Get Match Info
         id: get_match
         uses: actions/github-script@v7
         with:
           script: |
             const date = new Date();
             const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            const winner = github.event.inputs.winner
+            const loser = github.event.inputs.loser
+            const match_length = github.event.inputs.match_length
             console.log(`Match Date: ${formattedDate}`);
-            return `|${formattedDate}|${{ github.event.inputs.winner }}|${{ github.event.inputs.loser }}|${{ github.event.inputs.match_length }}|`;
+            return `|${ formattedDate }|${ winner }|${ loser }|${ match_length }|`;
           
       - name: Append Match Info to Match List
         run: |
