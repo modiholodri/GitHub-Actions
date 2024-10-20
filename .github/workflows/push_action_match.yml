@@ -3,7 +3,7 @@ name: Process Action Match
 on: 
   workflow_dispatch:
     inputs:
-      winner:
+      winner_name:
         description: 'Winner'
         required: true
         type: choice
@@ -17,7 +17,7 @@ on:
           - 'Reinhold (Modi) Lauer'
           - 'Chris 1'
           - 'Chris 2'
-      loser:
+      loser_name:
         description: 'Loser'
         required: true
         type: choice
@@ -60,9 +60,10 @@ jobs:
           script: |
             const date = new Date();
             const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            const winner = github.event.inputs.winner
-            const loser = github.event.inputs.loser
-            const match_length = github.event.inputs.match_length
+            const winner = context.payload.inputs.winner_name;
+            const loser = context.payload.inputs.loser_name;
+            const match_length = context.payload.inputs.match_length;
+            
             console.log(`Match Date: ${formattedDate}`);
             return `|${ formattedDate }|${ winner }|${ loser }|${ match_length }|`;
           
