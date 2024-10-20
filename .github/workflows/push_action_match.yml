@@ -1,6 +1,50 @@
 name: Process Action Match
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      winner:
+        description: 'Select the Winner'
+        required: true
+        type: choice
+        options:
+          - 'Walter (Mief) Meuwis'
+          - 'Vinnie Vinnie'
+          - 'Van'
+          - 'Brian'
+          - 'Graham'
+          - 'James'
+          - 'Reinhold (Modi) Lauer'
+          - 'Chris 1'
+          - 'Chris 2'
+      loser:
+        description: 'Select the Loser'
+        required: true
+        type: choice
+        options:
+          - 'Walter (Mief) Meuwis'
+          - 'Vinnie Vinnie'
+          - 'Van'
+          - 'Brian'
+          - 'Graham'
+          - 'James'
+          - 'Reinhold (Modi) Lauer'
+          - 'Chris 1'
+          - 'Chris 2'
+      match_length:
+        description: 'Select the Match Length'
+        required: true
+        type: choice
+        options:
+          - '1'
+          - '3'
+          - '5'
+          - '7'
+          - '9'
+          - '11'
+          - '13'
+          - '15'
+          - '17'
 
 jobs:
   process_action_match:
@@ -9,56 +53,27 @@ jobs:
       - name: Check Out Repository
         uses: actions/checkout@v3
 
-      - name: Get Match Info
-        id: get_match
+      - name: Get Date
+        id: get_date
         uses: actions/github-script@v7
         with:
           script: |
-            const issue = context.payload.issue;
-            const label = 'match';
             const date = new Date();
-            
             const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            
-            console.log(`Issue Title: ${issue.title}`);
-            console.log(`Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
-            
-            let matchInfo = `No Match Info`;
-            
-            if (issue.labels.some(l => l.name === label)) {
-              if (issue.title.indexOf(',') > 0) {
-                const titleParts = issue.title.split(',');
-                matchInfo = "";
-                for (let i = 0; i < titleParts.length; i++) {
-                  matchInfo += titleParts[i].trim();
-                  if (i < titleParts.length - 1) {
-                    matchInfo += '|';
-                  }
-                }
-              }
-              else {
-                matchInfo = issue.title.replace(/ /g,'|');
-              }
-              matchInfo = `|${formattedDate}|${matchInfo}|`;
-            }
-            
-            console.log(`Match Info: ${matchInfo}`);
-            return matchInfo;
+            console.log(`Match Date: ${formattedDate}`);
+            return formattedDate;
           
       - name: Append Match Info to Match List
-        if: steps.get_match.outputs.result != '"No Match Info"'
         run: |
-          echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
+          echo "|${{ steps.get_date.outputs.result }}|${{ github.event.inputs.winner }}|${{ github.event.inputs.loser }}|${{ github.event.inputs.match_length }}|" >> "Match List.md"
 
       - name: Update Rating List
-        if: steps.get_match.outputs.result != '"No Match Info"'
         run: |
-          echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
+          echo "Updateing Rating List on " ${{ steps.get_date.outputs.result }}
           ./bigeloCLI.exe
           echo "Updated Rating List!"
 
       - name: Commit Changes
-        if: steps.get_match.outputs.result != '"No Match Info"'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -68,11 +83,3 @@ jobs:
           git add 'README.md'
           git commit -m '${{ steps.get_match.outputs.result }} -> Rating'
           git push
-
-      - name: Close Issue
-        if: steps.get_match.outputs.result != '"No Match Info"'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          gh issue close ${{ github.event.issue.number }}
