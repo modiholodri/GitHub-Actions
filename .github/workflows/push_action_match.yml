@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       winner:
-        description: 'Select the Winner'
+        description: 'Winner'
         required: true
         type: choice
         options:
@@ -18,7 +18,7 @@ on:
           - 'Chris 1'
           - 'Chris 2'
       loser:
-        description: 'Select the Loser'
+        description: 'Loser'
         required: true
         type: choice
         options:
@@ -32,7 +32,7 @@ on:
           - 'Chris 1'
           - 'Chris 2'
       match_length:
-        description: 'Select the Match Length'
+        description: 'Length'
         required: true
         type: choice
         options:
@@ -65,8 +65,8 @@ jobs:
           
       - name: Append Match Info to Match List
         run: |
-          echo "|${{ steps.get_date.outputs.result }}|${{ github.event.inputs.winner }}|${{ github.event.inputs.loser }}|${{ github.event.inputs.match_length }}|" >> "Match List.md"
-
+          echo "${{ steps.get_date.outputs.result }}|${{ github.event.inputs.winner }}|${{ github.event.inputs.loser }}|${{ github.event.inputs.match_length }}" >> "Match List.md"
+        
       - name: Update Rating List
         run: |
           echo "Updateing Rating List on " ${{ steps.get_date.outputs.result }}
