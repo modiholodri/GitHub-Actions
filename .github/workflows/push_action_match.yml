@@ -69,7 +69,7 @@ jobs:
           
       - name: Append Match Info to Match List
         run: |
-          echo "${{ steps.get_match.outputs.result }}" >> "Match List.md"
+          echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
         
       - name: Update Rating List
         run: |
