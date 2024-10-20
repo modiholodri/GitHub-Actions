@@ -39,9 +39,9 @@ jobs:
                 }
               }
               else {
-                matchInfo = issueTitle.replace(/ /g,'|');
+                matchInfo = issue.title.replace(/ /g,'|');
               }
-              matchInfo = `|${formattedDate}|${issuesTitle}|`;
+              matchInfo = `|${formattedDate}|${matchInfo}|`;
             }
             
             console.log(`Match Info: ${matchInfo}`);
