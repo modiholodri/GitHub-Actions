@@ -7,21 +7,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #121212;
+            background-color: #2200ff93;
             color: #ffffff;
         }
         .container {
             margin-top: 50px;
         }
         .btn-primary {
-            background-color: #1e90ff;
-            border-color: #1e90ff;
+            background-color: #0004fdab;
+            border-color: #1eff29;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>BKK-BG Match Result</h1>
+        <p>The webpage can be found here <a href="https://modiholodri.github.io/GitHub-Actions/">BKK-BG Match Result</a>.</p>
         <form id="matchForm">
             <div class="form-group">
                 <label for="winnerName">Winner Name</label>
@@ -36,7 +37,7 @@
                 <select class="form-control" id="matchLength">
                     <option value="1">1</option>
                     <option value="3">3</option>
-                    <option value="5">5</option>
+                    <option value="5" selected>5</option>
                     <option value="7">7</option>
                     <option value="9">9</option>
                     <option value="11">11</option>
@@ -47,22 +48,19 @@
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-        <h2>Rating List</h2>
+        <h2><br>BKK-BG Rating List</h2>
         <div id="ratingList"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         // Fetch the rating list from README.md
-
         async function loadRatingList() {
             try {
                 const response = await fetch('README.md');
                 if (response.ok) {
                     const data = await response.text();
-                    // document.getElementById('ratingList').textContent = data;
-                    document.getElementById('ratingList').innerHTML =
-                    marked.parse(data);
+                    document.getElementById('ratingList').innerHTML = marked.parse(data);
                 } else {
                     console.error('Failed to fetch README.md:', response.statusText);
                 }
@@ -102,4 +100,5 @@
             }
         });
     </script>
+</body>
 </html>
