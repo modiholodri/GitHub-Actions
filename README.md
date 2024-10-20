@@ -13,27 +13,30 @@
 |11|Hello|1,807|7.2|13|
 |12|Just|1,807|6.6|11|
 |13|Henk|1,807|6.6|11|
-|14|Graham|1,805|4.6|5|
-|15|Van|1,798|4.4|16|
-|16|Testing|1,793|-6.6|11|
-|17|Jack|1,793|-6.6|11|
-|18|Hund|1,793|-7.2|13|
-|19|Wida|1,793|-7.2|13|
-|20|World|1,793|-7.2|13|
-|21|Hölle|1,792|-7.7|15|
-|22|Party|1,792|-8.2|17|
-|23|Wieder|1,792|-8.2|17|
-|24|Simon|1,787|-12.7|33|
-|25|Wuast|1,786|-7.0|24|
-|26|Moto|1,782|-7.6|73|
-|27|มยยั|1,779|-21.1|111|
-|28|Modi|1,771|-4.4|312|
-|29|Walter Meuwis|1,768|-8.0|72|
-|30|Hell|1,747|-52.7|695|
+|14|Heidi|1,807|6.6|11|
+|15|Graham|1,805|4.6|5|
+|16|Van|1,798|4.4|16|
+|17|Testing|1,793|-6.6|11|
+|18|Jack|1,793|-6.6|11|
+|19|Franco|1,793|-6.6|11|
+|20|Hund|1,793|-7.2|13|
+|21|Wida|1,793|-7.2|13|
+|22|World|1,793|-7.2|13|
+|23|Hölle|1,792|-7.7|15|
+|24|Party|1,792|-8.2|17|
+|25|Wieder|1,792|-8.2|17|
+|26|Simon|1,787|-12.7|33|
+|27|Wuast|1,786|-7.0|24|
+|28|Moto|1,782|-7.6|73|
+|29|มยยั|1,779|-21.1|111|
+|30|Modi|1,771|-4.4|312|
+|31|Walter Meuwis|1,768|-8.0|72|
+|32|Hell|1,747|-52.7|695|
 
 ## Reporting
 
-Matches are reported as GitHub issues labeled as match with a title in the following formats...
+Matches can be reported on [BKK-BG Match Result](https://modiholodri.github.io/GitHub-Actions/) or 
+as GitHub issues labeled as match with a title in the following formats...
 
 - WinnerName LoserName MatchLength
 - Winner Name, Loser Name, MatchLength
