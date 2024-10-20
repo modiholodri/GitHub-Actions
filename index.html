@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #2200ff93;
+            background-color: #2200ff2c;
             color: #ffffff;
         }
         .container {
@@ -22,7 +22,7 @@
 <body>
     <div class="container">
         <h1>BKK-BG Match Result</h1>
-        <p>The webpage can be found here <a href="https://modiholodri.github.io/GitHub-Actions/">BKK-BG Match Result</a>.</p>
+        <p>Follow the Reporting Guidelines below to report a match to the Bangkok Backgammon Rating List.</p>
         <form id="matchForm">
             <div class="form-group">
                 <label for="winnerName">Winner Name</label>
@@ -81,7 +81,7 @@
             // Your GitHub repository details
             const repoOwner = 'modiholodri';
             const repoName = 'GitHub-Actions';
-            const githubToken = 'YOUR_GITHUB_TOKEN';
+            const githubToken = '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';
 
             const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
                 method: 'POST',
