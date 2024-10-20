@@ -17,7 +17,7 @@ jobs:
       - name: Update Rating List
         run: |
           echo "Updating Rating List..."
-          ./Bigelo.exe -JustRateIt
+          ./bigeloCLI.exe
           echo "Updated Rating List!"
 
       - name: Commit Changes
