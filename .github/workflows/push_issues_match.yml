@@ -21,17 +21,31 @@ jobs:
             const date = new Date();
             
             const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            const issuesTitle = issue.title.replace(/ /g,'|');
-            const matchInfo = `|${formattedDate}|${issuesTitle}|`;
             
             console.log(`Issue Title: ${issue.title}`);
             console.log(`Issue Labels: ${issue.labels.map(l => l.name).join(', ')}`);
-            console.log(`Match Info: ${matchInfo}`);
+            
+            let matchInfo = `No Match Info`;
             
             if (issue.labels.some(l => l.name === label)) {
-              return matchInfo;
+              if (issue.title.indexOf(',') > 0) {
+                const titleParts = issue.title.split(',').trim();
+                matchInfo = "";
+                for (let i = 0; i < titleParts.length; i++) {
+                  matchInfo += titleParts[i];
+                  if (i < titleParts.length - 1) {
+                    matchInfo += '|';
+                  }
+                }
+              }
+              else {
+                matchInfo = issueTitle.replace(/ /g,'|');
+              }
+              matchInfo = `|${formattedDate}|${issuesTitle}|`;
             }
-            return `No Match Info`;
+            
+            console.log(`Match Info: ${matchInfo}`);
+            return matchInfo;
           
       - name: Append Match Info to Match List
         if: steps.get_match.outputs.result != '"No Match Info"'
