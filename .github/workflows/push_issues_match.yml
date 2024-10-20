@@ -36,13 +36,13 @@ jobs:
       - name: Append Match Info to Match List
         if: steps.get_match.outputs.result != 'No Match Info'
         run: |
-          echo ${{steps.get_match.outputs.result}} >> "Match List.md"
+          echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
 
       - name: Update Rating List
         if: steps.get_match.outputs.result != 'No Match Info'
         run: |
-          echo "Updateing Rating List..."
-          ./Bigelo.exe -JustRateIt
+          echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
+          ./bigeloCLI.exe
           echo "Updated Rating List!"
 
       - name: Commit Changes
