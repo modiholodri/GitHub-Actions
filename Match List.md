@@ -32,3 +32,4 @@
 |2024-10-20|Schnitzel|Party|17|
 |2024-10-20|Immer|Wieder|17|
 |2024-10-20|Reinhold Lauer|Walter Meuwis|15|
+|2024-10-20|Reinhold Lauer|Walter Meuwis|17|
