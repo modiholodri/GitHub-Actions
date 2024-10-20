@@ -34,19 +34,19 @@ jobs:
             return `No Match Info`;
           
       - name: Append Match Info to Match List
-        if: steps.get_match.outputs.result != 'No Match Info'
+        if: steps.get_match.outputs.result != '"No Match Info"'
         run: |
           echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
 
       - name: Update Rating List
-        if: steps.get_match.outputs.result != 'No Match Info'
+        if: steps.get_match.outputs.result != '"No Match Info"'
         run: |
           echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
           ./bigeloCLI.exe
           echo "Updated Rating List!"
 
       - name: Commit Changes
-        if: steps.get_match.outputs.result != 'No Match Info'
+        if: steps.get_match.outputs.result != '"No Match Info"'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
