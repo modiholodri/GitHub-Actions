@@ -18,34 +18,43 @@
 |16|Hallo|1,805|4.5|5|
 |17|Just Testing|1,804|4.5|5|
 |18|Chris 1|1,804|4.5|5|
-|19|Hello|1,803|-4.5|18|
-|20|Van|1,798|4.4|16|
+|19|James|1,804|4.5|5|
+|20|Hello|1,803|-4.5|18|
 |21|Brian|1,796|-4.4|5|
 |22|And Again|1,796|-4.5|5|
 |23|Chris 2|1,796|-4.5|5|
-|24|Testing|1,793|-6.6|11|
-|25|Jack|1,793|-6.6|11|
-|26|Franco|1,793|-6.6|11|
-|27|Hund|1,793|-7.2|13|
-|28|Wida|1,793|-7.2|13|
-|29|World|1,793|-7.2|13|
-|30|Hölle|1,792|-7.7|15|
-|31|Party|1,792|-8.2|17|
-|32|Wieder|1,792|-8.2|17|
-|33|Vinnie Vinnie|1,791|-4.4|10|
-|34|Simon|1,787|-12.7|33|
-|35|Wuast|1,786|-7.0|24|
-|36|Moto|1,782|-7.6|73|
-|37|มยยั|1,779|-21.1|111|
-|38|Reinhold (Modi) Lauer|1,778|-5.0|34|
-|39|Modi|1,771|-4.4|312|
-|40|Walter Meuwis|1,768|-8.0|72|
-|41|Hell|1,747|-52.7|695|
+|24|Van|1,794|-4.5|21|
+|25|Testing|1,793|-6.6|11|
+|26|Jack|1,793|-6.6|11|
+|27|Franco|1,793|-6.6|11|
+|28|Hund|1,793|-7.2|13|
+|29|Wida|1,793|-7.2|13|
+|30|World|1,793|-7.2|13|
+|31|Hölle|1,792|-7.7|15|
+|32|Party|1,792|-8.2|17|
+|33|Wieder|1,792|-8.2|17|
+|34|Vinnie Vinnie|1,791|-4.4|10|
+|35|Simon|1,787|-12.7|33|
+|36|Wuast|1,786|-7.0|24|
+|37|Moto|1,782|-7.6|73|
+|38|มยยั|1,779|-21.1|111|
+|39|Reinhold (Modi) Lauer|1,778|-5.0|34|
+|40|Modi|1,771|-4.4|312|
+|41|Walter Meuwis|1,768|-8.0|72|
+|42|Hell|1,747|-52.7|695|
+
+ 
 
 ## Reporting
 
-Matches can be reported on [BKK-BG Match Result](https://modiholodri.github.io/GitHub-Actions/) or 
-as GitHub issues labeled as match with a title in the following formats...
+Frequent players are included in dropdown menus to ease the match reporting.
+When a player, who is not included in dropdown menus is involved, the names of both players have to be typed in.
+
+- Usual Matches -> Actions:  are matches between players that are normally present during the Saturday sessions.
+Usual matches can be reported using dropdown menus for the winner/loser name and the match length.
+To report a Usual Match, start a GitHub Action from the Actions menu.
+- Unusual Matches -> Issues:  are matches with a player not in the dropdown menus, for example, when a new player joins.
+To report an Unusual Match, report a GitHub issue labeled as "match" with the title in one of the following formats...
 
 - WinnerName LoserName MatchLength
 - Winner Name, Loser Name, MatchLength
