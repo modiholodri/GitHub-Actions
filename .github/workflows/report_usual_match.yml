@@ -33,6 +33,7 @@ on:
           - 'Chris 2'
       match_length:
         description: 'Length'
+        default: '5'
         required: true
         type: choice
         options:
