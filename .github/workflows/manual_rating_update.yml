@@ -1,4 +1,4 @@
-name: Manual Rating Update
+name: Update Manual Rating
 
 on: workflow_dispatch
 
