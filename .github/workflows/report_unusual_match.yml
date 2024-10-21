@@ -74,7 +74,7 @@ jobs:
       - name: Close Issue
         if: steps.get_match.outputs.result != '"No Match Info"'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-          gh issue close ${{ github.event.issue.number }}          
+          echo $GH_TOKEN | gh auth login --with-token
+          gh issue close ${{ github.event.issue.number }}
