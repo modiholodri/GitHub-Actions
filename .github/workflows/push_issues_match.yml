@@ -1,11 +1,11 @@
-name: Process Issues Match
+name: Report Unusual Match
 
 on:
   issues:
     types: [opened, edited]
 
 jobs:
-  process_issues_match:
+  report_unusual_match:
     runs-on: windows-latest
     steps:
       - name: Check Out Repository
