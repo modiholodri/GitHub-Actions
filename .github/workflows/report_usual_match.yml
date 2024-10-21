@@ -1,4 +1,4 @@
-name: Process Action Match
+name: Report Usual Match
 
 on: 
   workflow_dispatch:
