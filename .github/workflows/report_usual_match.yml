@@ -9,14 +9,15 @@ on:
         type: choice
         options:
           - 'Walter (Mief) Meuwis'
-          - 'Vinnie Vinnie'
+          - 'Vinod (Vinnie) Ratnaphat'
           - 'Van'
           - 'Brian'
           - 'Graham'
-          - 'James'
+          - 'James Michael Haley'
           - 'Reinhold (Modi) Lauer'
-          - 'Chris 1'
-          - 'Chris 2'
+          - 'Chris'
+          - 'Bruno Kursteiner'
+          - 'Giggs'
       loser_name:
         description: 'Loser'
         required: true
