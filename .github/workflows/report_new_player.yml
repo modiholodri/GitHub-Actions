@@ -5,6 +5,7 @@ on:
     inputs:
       winner_name:
         description: 'Winner'
+        default: 'Selected or edit'
         required: true
         type: choice
         options:
@@ -18,9 +19,12 @@ on:
           - 'Van'
           - 'Vinod (Vinnie) Ratnaphat'
           - 'Walter (Mief) Meuwis'
+          - 'Selected or edit'
       new_winner_name:
+        description: 'New Player'
       loser_name:
         description: 'Loser'
+        default: 'Selected or edit'
         required: true
         type: choice
         options:
@@ -35,6 +39,7 @@ on:
           - 'Vinod (Vinnie) Ratnaphat'
           - 'Walter (Mief) Meuwis'
       new_loser_name:
+        description: 'New Player'
       match_length:
         description: 'Length'
         default: '5'
