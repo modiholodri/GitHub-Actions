@@ -1,9 +1,9 @@
-name: Update Manual Rating
+name: Update Rating Manual
 
 on: workflow_dispatch
 
 jobs:
-  manual_rating_update:
+  update_rating_manual:
     runs-on: windows-latest
     steps:
       - name: Check Out Repository
