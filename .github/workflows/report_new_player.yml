@@ -19,6 +19,7 @@ on:
           - 'Van'
           - 'Vinod (Vinnie) Ratnaphat'
           - 'Walter (Mief) Meuwis'
+          - 'Select or edit'
       new_winner_name:
         description: 'New Player'
       loser_name:
@@ -37,6 +38,7 @@ on:
           - 'Van'
           - 'Vinod (Vinnie) Ratnaphat'
           - 'Walter (Mief) Meuwis'
+          - 'Select or edit'
       new_loser_name:
         description: 'New Player'
       match_length:
