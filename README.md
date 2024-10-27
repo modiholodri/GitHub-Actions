@@ -9,16 +9,16 @@
 |7|Heinous|1,815|2.0|25|
 |8|Joske|1,814|14.0|49|
 |9|Mia|1,814|7.0|24|
-|10|Schnitzel|1,808|8.2|17|
-|11|Immer|1,808|8.2|17|
-|12|Peter|1,808|8.2|17|
-|13|Löwe|1,808|7.7|15|
-|14|Bluadiga|1,807|7.2|13|
-|15|Ima|1,807|7.2|13|
-|16|Just|1,807|6.6|11|
-|17|Henk|1,807|6.6|11|
-|18|Heidi|1,807|6.6|11|
-|19|Vinod (Vinnie) Ratnaphat|1,805|4.8|5|
+|10|Vinod (Vinnie) Ratnaphat|1,809|4.2|10|
+|11|Schnitzel|1,808|8.2|17|
+|12|Immer|1,808|8.2|17|
+|13|Peter|1,808|8.2|17|
+|14|Löwe|1,808|7.7|15|
+|15|Bluadiga|1,807|7.2|13|
+|16|Ima|1,807|7.2|13|
+|17|Just|1,807|6.6|11|
+|18|Henk|1,807|6.6|11|
+|19|Heidi|1,807|6.6|11|
 |20|Hallo|1,805|4.5|5|
 |21|Just Testing|1,804|4.5|5|
 |22|Chris 1|1,804|4.5|5|
@@ -47,7 +47,7 @@
 |45|มยยั|1,779|-21.1|111|
 |46|Modi|1,773|10.2|358|
 |47|Walter Meuwis|1,768|-8.0|72|
-|48|Reinhold (Modi) Lauer|1,763|-4.4|61|
+|48|Reinhold (Modi) Lauer|1,758|-4.2|66|
 |49|Hell|1,747|-52.7|695|
 
  
@@ -55,16 +55,16 @@
 ## Reporting
 
 Frequent players are included in dropdown menus to ease the match reporting.
-When a player, who is not included in dropdown menus is involved, the names of both players have to be typed in.
+When a player, who is not included in dropdown menus is involved, the name of the player has to be typed in.
 
-- Usual Matches -> Actions:  are matches between players that are normally present during the Saturday sessions.
-Usual matches can be reported using dropdown menus for the winner/loser name and the match length.
-To report a Usual Match, start a GitHub Action from the Actions menu.
-- Unusual Matches -> Issues:  are matches with a player not in the dropdown menus, for example, when a new player joins.
-To report an Unusual Match, report a GitHub issue labeled as "match" with the title in one of the following formats...
+- Report Match:  is used for matches between players that are normally present during the Saturday sessions.
+Matches are reported using dropdown menus for the winner/loser name and the match length.
+- Report New Player Matches:  is used for matches with a player not in the dropdown menus, for example, when a new player joins.
+Matches are reported using dropdown menus or editing the name manual for the winner/loser name and the match length.
 
-- WinnerName LoserName MatchLength
-- Winner Name, Loser Name, MatchLength
+To report any of the two match types go to Actions, select the match type, click on RUN WORKFLOW.
+Select or type in the Winner, the Loser and the Match Length.
+Click on RUN WORKFLOW again to submit the match report.
 
 ### Reporting Guidelines
 
