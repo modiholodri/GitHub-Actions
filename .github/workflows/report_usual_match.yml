@@ -1,4 +1,4 @@
-name: Report Usual Match
+name: Report Match
 
 on: 
   workflow_dispatch:
@@ -8,30 +8,31 @@ on:
         required: true
         type: choice
         options:
-          - 'Walter (Mief) Meuwis'
-          - 'Vinod (Vinnie) Ratnaphat'
-          - 'Van'
           - 'Brian'
+          - 'Bruno Kursteiner'
+          - 'Chris'
+          - 'Giggs'
           - 'Graham'
           - 'James Michael Haley'
           - 'Reinhold (Modi) Lauer'
-          - 'Chris'
-          - 'Bruno Kursteiner'
-          - 'Giggs'
+          - 'Van'
+          - 'Vinod (Vinnie) Ratnaphat'
+          - 'Walter (Mief) Meuwis'
       loser_name:
         description: 'Loser'
         required: true
         type: choice
         options:
-          - 'Walter (Mief) Meuwis'
-          - 'Vinnie Vinnie'
-          - 'Van'
           - 'Brian'
+          - 'Bruno Kursteiner'
+          - 'Chris'
+          - 'Giggs'
           - 'Graham'
-          - 'James'
+          - 'James Michael Haley'
           - 'Reinhold (Modi) Lauer'
-          - 'Chris 1'
-          - 'Chris 2'
+          - 'Van'
+          - 'Vinod (Vinnie) Ratnaphat'
+          - 'Walter (Mief) Meuwis'
       match_length:
         description: 'Length'
         default: '5'
@@ -47,6 +48,10 @@ on:
           - '13'
           - '15'
           - '17'
+          - '19'
+          - '21'
+          - '23'
+          - '25'
 
 jobs:
   process_action_match:
