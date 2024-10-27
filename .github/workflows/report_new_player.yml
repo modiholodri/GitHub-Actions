@@ -5,7 +5,7 @@ on:
     inputs:
       winner_name:
         description: 'Winner'
-        default: 'Selected or edit'
+        default: 'Select or edit'
         required: true
         type: choice
         options:
@@ -19,12 +19,11 @@ on:
           - 'Van'
           - 'Vinod (Vinnie) Ratnaphat'
           - 'Walter (Mief) Meuwis'
-          - 'Selected or edit'
       new_winner_name:
         description: 'New Player'
       loser_name:
         description: 'Loser'
-        default: 'Selected or edit'
+        default: 'Select or edit'
         required: true
         type: choice
         options:
@@ -72,11 +71,14 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const inputs = context.payload.inputs
             const date = new Date();
             const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            const winner = context.payload.inputs.winner_name;
-            const loser = context.payload.inputs.loser_name;
-            const match_length = context.payload.inputs.match_length;
+            var winner = inputs.winner_name;
+            if (inputs.winner_name == `Select or edit`) winner = inputs.new_winner_name
+            var loser = inputs.loser_name;
+            if (inputs.loser_name == `Select or edit`) loser = inputs.new_loser_name
+            const match_length = inputs.match_length;
             
             console.log(`Match Date: ${formattedDate}`);
             return `|${ formattedDate }|${ winner }|${ loser }|${ match_length }|`;
