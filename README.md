@@ -21,13 +21,13 @@
 |19|Just|1,807|+6.6|11|
 |20|Henk|1,807|+6.6|11|
 |21|Hallo|1,805|+4.5|5|
-|22|James Michael Haley|1,804|-4.5|15|
-|23|Just Testing|1,804|+4.5|5|
-|24|Chris 1|1,804|+4.5|5|
-|25|Hello|1,803|-4.5|18|
-|26|Heidi|1,802|-4.5|16|
+|22|Just Testing|1,804|+4.5|5|
+|23|Chris 1|1,804|+4.5|5|
+|24|Hello|1,803|-4.5|18|
+|25|Heidi|1,802|-4.5|16|
+|26|Bruno Kursteiner|1,800|+4.5|20|
 |27|Vinod (Vinnie) Ratnaphat|1,800|-4.4|20|
-|28|Bruno Kursteiner|1,796|-4.4|15|
+|28|James Michael Haley|1,800|-4.5|20|
 |29|And Again|1,796|-4.5|5|
 |30|Chris 2|1,796|-4.5|5|
 |31|Jake|1,796|-4.5|5|
