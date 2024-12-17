@@ -1,4 +1,4 @@
-name: Report Match
+name: Report Match Linux
 
 on: 
   workflow_dispatch:
