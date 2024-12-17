@@ -78,7 +78,12 @@ jobs:
       - name: Append Match Info to Match List
         run: |
           echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
-        
+      
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'  
+      
       - name: Update Rating List
         run: |
           echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
