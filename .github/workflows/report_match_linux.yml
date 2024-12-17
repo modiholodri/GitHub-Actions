@@ -80,9 +80,10 @@ jobs:
           echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
         
       - name: Update Rating List
+        uses: actions/setup-dotnet@v3
         run: |
           echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
-          ./bigeloCLILinux.exe
+          dotnet ./bigeloCLILinux.exe
           echo "Updated Rating List!"
 
       - name: Commit Changes
