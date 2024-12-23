@@ -87,7 +87,7 @@ jobs:
       - name: Update Rating List
         run: |
           echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
-          dotnet ./bigeloCLILinux.exe
+          ./bigeloLin
           echo "Updated Rating List!"
 
       - name: Commit Changes
@@ -98,5 +98,5 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add 'Match List.md'
           git add 'README.md'
-          git commit -m '${{ steps.get_match.outputs.result }} -> Rating'
+          git commit -m '${{ steps.get_match.outputs.result }}'
           git push
