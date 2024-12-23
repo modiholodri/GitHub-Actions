@@ -87,6 +87,7 @@ jobs:
       - name: Update Rating List
         run: |
           echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
+          chmod +x ./bigeloLin
           ./bigeloLin
           echo "Updated Rating List!"
 
