@@ -81,6 +81,7 @@ jobs:
       
       - name: Update Rating List
         run: |
+          echo "____________________________"
           echo ${{ steps.get_match.outputs.result }}
           chmod +x ./bigeloLin
           ./bigeloLin
