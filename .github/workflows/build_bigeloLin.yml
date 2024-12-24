@@ -1,0 +1,22 @@
+name: Build bigeloLin
+
+on: workflow_dispatch
+
+jobs:
+  update_rating_manual:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repository
+        uses: actions/checkout@v3
+
+      - name: Update Rating List
+        run: |
+          cd ./source
+          dotnet build
+
+      - name: Commit Changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Manual Rating Update'
+          git push
