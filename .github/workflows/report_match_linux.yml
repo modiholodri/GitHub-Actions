@@ -71,13 +71,8 @@ jobs:
             var winner = inputs.winner_name;
             var loser = inputs.loser_name;
             const match_length = inputs.match_length;
-            
             console.log(`____________________________`);
-            console.log(`Match Date: ${formattedDate}`);
-            console.log(`Winner    : ${formattedDate}`);
-            console.log(`Loser     : ${formattedDate}`);
-            console.log(`Length    : ${formattedDate}`);
-            
+            console.log(`${ formattedDate } ${ winner } > ${ loser } ${ match_length }`);
             return `|${ formattedDate }|${ winner }|${ loser }|${ match_length }|`;
           
       - name: Append Match Info to Match List
