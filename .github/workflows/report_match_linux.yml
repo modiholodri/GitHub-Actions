@@ -72,7 +72,12 @@ jobs:
             var loser = inputs.loser_name;
             const match_length = inputs.match_length;
             
+            console.log(`____________________________`);
             console.log(`Match Date: ${formattedDate}`);
+            console.log(`Winner    : ${formattedDate}`);
+            console.log(`Loser     : ${formattedDate}`);
+            console.log(`Length    : ${formattedDate}`);
+            
             return `|${ formattedDate }|${ winner }|${ loser }|${ match_length }|`;
           
       - name: Append Match Info to Match List
@@ -81,7 +86,7 @@ jobs:
       
       - name: Update Rating List
         run: |
-          echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
+          echo ${{ steps.get_match.outputs.result }}
           chmod +x ./bigeloLin
           ./bigeloLin
           echo "Updated Rating List!"
