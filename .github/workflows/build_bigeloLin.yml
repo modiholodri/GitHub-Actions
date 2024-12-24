@@ -9,7 +9,7 @@ jobs:
       - name: Check Out Repository
         uses: actions/checkout@v3
 
-      - name: Update Rating List
+      - name: Build bigeloLin
         run: |
           cd ./source
           dotnet build
@@ -18,5 +18,6 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Manual Rating Update'
+          git add source/bin/
+          git commit -m 'Build bigeloLin'
           git push
