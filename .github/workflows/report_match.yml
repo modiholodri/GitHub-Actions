@@ -65,7 +65,7 @@ jobs:
   process_action_match:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Out Repository
+      - name: Check Out Repo
         uses: actions/checkout@v4
 
       - name: Get Match Info
@@ -83,7 +83,7 @@ jobs:
             console.log(`${ formattedDate } ${ winner } > ${ loser } ${ match_length }`);
             return `|${ formattedDate }|${ winner }|${ loser }|${ match_length }|`;
           
-      - name: Append Match Info to Match List
+      - name: Add to Match List
         run: |
           echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
         
