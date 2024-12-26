@@ -9,30 +9,38 @@ on:
         type: choice
         options:
           - 'Brian'
-          - 'Bruno Kursteiner'
           - 'Chris'
-          - 'Giggs'
+          - 'Chuck'
+          - 'David'
           - 'Graham'
-          - 'James Michael Haley'
-          - 'Reinhold (Modi) Lauer'
+          - 'Gregg'
+          - 'James'
+          - 'Jay'
+          - 'John'
+          - 'Modi'
+          - 'Somchai'
           - 'Van'
-          - 'Vinod (Vinnie) Ratnaphat'
-          - 'Walter (Mief) Meuwis'
+          - 'Vinnie'
+          - 'Walter'
       loser_name:
         description: 'Loser'
         required: true
         type: choice
         options:
           - 'Brian'
-          - 'Bruno Kursteiner'
           - 'Chris'
-          - 'Giggs'
+          - 'Chuck'
+          - 'David'
           - 'Graham'
-          - 'James Michael Haley'
-          - 'Reinhold (Modi) Lauer'
+          - 'Gregg'
+          - 'James'
+          - 'Jay'
+          - 'John'
+          - 'Modi'
+          - 'Somchai'
           - 'Van'
-          - 'Vinod (Vinnie) Ratnaphat'
-          - 'Walter (Mief) Meuwis'
+          - 'Vinnie'
+          - 'Walter'
       match_length:
         description: 'Length'
         default: '5'
@@ -55,7 +63,7 @@ on:
 
 jobs:
   process_action_match:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Check Out Repository
         uses: actions/checkout@v4
@@ -71,8 +79,8 @@ jobs:
             var winner = inputs.winner_name;
             var loser = inputs.loser_name;
             const match_length = inputs.match_length;
-            
-            console.log(`Match Date: ${formattedDate}`);
+            console.log(`____________________________`);
+            console.log(`${ formattedDate } ${ winner } > ${ loser } ${ match_length }`);
             return `|${ formattedDate }|${ winner }|${ loser }|${ match_length }|`;
           
       - name: Append Match Info to Match List
@@ -81,8 +89,10 @@ jobs:
         
       - name: Update Rating List
         run: |
-          echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
-          ./bigeloCLI.exe
+          echo "____________________________"
+          echo ${{ steps.get_match.outputs.result }}
+          chmod +x ./bigeloLin
+          ./bigeloLin
           echo "Updated Rating List!"
 
       - name: Commit Changes
@@ -93,5 +103,5 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add 'Match List.md'
           git add 'README.md'
-          git commit -m '${{ steps.get_match.outputs.result }} -> Rating'
+          git commit -m '${{ steps.get_match.outputs.result }}'
           git push

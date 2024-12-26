@@ -4,15 +4,16 @@ on: workflow_dispatch
 
 jobs:
   update_rating_manual:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Check Out Repository
         uses: actions/checkout@v3
 
       - name: Update Rating List
         run: |
-          echo "Updating Rating List..."
-          ./bigeloCLI.exe
+          echo "Update Rating Manual"
+          chmod +x ./bigeloLin
+          ./bigeloLin
           echo "Updated Rating List!"
 
       - name: Commit Changes
