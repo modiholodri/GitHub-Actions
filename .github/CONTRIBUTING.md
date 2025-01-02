@@ -1,4 +1,4 @@
-## Reporting Guidelines
+## Reporting
 
 Frequent players are included in dropdown menus to ease the match reporting.
 When a player, who is not included in dropdown menus is involved, the name of the player has to be typed in.
