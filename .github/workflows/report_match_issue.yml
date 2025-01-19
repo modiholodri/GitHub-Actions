@@ -6,7 +6,7 @@ on:
 
 jobs:
   scan_issue_match_report:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Check Out Repository
         uses: actions/checkout@v4
@@ -55,8 +55,10 @@ jobs:
       - name: Update Rating List
         if: steps.get_match.outputs.result != '"No Match Info"'
         run: |
-          echo "Updateing Rating List with " ${{ steps.get_match.outputs.result }}
-          ./bigeloCLI.exe
+          echo "____________________________"
+          echo ${{ steps.get_match.outputs.result }}
+          chmod +x ./bigeloLin
+          ./bigeloLin
           echo "Updated Rating List!"
 
       - name: Commit Changes
