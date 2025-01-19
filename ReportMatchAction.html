@@ -21,7 +21,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>BKK-BG Match Result</h1>
+        <h1>BKK-BG Match Report</h1>
         <p>Follow the Reporting Guidelines below to report a match to the Bangkok Backgammon Rating List.</p>
         <form id="matchForm">
             <div class="form-group">
@@ -81,22 +81,42 @@
             // Your GitHub repository details
             const repoOwner = 'modiholodri';
             const repoName = 'GitHub-Actions';
-            const githubToken = 'access_token';
+            const githubToken = '';
 
-            const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `token ${githubToken}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ title: issueTitle, labels: ['match'] })
-            });
+            try {
+                const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json',
+                    },
+                    body: JSON.stringify({ 
+                        event_type: 'match_report', 
+                        client_payload: { 
+                            winner_name: `${winnerName}`,
+                            loser_name:  `${loserName}`, 
+                            match_length: `${matchLength}`
+                        } 
+                    })
+                });
 
-            if (response.ok) {
-                alert('Issue created successfully!');
-            } else {
-                alert('Failed to create the issue.');
+                alert(`checking response`);
+
+                if (!response.ok) { 
+                // Handle response failure 
+                   const errorDetails = await response.json(); 
+                   alert('GitHub API response failed:' + response.status + errorDetails); 
+                   // Implement retry logic if necessary 
+                   throw new Error('Failed to trigger GitHub Action'); 
+                }
+                else {
+                    // Handle successful response 
+                    const responseData = await response.json(); 
+                    alert('GitHub Action triggered successfully:' + responseData);
+                }
+            } catch (error) { 
+                alert('Error triggering GitHub Action:' + error.message); // Handle error (e.g., notify user, retry, etc.)
             }
         });
     </script>
