@@ -81,7 +81,7 @@
             // Your GitHub repository details
             const repoOwner = 'modiholodri';
             const repoName = 'GitHub-Actions';
-            const githubToken = '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';
+            const githubToken = 'access_token';
 
             const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/issues`, {
                 method: 'POST',
@@ -94,9 +94,9 @@
             });
 
             if (response.ok) {
-                alert('Match report (issue) created successfully!');
+                alert('Issue created successfully!');
             } else {
-                alert('Failed to create the match report (issue).');
+                alert('Failed to create the issue.');
             }
         });
     </script>
