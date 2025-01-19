@@ -190,3 +190,4 @@
 |2025-1-19|Jesus|Wäre|5|
 |2025-1-19|Ted|Nugent|11|
 |2025-1-19|Ted|Nugent|11|
+|2025-1-19|Walter Meuwis|Reinhold Lauer|5|
