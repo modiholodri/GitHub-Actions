@@ -72,11 +72,3 @@ jobs:
           git add 'README.md'
           git commit -m '${{ steps.get_match.outputs.result }} -> Rating'
           git push
-
-      - name: Close Issue
-        if: steps.get_match.outputs.result != '"No Match Info"'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo $GH_TOKEN | gh auth login --with-token
-          gh issue close ${{ github.event.issue.number }}
