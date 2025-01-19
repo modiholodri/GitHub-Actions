@@ -185,3 +185,4 @@
 |2025-1-15|Modi|Somchai|5|
 |2025-1-19|Mia|Wuast|5|
 |2025-1-19|Noch|Mal|5|
+|2025-1-19|Winner1|Loser1|5|
