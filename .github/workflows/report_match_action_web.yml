@@ -1,0 +1,50 @@
+name: Report Match Action
+
+on: 
+  repository_dispatch: 
+    types: [match_report]    
+
+jobs:
+  process_action_match:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v4
+
+      - name: Get Match Info
+        id: get_match
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date();
+            const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            const inputs = context.payload.inputs
+            var winner = ${{ github.event.client_payload.winner_name }};
+            var loser = ${{ github.event.client_payload.loser_name }};
+            const match_length = ${{ github.event.client_payload.match_length }}
+            console.log(`____________________________`);
+            console.log(`${ formattedDate } ${ winner } > ${ loser } ${ match_length }`);
+            return `|${ formattedDate }|${ winner }|${ loser }|${ match_length }|`;
+          
+      - name: Add to Match List
+        run: |
+          echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
+        
+      - name: Update Rating List
+        run: |
+          echo "____________________________"
+          echo ${{ steps.get_match.outputs.result }}
+          chmod +x ./bigeloLin
+          ./bigeloLin
+          echo "Updated Rating List!"
+
+      - name: Commit Changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add 'Match List.md'
+          git add 'README.md'
+          git commit -m '${{ steps.get_match.outputs.result }}'
+          git push
