@@ -18,9 +18,8 @@ jobs:
           script: |
             const date = new Date();
             const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            const inputs = context.payload.inputs
-            var winner = `${{ github.event.client_payload.winner_name }}`;
-            var loser = `${{ github.event.client_payload.loser_name }}`;
+            const winner = `${{ github.event.client_payload.winner_name }}`;
+            const loser = `${{ github.event.client_payload.loser_name }}`;
             const match_length = `${{ github.event.client_payload.match_length }}`;
             console.log(`____________________________`);
             console.log(`${ formattedDate } ${ winner } > ${ loser } ${ match_length }`);
