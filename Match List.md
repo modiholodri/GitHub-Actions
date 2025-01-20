@@ -194,3 +194,4 @@
 |2025-1-20|Modi|Wäre|5|
 |2025-1-20|Holy|Molly|17|
 |2025-1-20|Another One|And more|5|
+|2025-1-20|Molly|Malone|5|
