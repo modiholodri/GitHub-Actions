@@ -17,16 +17,28 @@
             background-color: #0004fdab;
             border-color: #1eff29;
         }
+        .input-group-text {
+            margin-top: 15px;
+        }
+        .form-select {
+            margin-top: 15px;
+        }
+        .form-control {
+            margin-top: 15px;
+        }
+        .btn {
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>BKK-BG Match</h1>
         <form id="matchForm">
-            <div class="form-group">
-                <label for="winnerName">Winner Name</label>
-                <select class="form-control" id="winnerName">
-                    <option value="Select or edit below">Select or edit below</option>
+            <div class="input-group">
+                <span class="input-group-text">Winner</span>
+                <select class="form-select" id="winnerName">
+                    <option value="Select or edit">Select or edit</option>
                     <option value="Brian">Brian</option>
                     <option value="Modi">Modi</option>
                     <option value="Walter">Walter</option>
@@ -34,10 +46,10 @@
                 </select>
                 <input type="text" class="form-control" id="winnerNameTyped">
             </div>
-            <div class="form-group">
-                <label for="loserName">Loser Name</label>
-                <select class="form-control" id="loserName">
-                    <option value="Select or edit below">Select or edit below</option>
+            <div class="input-group">
+                <span class="input-group-text">Loser</span>
+                <select class="form-select" id="loserName">
+                    <option value="Select or edit">Select or edit</option>
                     <option value="Brian">Brian</option>
                     <option value="Modi">Modi</option>
                     <option value="Walter">Walter</option>
@@ -45,9 +57,9 @@
                 </select>
                 <input type="text" class="form-control" id="loserNameTyped">
             </div>
-            <div class="form-group">
-                <label for="matchLength">Match Length</label>
-                <select class="form-control" id="matchLength">
+            <div class="input-group">
+                <span class="input-group-text">Match Length</span>
+                <select class="form-select" id="matchLength">
                     <option value="1">1</option>
                     <option value="3">3</option>
                     <option value="5" selected>5</option>
@@ -58,44 +70,49 @@
                     <option value="15">15</option>
                     <option value="17">17</option>
                 </select>
+                <input type="text" class="form-control" id="spacer" value="->">
+                <button type="submit" class="btn btn-primary">Submit</button>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
         <h2><br>BKK-BG Ratings</h2>
         <div id="ratingList"></div>
-    </div>
+        <button id="refresh" class="btn btn-secondary">Refresh</button>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         // Fetch the rating list from README.md
         async function loadRatingList() {
             try {
-                const response = await fetch('README.md');
+                const response = await fetch('https://raw.githubusercontent.com/modiholodri/GitHub-Actions/refs/heads/main/README.md');
                 if (response.ok) {
                     const data = await response.text();
                     document.getElementById('ratingList').innerHTML = marked.parse(data);
                 } else {
-                    console.error('Failed to fetch README.md:', response.statusText);
+                    alert('Failed to fetch README.md: ' + response.statusText);
                 }
             } catch (error) {
-                console.error('Error fetching README.md:', error);
+                alert('Error fetching README.md: ' + error);
             }
         }
 
-        loadRatingList();
+
+        document.getElementById('refresh').onclick = function() {
+            alert('updating rating list')
+            document.getElementById('ratingList').innerHTML = '<p>rating list</p>';
+            loadRatingList();
+        };
 
         document.getElementById('matchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             var winnerName = document.getElementById('winnerName').value;
-            if (winnerName == 'Select or edit below') winnerName = document.getElementById('winnerNameTyped').value;
+            if (winnerName == 'Select or edit') winnerName = document.getElementById('winnerNameTyped').value;
             
             var loserName = document.getElementById('loserName').value;
-            if (loserName == 'Select or edit below') loserName = document.getElementById('loserNameTyped').value;
+            if (loserName == 'Select or edit') loserName = document.getElementById('loserNameTyped').value;
             
             const matchLength = document.getElementById('matchLength').value;
-
-            const issueTitle = `${winnerName}, ${loserName}, ${matchLength}`;
 
             // Your GitHub repository details
             const repoOwner = 'modiholodri';
@@ -138,11 +155,11 @@
                     });
 
                     if (!response.ok) { 
-                    // Handle response failure 
-                    const errorDetails = await response.json(); 
-                    alert('GitHub API response failed: ' + response.status + ' -> ' + errorDetails); 
-                    // Implement retry logic if necessary 
-                    throw new Error('Failed to trigger GitHub Action'); 
+                        // Handle response failure 
+                        const errorDetails = await response.json(); 
+                        alert('GitHub API response failed: ' + response.status + ' -> ' + errorDetails); 
+                        // Implement retry logic if necessary 
+                        throw new Error('Failed to trigger GitHub Action'); 
                     }
                     else {
                         // Handle successful response 
