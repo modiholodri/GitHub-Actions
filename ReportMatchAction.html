@@ -11,7 +11,7 @@
             color: #ffffff;
         }
         .container {
-            margin-top: 50px;
+            margin-top: 15px;
         }
         .btn-primary {
             background-color: #0004fdab;
@@ -21,16 +21,29 @@
 </head>
 <body>
     <div class="container">
-        <h1>BKK-BG Match Report</h1>
-        <p>Follow the Reporting Guidelines below to report a match to the Bangkok Backgammon Rating List.</p>
+        <h1>BKK-BG Match</h1>
         <form id="matchForm">
             <div class="form-group">
                 <label for="winnerName">Winner Name</label>
-                <input type="text" class="form-control" id="winnerName" required>
+                <select class="form-control" id="winnerName">
+                    <option value="Select or edit below">Select or edit below</option>
+                    <option value="Brian">Brian</option>
+                    <option value="Modi">Modi</option>
+                    <option value="Walter">Walter</option>
+                    <option value="Vinnie">Vinnie</option>
+                </select>
+                <input type="text" class="form-control" id="winnerNameTyped">
             </div>
             <div class="form-group">
                 <label for="loserName">Loser Name</label>
-                <input type="text" class="form-control" id="loserName" required>
+                <select class="form-control" id="loserName">
+                    <option value="Select or edit below">Select or edit below</option>
+                    <option value="Brian">Brian</option>
+                    <option value="Modi">Modi</option>
+                    <option value="Walter">Walter</option>
+                    <option value="Vinnie">Vinnie</option>
+                </select>
+                <input type="text" class="form-control" id="loserNameTyped">
             </div>
             <div class="form-group">
                 <label for="matchLength">Match Length</label>
@@ -48,7 +61,7 @@
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-        <h2><br>BKK-BG Rating List</h2>
+        <h2><br>BKK-BG Ratings</h2>
         <div id="ratingList"></div>
     </div>
 
@@ -73,9 +86,15 @@
 
         document.getElementById('matchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const winnerName = document.getElementById('winnerName').value;
-            const loserName = document.getElementById('loserName').value;
+            
+            var winnerName = document.getElementById('winnerName').value;
+            if (winnerName == 'Select or edit below') winnerName = document.getElementById('winnerNameTyped').value;
+            
+            var loserName = document.getElementById('loserName').value;
+            if (loserName == 'Select or edit below') loserName = document.getElementById('loserNameTyped').value;
+            
             const matchLength = document.getElementById('matchLength').value;
+
             const issueTitle = `${winnerName}, ${loserName}, ${matchLength}`;
 
             // Your GitHub repository details
@@ -84,39 +103,55 @@
             const githubToken = '';
 
             try {
-                const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${githubToken}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json',
-                    },
-                    body: JSON.stringify({ 
+                if (winnerName == '') {
+                    alert('Select or edit the winner name!');
+                }
+                else if (loserName == '') {
+                    alert('Select or edit the loser name!');
+                }
+                else if (githubToken != ' ') {
+                    alert(JSON.stringify({ 
                         event_type: 'match_report', 
                         client_payload: { 
                             winner_name: `${winnerName}`,
                             loser_name:  `${loserName}`, 
                             match_length: `${matchLength}`
                         } 
-                    })
-                });
-
-                alert(`checking response`);
-
-                if (!response.ok) { 
-                // Handle response failure 
-                   const errorDetails = await response.json(); 
-                   alert('GitHub API response failed:' + response.status + errorDetails); 
-                   // Implement retry logic if necessary 
-                   throw new Error('Failed to trigger GitHub Action'); 
+                    }));
                 }
                 else {
-                    // Handle successful response 
-                    const responseData = await response.json(); 
-                    alert('GitHub Action triggered successfully:' + responseData);
+                    const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${githubToken}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json',
+                        },
+                        body: JSON.stringify({ 
+                            event_type: 'match_report', 
+                            client_payload: { 
+                                winner_name: `${winnerName}`,
+                                loser_name:  `${loserName}`, 
+                                match_length: `${matchLength}`
+                            } 
+                        })
+                    });
+
+                    if (!response.ok) { 
+                    // Handle response failure 
+                    const errorDetails = await response.json(); 
+                    alert('GitHub API response failed: ' + response.status + ' -> ' + errorDetails); 
+                    // Implement retry logic if necessary 
+                    throw new Error('Failed to trigger GitHub Action'); 
+                    }
+                    else {
+                        // Handle successful response 
+                        const responseData = await response.json(); 
+                        alert('GitHub Action triggered successfully: ' + responseData);
+                    }
                 }
             } catch (error) { 
-                alert('Error triggering GitHub Action:' + error.message); // Handle error (e.g., notify user, retry, etc.)
+                alert('Error triggering GitHub Action: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
             }
         });
     </script>
