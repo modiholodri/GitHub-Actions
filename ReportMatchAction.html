@@ -36,6 +36,13 @@
         <h1>BKK-BG Match</h1>
         <form id="matchForm">
             <div class="input-group">
+                <span class="input-group-text">Rating List</span>
+                <select class="form-select" id="ratingListSelection">
+                    <option value="bkk-bg-rating-list">BKK BG Rating List</option>
+                    <option value="GitHub-Actions">GitHub-Actions</option>
+                </select>
+            </div>
+            <div class="input-group">
                 <span class="input-group-text">Winner</span>
                 <select class="form-select" id="winnerName">
                     <option value="Select or edit">Select or edit</option>
@@ -90,8 +97,8 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
-        <h2><br>BKK-BG Ratings</h2>
-        <button id="refresh" class="btn btn-secondary">Refresh</button>
+        
+        <h2><br>BKK-BG Ratings <button id="refresh" class="btn btn-secondary">Refresh</button></h2>
         <div id="ratingList"></div>
 </div>
 
@@ -100,7 +107,10 @@
         // Fetch the rating list from README.md
         async function loadRatingList() {
             try {
-                const response = await fetch('https://raw.githubusercontent.com/modiholodri/GitHub-Actions/refs/heads/main/README.md');
+                const repoName = document.getElementById('ratingListSelection').value;
+                const ratingListURL = 'https://raw.githubusercontent.com/modiholodri/' + repoName + '/refs/heads/main/README.md';
+                alert(ratingListURL);
+                const response = await fetch(ratingListURL);
                 if (response.ok) {
                     const data = await response.text();
                     document.getElementById('ratingList').innerHTML = marked.parse(data);
@@ -129,8 +139,8 @@
 
             // Your GitHub repository details
             const repoOwner = 'modiholodri';
-            const repoName = 'GitHub-Actions';
-            const githubToken = '';
+            const repoName = document.getElementById('ratingListSelection').value;
+            const githubToken = '';  // Fill in the token before distributing the file to others
 
             if (winnerName == '') {
                 alert('Select or edit the Winner name!');
@@ -166,7 +176,8 @@
                         } 
                     })
                     });
-                    alert(`Submitted match ${winnerName} >  ${loserName} -> ${matchLength}`);
+
+                    alert(`Submitted match ${winnerName} > ${loserName} -> ${matchLength}\nWait 15 seconds before clicking Refresh...`);
                     document.getElementById('winnerName').value = 'Select or edit';
                     document.getElementById('winnerNameTyped').value = '';
                     
