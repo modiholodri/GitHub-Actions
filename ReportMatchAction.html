@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #2200ff2c;
+            background-color: #0d0064;
             color: #ffffff;
         }
         .container {
             margin-top: 15px;
         }
         .btn-primary {
-            background-color: #0004fdab;
+            background-color: #0004fd;
             border-color: #1eff29;
         }
         .input-group-text {
@@ -109,7 +109,7 @@
             try {
                 const repoName = document.getElementById('ratingListSelection').value;
                 const ratingListURL = 'https://raw.githubusercontent.com/modiholodri/' + repoName + '/refs/heads/main/README.md';
-                alert(ratingListURL);
+
                 const response = await fetch(ratingListURL);
                 if (response.ok) {
                     const data = await response.text();
