@@ -229,3 +229,4 @@
 |2025-2-3|Llll|Kkkk|17|
 |2025-2-3|Samsung|Zzzz|5|
 |2025-2-3|Edge|Ssss|5|
+|2025-2-3|Chrome|Uuuu|5|
