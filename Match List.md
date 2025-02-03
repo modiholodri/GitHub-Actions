@@ -231,3 +231,4 @@
 |2025-2-3|Edge|Ssss|5|
 |2025-2-3|Chrome|Uuuu|5|
 |2025-2-3|API|Fetch|17|
+|2025-2-3|API1|Fetch1|17|
