@@ -104,28 +104,35 @@
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+        const repoOwner = 'modiholodri';
+        const githubToken = '';  // Fill in the token before distributing the file to others
+
         // Fetch the rating list from README.md
-        async function loadRatingList() {
-            try {
-                const repoName = document.getElementById('ratingListSelection').value;
-                const ratingListURL = 'https://raw.githubusercontent.com/modiholodri/' + repoName + '/refs/heads/main/README.md';
-
-                const response = await fetch(ratingListURL);
-                if (response.ok) {
-                    const data = await response.text();
-                    document.getElementById('ratingList').innerHTML = marked.parse(data);
-                } else {
-                    alert('Failed to fetch Rating List: ' + response.statusText);
-                }
-            } catch (error) {
-                alert('Error fetching Rating List: ' + error);
-            }
-        }
-
         document.getElementById('refresh').onclick = function() {
-            loadRatingList();
+            const repoName = document.getElementById('ratingListSelection').value;
+
+            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/README.md`;
+
+            const options = {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            };
+
+            fetch(url, options)
+            .then(response => response.json())
+            .then(data => {
+                if (data.content) {
+                    const fileContent = decodeURIComponent(escape(window.atob( data.content )));
+                    document.getElementById('ratingList').innerHTML = marked.parse(fileContent);
+                } else {
+                    console.log('Failed to fetch file content');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         };
 
+        // Submit a match report
         document.getElementById('matchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -138,9 +145,7 @@
             const matchLength = document.getElementById('matchLength').value;
 
             // Your GitHub repository details
-            const repoOwner = 'modiholodri';
             const repoName = document.getElementById('ratingListSelection').value;
-            const githubToken = '';  // Fill in the token before distributing the file to others
 
             if (winnerName == '') {
                 alert('Select or edit the Winner name!');
