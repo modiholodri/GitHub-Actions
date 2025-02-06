@@ -12,4 +12,4 @@ To report any of the two match types go to Actions, select the match type, click
 Select or type in the Winner, the Loser and the Match Length.
 Click on RUN WORKFLOW again to submit the match report.
 
-The rating list will be updated after around 30 seconds.
+The rating list will be updated within 20 seconds.
