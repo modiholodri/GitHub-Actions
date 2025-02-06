@@ -38,14 +38,14 @@
         <form id="matchForm">
             <div class="input-group">
                 <span class="input-group-text">Rating List</span>
-                <select class="form-select" id="ratingListSelection">
-                    <option value="bkk-bg-rating-list">BKK BG Rating List</option>
+                <select class="form-select" title="Rating List Selection" id="ratingListSelection">
                     <option value="GitHub-Actions">GitHub-Actions</option>
+                    <option value="bkk-bg-rating-list">BKK BG Rating List</option>
                 </select>
             </div>
             <div class="input-group">
                 <span class="input-group-text">Winner</span>
-                <select class="form-select" id="winnerName">
+                <select class="form-select" title="Winner Name" id="winnerName">
                     <option value="Select or edit">Select/Edit</option>
                     <option value="Ashok">Ashok</option>
                     <option value="Brian">Brian</option>
@@ -55,16 +55,16 @@
                     <option value="Jay">Jay</option>
                     <option value="John">John</option>
                     <option value="Modi">Modi</option>
-                    <option value="Somchai">Somechai</option>
+                    <option value="Somchai">Somchai</option>
                     <option value="Walter">Walter</option>
                     <option value="Van">Van</option>
                     <option value="Vinnie">Vinnie</option>
                 </select>
-                <input type="text" class="form-control" id="winnerNameTyped">
+                <input type="text" title="Winner Name" class="form-control" id="winnerNameTyped">
             </div>
             <div class="input-group">
                 <span class="input-group-text">Loser</span>
-                <select class="form-select" id="loserName">
+                <select class="form-select" title="Loser Name" id="loserName">
                     <option value="Select or edit">Select/Edit</option>
                     <option value="Ashok">Ashok</option>
                     <option value="Brian">Brian</option>
@@ -74,16 +74,16 @@
                     <option value="Jay">Jay</option>
                     <option value="John">John</option>
                     <option value="Modi">Modi</option>
-                    <option value="Somchai">Somechai</option>
+                    <option value="Somchai">Somchai</option>
                     <option value="Walter">Walter</option>
                     <option value="Van">Van</option>
                     <option value="Vinnie">Vinnie</option>
                 </select>
-                <input type="text" class="form-control" id="loserNameTyped">
+                <input type="text" title="Loser Name" class="form-control" id="loserNameTyped">
             </div>
             <div class="input-group">
                 <span class="input-group-text">Match Length</span>
-                <select class="form-select" id="matchLength">
+                <select class="form-select" title="Match Length" id="matchLength">
                     <option value="1">1</option>
                     <option value="3">3</option>
                     <option value="5" selected>5</option>
@@ -94,44 +94,23 @@
                     <option value="15">15</option>
                     <option value="17">17</option>
                 </select>
-                <input type="text" class="form-control" id="spacer" value="->">
+                <input type="text" title="Spacer" class="form-control" id="spacer" value="->">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
         
         <h2><br>Rating List <button id="refresh" class="btn btn-secondary">Refresh</button></h2>
         <div id="ratingList"></div>
-</div>
+
+        <p><br></p>
+        <div id="reportingGuidelines"></div>
+        <div id="reportMatchOnTheWeb"></div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         const repoOwner = 'modiholodri';
         const githubToken = '';  // Fill in the token before distributing the file to others
-
-        // Fetch the rating list from README.md
-        document.getElementById('refresh').onclick = function() {
-            const repoName = document.getElementById('ratingListSelection').value;
-
-            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/README.md`;
-
-            const options = {
-                headers: {
-                    'Authorization': `token ${githubToken}`
-                }
-            };
-
-            fetch(url, options)
-            .then(response => response.json())
-            .then(data => {
-                if (data.content) {
-                    const fileContent = decodeURIComponent(escape(window.atob( data.content )));
-                    document.getElementById('ratingList').innerHTML = marked.parse(fileContent);
-                } else {
-                    console.log('Failed to fetch file content');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        };
 
         // Submit a match report
         document.getElementById('matchForm').addEventListener('submit', async (e) => {
@@ -195,6 +174,45 @@
                 }
             }
         });
+
+        // Fetch the rating list from README.md
+        document.getElementById('refresh').onclick = function() {
+            FetchMarkDownFromRepo('README', 'ratingList');
+        };
+
+        // Fetch a markdown file from the repository
+        function FetchMarkDownFromRepo(fileName, divName) {
+            const repoName = document.getElementById('ratingListSelection').value;
+
+            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}.md`;
+
+            const options = {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            };
+
+            fetch(url, options)
+            .then(response => response.json())
+            .then(data => {
+                if (data.content) {
+                    const fileContent = decodeURIComponent(escape(window.atob( data.content )));
+                    document.getElementById(divName).innerHTML = marked.parse(fileContent);
+                } else {
+                    console.log('Failed to fetch file content');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
+            alert ('Fetched ' + url + ' -> ' + divName);
+        };
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+            FetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
+            FetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+        });
+
+    
     </script>
 </body>
 </html>
