@@ -94,8 +94,8 @@
                     <option value="15">15</option>
                     <option value="17">17</option>
                 </select>
-                <input type="text" title="Spacer" class="form-control" id="spacer" value="->">
-                <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+                <input type="text" title="Match Length" class="form-control" id="matchLengthTyped" value="">
+                <button type="submit" id="submit" class="btn btn-primary float-right">Submit</button>
             </div>
         </form>
 
@@ -152,7 +152,8 @@
             var loserName = document.getElementById('loserName').value;
             if (loserName == 'Select or edit') loserName = document.getElementById('loserNameTyped').value;
             
-            const matchLength = document.getElementById('matchLength').value;
+            var matchLength = document.getElementById('matchLengthTyped').value;
+            if (matchLength == '') matchLength = document.getElementById('matchLength').value;
 
             // Your GitHub repository details
             const repoName = document.getElementById('ratingListSelection').value;
