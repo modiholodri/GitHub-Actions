@@ -95,14 +95,15 @@
                     <option value="17">17</option>
                 </select>
                 <input type="text" title="Spacer" class="form-control" id="spacer" value="->">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" id="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
-        
+
         <h2><br>Rating List <button id="refresh" class="btn btn-secondary">Refresh</button></h2>
+
         <div id="ratingList"></div>
 
-        <p><br></p>
+        <p><br><br></p>
         <div id="reportingGuidelines"></div>
         <div id="reportMatchOnTheWeb"></div>
     </div>
@@ -111,6 +112,35 @@
     <script>
         const repoOwner = 'modiholodri';
         const githubToken = '';  // Fill in the token before distributing the file to others
+
+        const initialSubmitTimeout = 20;
+        let submitTimeout = 0;
+
+        const initialRefreshTimeout = 60;
+        let refreshTimeout = 0;
+        let oneSecondInterval = setInterval(decreaseTimeouts, 1000);
+
+        function decreaseTimeouts() {
+            submitTimeout--;
+            if (submitTimeout > 0) {
+                document.getElementById("submit").innerHTML = `${submitTimeout}`;
+                document.getElementById("submit").disabled = true;
+            }
+            else {
+                document.getElementById("submit").innerHTML = `Submit`;
+                document.getElementById("submit").disabled = false;
+            }
+
+            refreshTimeout--;
+            if (refreshTimeout > 0) {
+                document.getElementById("refresh").innerHTML = `${refreshTimeout}`;
+                document.getElementById("refresh").disabled = true;
+            }
+            else {
+                document.getElementById("refresh").innerHTML = `Refresh`;
+                document.getElementById("refresh").disabled = false;
+            }
+        }
 
         // Submit a match report
         document.getElementById('matchForm').addEventListener('submit', async (e) => {
@@ -162,7 +192,11 @@
                     })
                     });
 
-                    alert(`Submitted match ${winnerName} > ${loserName} -> ${matchLength}\nWait 15 seconds before clicking Refresh...`);
+                    submitTimeout = initialSubmitTimeout;
+                    if (refreshTimeout < initialSubmitTimeout) refreshTimeout = initialSubmitTimeout;
+                    let autoRefresh = setTimeout(function() { refreshRatingList() }, refreshTimeout * 1000);
+
+                    alert(`Submitted match ${winnerName} > ${loserName} -> ${matchLength}`);
                     document.getElementById('winnerName').value = 'Select or edit';
                     document.getElementById('winnerNameTyped').value = '';
                     
@@ -175,9 +209,20 @@
             }
         });
 
+        function refreshRatingList() {
+            if (refreshTimeout < 6) {
+                FetchMarkDownFromRepo('README', 'ratingList');
+                refreshTimeout = initialRefreshTimeout;
+                alert("Refreshed Rating List");
+            }
+            else {
+                alert(`Refresh Timeout ${refreshTimeout}`);
+            }
+        }
+
         // Fetch the rating list from README.md
         document.getElementById('refresh').onclick = function() {
-            FetchMarkDownFromRepo('README', 'ratingList');
+            refreshRatingList();
         };
 
         // Fetch a markdown file from the repository
@@ -203,8 +248,6 @@
                 }
             })
             .catch(error => console.error('Error:', error));
-
-            alert ('Fetched ' + url + ' -> ' + divName);
         };
 
         document.addEventListener("DOMContentLoaded", (event) => {
@@ -212,7 +255,6 @@
             FetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
         });
 
-    
     </script>
 </body>
 </html>
