@@ -33,7 +33,7 @@ jobs:
         run: |
           echo "____________________________"
           echo ${{ steps.get_match.outputs.result }}
-          cd ,/bigelo
+          cd ./bigelo
           chmod +x ./bigeloLin
           ./bigeloLin
           echo "Updated Rating List!"
