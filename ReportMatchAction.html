@@ -34,26 +34,21 @@
 <body>
     <div class="container">
         <h1>Bangkok BG</h1>
-        <h2>Match Report</h2>
+        <h3>Match Report</h3>
         <form id="matchForm">
-            <div class="input-group">
-                <span class="input-group-text">Rating List</span>
-                <select class="form-select" title="Rating List Selection" id="ratingListSelection">
-                    <option value="GitHub-Actions">GitHub-Actions</option>
-                    <option value="bkk-bg-rating-list">BKK BG Rating List</option>
-                </select>
-            </div>
             <div class="input-group">
                 <span class="input-group-text">Winner</span>
                 <select class="form-select" title="Winner Name" id="winnerName">
                     <option value="Select or edit">Select/Edit</option>
                     <option value="Ashok">Ashok</option>
+                    <option value="Avi">Avi</option>
                     <option value="Brian">Brian</option>
                     <option value="David">David</option>
                     <option value="Chris">Chris</option>
                     <option value="Graham">Graham</option>
                     <option value="Jay">Jay</option>
                     <option value="John">John</option>
+                    <option value="Leonard">Leonard</option>
                     <option value="Modi">Modi</option>
                     <option value="Somchai">Somchai</option>
                     <option value="Walter">Walter</option>
@@ -67,12 +62,14 @@
                 <select class="form-select" title="Loser Name" id="loserName">
                     <option value="Select or edit">Select/Edit</option>
                     <option value="Ashok">Ashok</option>
+                    <option value="Avi">Avi</option>
                     <option value="Brian">Brian</option>
                     <option value="David">David</option>
                     <option value="Chris">Chris</option>
                     <option value="Graham">Graham</option>
                     <option value="Jay">Jay</option>
                     <option value="John">John</option>
+                    <option value="Leonard">Leonard</option>
                     <option value="Modi">Modi</option>
                     <option value="Somchai">Somchai</option>
                     <option value="Walter">Walter</option>
@@ -99,13 +96,28 @@
             </div>
         </form>
 
-        <h2><br>Rating List <button id="refresh" class="btn btn-secondary">Refresh</button></h2>
+        <h3><br>Rating List <button id="refresh" class="btn btn-secondary">Refresh</button></h3>
 
         <div id="ratingList"></div>
 
-        <p><br><br></p>
+        <p><br></p>
         <div id="reportingGuidelines"></div>
         <div id="reportMatchOnTheWeb"></div>
+
+        <p><br></p>
+        <h3>Submission Test</h3>
+        <p>To test/exercise match submissions you can change to a Fake Rating List below.
+           It should work the same as the BKK BG Rating List, but matches will be cleared from time to time.
+           To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
+        </p>
+        <p>Note: After the this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
+        <div class="input-group">
+            <span class="input-group-text">Rating List</span>
+            <select class="form-select" title="Rating List Selection" id="ratingListSelection">
+                <option value="bkk-bg-rating-list">BKK BG Rating List</option>
+                <option value="GitHub-Actions">Fake Rating List</option>
+            </select>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -212,9 +224,8 @@
 
         function refreshRatingList() {
             if (refreshTimeout < 6) {
-                FetchMarkDownFromRepo('README', 'ratingList');
+                FetchMarkDownFromRepo('RatingList', 'ratingList');
                 refreshTimeout = initialRefreshTimeout;
-                alert("Refreshed Rating List");
             }
             else {
                 alert(`Refresh Timeout ${refreshTimeout}`);
