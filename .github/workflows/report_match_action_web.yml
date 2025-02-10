@@ -27,14 +27,14 @@ jobs:
           
       - name: Add to Match List
         run: |
-          echo ${{ steps.get_match.outputs.result }} >> "Match List.md"
+          echo ${{ steps.get_match.outputs.result }} >> "MatchList.md"
         
       - name: Update Rating List
         run: |
           echo "____________________________"
           echo ${{ steps.get_match.outputs.result }}
-          chmod +x ./bigeloLin
-          ./bigeloLin
+          chmod +x ./bigelo/bigeloLin
+          ./bigelo/bigeloLin
           echo "Updated Rating List!"
 
       - name: Commit Changes
@@ -43,7 +43,8 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add 'Match List.md'
+          git add 'MatchList.md'
+          git add 'RatingList.md'
           git add 'README.md'
           git commit -m '${{ steps.get_match.outputs.result }}'
           git push
