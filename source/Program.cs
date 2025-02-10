@@ -160,17 +160,20 @@ namespace bigeloCLI
         }
 
         private void AppendFileToStreamWriter(StreamWriter swTarget, string sFileName) {
-            StreamReader srFileToAppend = new StreamReader(sFileName);
-            if (!srFileToAppend.EndOfStream)
+            if (File.Exists(sFileName))
             {
-                swTarget.WriteLine(); // add two blank lines before appending the file
-                swTarget.WriteLine();
-
-                var sLineToAppend = srFileToAppend.ReadLine();
-                while (sLineToAppend != null)
+                StreamReader srFileToAppend = new StreamReader(sFileName);
+                if (!srFileToAppend.EndOfStream)
                 {
-                    swTarget.WriteLine(sLineToAppend);
-                    sLineToAppend = srFileToAppend.ReadLine();
+                    swTarget.WriteLine(); // add two blank lines before appending the file
+                    swTarget.WriteLine();
+
+                    var sLineToAppend = srFileToAppend.ReadLine();
+                    while (sLineToAppend != null)
+                    {
+                        swTarget.WriteLine(sLineToAppend);
+                        sLineToAppend = srFileToAppend.ReadLine();
+                    }
                 }
             }
         }
