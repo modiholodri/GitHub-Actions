@@ -91,8 +91,8 @@ jobs:
         run: |
           echo "____________________________"
           echo ${{ steps.get_match.outputs.result }}
-          chmod +x ./bigeloLin
-          ./bigeloLin
+          chmod +x ./bigelo/bigeloLin
+          ./biegelo/bigeloLin
           echo "Updated Rating List!"
 
       - name: Commit Changes
