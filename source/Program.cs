@@ -64,9 +64,9 @@ namespace bigeloCLI
 
         void LoadMatchList()
         {
-            if (File.Exists("Match List.md"))
+            if (File.Exists("../MatchList.md"))
             {
-                FileStream fsMatchList = new FileStream("Match List.md", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                FileStream fsMatchList = new FileStream("../MatchList.md", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 StreamReader srMatchList = new StreamReader(fsMatchList);
 
                 if (!srMatchList.EndOfStream)
@@ -159,16 +159,34 @@ namespace bigeloCLI
             dataRatingList.EndLoadData();
         }
 
+        private void AppendFileToStreamWriter(StreamWriter swTarget, string sFileName) {
+            StreamReader srFileToAppend = new StreamReader(sFileName);
+            if (!srFileToAppend.EndOfStream)
+            {
+                swTarget.WriteLine(); // add two blank lines before appending the file
+                swTarget.WriteLine();
+
+                var sLineToAppend = srFileToAppend.ReadLine();
+                while (sLineToAppend != null)
+                {
+                    swTarget.WriteLine(sLineToAppend);
+                    sLineToAppend = srFileToAppend.ReadLine();
+                }
+            }
+        }
 
         private void SaveRatingList()
         {
-            StreamWriter swRatingList = new StreamWriter("README.md");
+            StreamWriter swRatingList = new StreamWriter("../RatingList.md"); // contains only the pure rating list
+            StreamWriter swReadme = new StreamWriter("../README.md"); // contains the rating list and the reporting guidelines
 
             dataRatingList.DefaultView.Sort = "Rating DESC";
             DataTable dataSortedRatingList = dataRatingList.DefaultView.ToTable();
 
             swRatingList.WriteLine("| |Name|Rating|+/-|Exp|");
             swRatingList.WriteLine("|-|:--:|:----:|:-:|:-:|");
+            swReadme.WriteLine("| |Name|Rating|+/-|Exp|");
+            swReadme.WriteLine("|-|:--:|:----:|:-:|:-:|");
 
             int iRank = 1;
             foreach (DataRow drPlayer in dataSortedRatingList.Rows)
@@ -181,40 +199,17 @@ namespace bigeloCLI
                                                         (double)drPlayer["Change"],
                                                         (int)drPlayer["Experience"]);
                     swRatingList.WriteLine(sPlayerRating);
+                    swReadme.WriteLine(sPlayerRating);
                 }
             }
 
-            swRatingList.WriteLine();
-            swRatingList.WriteLine(" ");
-            swRatingList.WriteLine();
-            swRatingList.WriteLine("## Reporting");
-            swRatingList.WriteLine();
-            swRatingList.WriteLine("Frequent players are included in dropdown menus to ease the match reporting.");
-            swRatingList.WriteLine("When a player, who is not included in dropdown menus is involved, the name of the player has to be typed in.");
-            swRatingList.WriteLine();
-            swRatingList.WriteLine("- Report Match:  is used for matches between players that are normally present during the Saturday sessions.");
-            swRatingList.WriteLine("Matches are reported using dropdown menus for the winner/loser name and the match length.");
-            swRatingList.WriteLine("- Report New Player Match:  is used for matches with a player not in the dropdown menus, for example, when a new player joins.");
-            swRatingList.WriteLine("Matches are reported using dropdown menus or editing the name manual for the winner/loser name and the match length.");
-            swRatingList.WriteLine();
-            swRatingList.WriteLine("To report any of the two match types go to Actions, select the match type, click on RUN WORKFLOW.");
-            swRatingList.WriteLine("Select or type in the Winner, the Loser and the Match Length.");
-            swRatingList.WriteLine("Click on RUN WORKFLOW again to submit the match report.");
-            swRatingList.WriteLine();
-            swRatingList.WriteLine("The rating list will be updated after around 30 seconds.");
-            swRatingList.WriteLine();
-            swRatingList.WriteLine("### Reporting Guidelines");
-            swRatingList.WriteLine();
-            swRatingList.WriteLine("Only the winner reports the result of a match.");
-            swRatingList.WriteLine("A match counts only for the rating if it is a live played match (no money play or chouettes)");
-            swRatingList.WriteLine("with both players agreeing beforehand that it will count for the rating.");
-            swRatingList.WriteLine();
-            swRatingList.WriteLine("- The winner chooses his name, for a new player: type in your name.");
-            swRatingList.WriteLine("- The winner chooses the name of his opponent, for a new player: type in the name of the opponent.");
-            swRatingList.WriteLine("- The winner chooses the length of the match.");
-            swRatingList.WriteLine("- The winner clicks on RUN WORKFLOW (submit).");
+            AppendFileToStreamWriter(swReadme, "../ReportingGuidelines.md");
+            AppendFileToStreamWriter(swReadme, "../ReportMatchOnGitHub.md");
+
             swRatingList.Flush();
             swRatingList.Close();
+            swReadme.Flush();
+            swReadme.Close();
         }
 
 
