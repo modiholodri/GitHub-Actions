@@ -17,6 +17,9 @@
             background-color: #0004fd;
             border-color: #1eff29;
         }
+        .btn-secondary {
+            background-color: #0d0064;
+        }
         .input-group-text {
             margin-top: 15px;
         }
@@ -114,8 +117,8 @@
         <div class="input-group">
             <span class="input-group-text">Rating List</span>
             <select class="form-select" title="Rating List Selection" id="ratingListSelection">
-                <option value="bkk-bg-rating-list">BKK BG Rating List</option>
                 <option value="GitHub-Actions">Fake Rating List</option>
+                <option value="bkk-bg-rating-list">BKK BG Rating List</option>
             </select>
         </div>
     </div>
@@ -130,9 +133,13 @@
 
         const initialRefreshTimeout = 60;
         let refreshTimeout = 0;
+        let lastRefreshTimeout = 0;
         let oneSecondInterval = setInterval(decreaseTimeouts, 1000);
 
+        let autoRefresh = false;
+
         function decreaseTimeouts() {
+            // handle the submit timeout
             submitTimeout--;
             if (submitTimeout > 0) {
                 document.getElementById("submit").innerHTML = `${submitTimeout}`;
@@ -143,31 +150,40 @@
                 document.getElementById("submit").disabled = false;
             }
 
+            // handle the refresh timeout
             refreshTimeout--;
             if (refreshTimeout > 0) {
                 document.getElementById("refresh").innerHTML = `${refreshTimeout}`;
                 document.getElementById("refresh").disabled = true;
             }
             else {
-                document.getElementById("refresh").innerHTML = `Refresh`;
-                document.getElementById("refresh").disabled = false;
+                if (autoRefresh && lastRefreshTimeout > 0) {  // automatically refresh after a match report has been submitted
+                    refreshRatingList();
+                }
+                else {
+                    document.getElementById("refresh").innerHTML = `Refresh`;
+                    document.getElementById("refresh").disabled = false;
+                }
             }
+            lastRefreshTimeout = refreshTimeout;
         }
 
         // Submit a match report
         document.getElementById('matchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // get the winner name
             var winnerName = document.getElementById('winnerName').value;
             if (winnerName == 'Select or edit') winnerName = document.getElementById('winnerNameTyped').value;
             
+            // get the loser name
             var loserName = document.getElementById('loserName').value;
             if (loserName == 'Select or edit') loserName = document.getElementById('loserNameTyped').value;
             
+            // get the match length
             var matchLength = document.getElementById('matchLengthTyped').value;
             if (matchLength == '') matchLength = document.getElementById('matchLength').value;
 
-            // Your GitHub repository details
             const repoName = document.getElementById('ratingListSelection').value;
 
             if (winnerName == '') {
@@ -207,9 +223,10 @@
 
                     submitTimeout = initialSubmitTimeout;
                     if (refreshTimeout < initialSubmitTimeout) refreshTimeout = initialSubmitTimeout;
-                    let autoRefresh = setTimeout(function() { refreshRatingList() }, refreshTimeout * 1000);
+                    autoRefresh = true;  // trigger the auto refresh
 
-                    alert(`Submitted match ${winnerName} > ${loserName} -> ${matchLength}`);
+                    // alert the submitter and reset the inputs
+                    alert(`Submitted match...\n\n ${winnerName} > ${loserName} -> ${matchLength}`);
                     document.getElementById('winnerName').value = 'Select or edit';
                     document.getElementById('winnerNameTyped').value = '';
                     
@@ -223,13 +240,9 @@
         });
 
         function refreshRatingList() {
-            if (refreshTimeout < 6) {
-                FetchMarkDownFromRepo('RatingList', 'ratingList');
-                refreshTimeout = initialRefreshTimeout;
-            }
-            else {
-                alert(`Refresh Timeout ${refreshTimeout}`);
-            }
+            FetchMarkDownFromRepo('RatingList', 'ratingList');
+            refreshTimeout = initialRefreshTimeout;
+            autoRefresh = false;
         }
 
         // Fetch the rating list from README.md
