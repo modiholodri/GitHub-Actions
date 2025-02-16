@@ -10,6 +10,9 @@
             background-color: #0d0064;
             color: #ffffff;
         }
+        h1, h3 {
+            color:#5c5ff8;
+        }
         .container {
             margin-top: 15px;
         }
@@ -54,9 +57,9 @@
                     <option value="Leonard">Leonard</option>
                     <option value="Modi">Modi</option>
                     <option value="Somchai">Somchai</option>
-                    <option value="Walter">Walter</option>
                     <option value="Van">Van</option>
                     <option value="Vinnie">Vinnie</option>
+                    <option value="Walter">Walter</option>
                 </select>
                 <input type="text" title="Winner Name" class="form-control" id="winnerNameTyped">
             </div>
@@ -75,9 +78,9 @@
                     <option value="Leonard">Leonard</option>
                     <option value="Modi">Modi</option>
                     <option value="Somchai">Somchai</option>
-                    <option value="Walter">Walter</option>
                     <option value="Van">Van</option>
                     <option value="Vinnie">Vinnie</option>
+                    <option value="Walter">Walter</option>
                 </select>
                 <input type="text" title="Loser Name" class="form-control" id="loserNameTyped">
             </div>
@@ -99,12 +102,20 @@
             </div>
         </form>
 
-        <h3><br>Rating List <button id="refresh" class="btn btn-secondary">Refresh</button></h3>
+        <h3>Last Submission <button id="getRunsStatus" class="btn btn-secondary">Get Status</button></h3>
+        <div id="statuses">
+            <p id="submissionStatus"></p>
+            <p id="runsInfo"></p>
+        </div>
 
+        <h3><br>Rating List <button id="refresh" class="btn btn-secondary">Refresh</button></h3>
         <div id="ratingList"></div>
 
         <p><br></p>
-        <div id="reportingGuidelines"></div>
+        <div id="reportingGuidelines">
+            <h3>Connection Issue</h3>
+            <p>If you can see this you might have internet connection issues or your access token might be expired.</p>
+        </div>
         <div id="reportMatchOnTheWeb"></div>
 
         <p><br></p>
@@ -113,7 +124,7 @@
            It should work the same as the BKK BG Rating List, but matches will be cleared from time to time.
            To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
         </p>
-        <p>Note: After the this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
+        <p>Warning: After the this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
         <div class="input-group">
             <span class="input-group-text">Rating List</span>
             <select class="form-select" title="Rating List Selection" id="ratingListSelection">
@@ -121,6 +132,7 @@
                 <option value="bkk-bg-rating-list">BKK BG Rating List</option>
             </select>
         </div>
+        <p><br></p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -128,44 +140,34 @@
         const repoOwner = 'modiholodri';
         const githubToken = '';  // Fill in the token before distributing the file to others
 
-        const initialSubmitTimeout = 20;
-        let submitTimeout = 0;
-
-        const initialRefreshTimeout = 60;
-        let refreshTimeout = 0;
-        let lastRefreshTimeout = 0;
         let oneSecondInterval = setInterval(decreaseTimeouts, 1000);
 
-        let autoRefresh = false;
+        let newSubmission = false;
+        let previousRunID = '';
 
         function decreaseTimeouts() {
-            // handle the submit timeout
-            submitTimeout--;
-            if (submitTimeout > 0) {
-                document.getElementById("submit").innerHTML = `${submitTimeout}`;
-                document.getElementById("submit").disabled = true;
-            }
-            else {
-                document.getElementById("submit").innerHTML = `Submit`;
-                document.getElementById("submit").disabled = false;
+            // show the status of a new submission until the status is Completed
+            if (newSubmission) {
+                refreshRunsStatus();
+                if (latestRunID != previousRunID) {
+                    setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
+                    if (latestRunStatus == 'Completed') {
+                        refreshRatingList();
+                        newSubmission = false;
+                        document.getElementById("submit").disabled = false;
+                    }
+                }
             }
 
-            // handle the refresh timeout
-            refreshTimeout--;
-            if (refreshTimeout > 0) {
-                document.getElementById("refresh").innerHTML = `${refreshTimeout}`;
-                document.getElementById("refresh").disabled = true;
-            }
-            else {
-                if (autoRefresh && lastRefreshTimeout > 0) {  // automatically refresh after a match report has been submitted
-                    refreshRatingList();
-                }
-                else {
-                    document.getElementById("refresh").innerHTML = `Refresh`;
-                    document.getElementById("refresh").disabled = false;
+            // show the status of other submissions until the submission is Completed
+            if (anotherSubmissionActive) {
+                refreshRunsStatus();
+                setRunsInfo(`${latestRunID}: ${latestRunStatus} -> ${latestRunConclusion}`);
+                if (latestRunStatus == 'Completed') {
+                    anotherSubmissionActive = false
+                    document.getElementById("submit").disabled = false;
                 }
             }
-            lastRefreshTimeout = refreshTimeout;
         }
 
         // Submit a match report
@@ -203,46 +205,109 @@
                 }));
             }
             else {
-                try {
+                await refreshRunsStatus();
+                setSubmissionStatus(`Submitting match...\n ${winnerName} > ${loserName} -> ${matchLength}`);
+                setRunsInfo('Hold on a sec...');
+                previousRunID = latestRunID;
+                if ( latestRunStatus != 'Completed') {
+                    setSubmissionStatus('Another submission in progress. Try again in a few seconds...');
+                    anotherSubmissionActive = true;
+                    document.getElementById("submit").disabled = true;
+                }
+                else try {
                     const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${githubToken}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json',
-                    },
-                    body: JSON.stringify({ 
-                        event_type: 'match_report', 
-                        client_payload: { 
-                            winner_name: `${winnerName}`,
-                            loser_name:  `${loserName}`, 
-                            match_length: `${matchLength}`
-                        } 
-                    })
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${githubToken}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/vnd.github.v3+json',
+                        },
+                        body: JSON.stringify({ 
+                            event_type: 'match_report', 
+                            client_payload: { 
+                                winner_name: `${winnerName}`,
+                                loser_name:  `${loserName}`, 
+                                match_length: `${matchLength}`
+                            } 
+                        })
                     });
 
-                    submitTimeout = initialSubmitTimeout;
-                    if (refreshTimeout < initialSubmitTimeout) refreshTimeout = initialSubmitTimeout;
-                    autoRefresh = true;  // trigger the auto refresh
+                    newSubmission = true;
+                    document.getElementById("submit").disabled = true;
 
-                    // alert the submitter and reset the inputs
-                    alert(`Submitted match...\n\n ${winnerName} > ${loserName} -> ${matchLength}`);
+                    // reset the inputs
                     document.getElementById('winnerName').value = 'Select or edit';
                     document.getElementById('winnerNameTyped').value = '';
                     
                     document.getElementById('loserName').value = 'Select or edit';
                     document.getElementById('loserNameTyped').value = '';
-                } catch (error) { 
+                } 
+                catch (error) { 
                     // Error triggering GitHub Action: Failed to execute 'json' on 'Response': Unexpected end of JSON input
                     alert('Error triggering GitHub Action: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
                 }
             }
         });
 
+        let latestRunID = '';
+        let latestRunConclusion = '';
+        let latestRunStatus = '';
+        let latestRunUpdatedAt = '';
+
+        // Fetch the Runs Status
+        async function  refreshRunsStatus() {
+            const repoName = document.getElementById('ratingListSelection').value;
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/actions/runs?per_page=1&timestamp=${Date.now()}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const workflowRuns = data.workflow_runs;
+
+                // ${run.id} ${run.name} ${run.status} ${run.conclusion} ${run.created_at} ${run.updated_at} ${run.jobs_url}`
+
+                latestRunID = workflowRuns[0].id;
+                latestRunStatus = toTitleCase(workflowRuns[0].status.replaceAll('_', ' '));
+                
+                latestRunUpdatedAt = formattedTimestamp(workflowRuns[0].updated_at);
+                
+                if(workflowRuns[0].conclusion === null) {
+                    latestRunConclusion = 'Wait...';
+                }
+                else {
+                    latestRunConclusion = toTitleCase(workflowRuns[0].conclusion.toUpperCase());
+                }
+            } 
+            catch (error) { 
+                alert('Error triggering GitHub Action: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
+            }
+        }
+
+        const formattedTimestamp = (timestamp)=> {
+            const datetime = new Date(timestamp)
+            const dateString = datetime.toISOString().split('T')[0];
+            const timeString = datetime.toTimeString().split(' ')[0];
+            return `${dateString} ${timeString}`;
+        }
+
+        document.getElementById("getRunsStatus").addEventListener("click", async () => {
+            await refreshRunsStatus();
+            setSubmissionStatus(`${latestRunID}: ${latestRunUpdatedAt}`);
+            setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
+        });
+
         function refreshRatingList() {
             FetchMarkDownFromRepo('RatingList', 'ratingList');
-            refreshTimeout = initialRefreshTimeout;
-            autoRefresh = false;
         }
 
         // Fetch the rating list from README.md
@@ -250,11 +315,27 @@
             refreshRatingList();
         };
 
+        function setRunsInfo (runsInfo) {
+            document.getElementById("runsInfo").innerText = runsInfo;
+        }
+
+        function setSubmissionStatus (submissionStatus) {
+            document.getElementById("submissionStatus").innerText = submissionStatus;
+        }
+
+        function toTitleCase(str) {
+            return str.replace(
+                /\w\S*/g,
+                text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+            );
+        }
+        
+
         // Fetch a markdown file from the repository
         function FetchMarkDownFromRepo(fileName, divName) {
             const repoName = document.getElementById('ratingListSelection').value;
 
-            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}.md`;
+            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}.md?timestamp=${Date.now()}`;
 
             const options = {
                 headers: {
@@ -278,6 +359,7 @@
         document.addEventListener("DOMContentLoaded", (event) => {
             FetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
             FetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+            refreshRatingList();
         });
 
     </script>
