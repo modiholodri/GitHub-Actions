@@ -1,7 +1,9 @@
 | |Name|Rating|+/-|Exp|
 |-|:--:|:----:|:-:|:-:|
 |1|Expert|1,804|+4.5|5|
-|2|Beginner|1,796|-4.5|5|
+|2|Master|1,804|+4.5|5|
+|3|Beginner|1,796|-4.5|5|
+|4|Awful|1,796|-4.5|5|
 
 
 ### Reporting Guidelines
