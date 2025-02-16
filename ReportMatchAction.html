@@ -47,20 +47,7 @@
                 <span class="input-group-text">Winner</span>
                 <select class="form-select" title="Winner Name" id="winnerName">
                     <option value="Select or edit">Select/Edit</option>
-                    <option value="Ashok">Ashok</option>
-                    <option value="Avi">Avi</option>
-                    <option value="Brian">Brian</option>
-                    <option value="David">David</option>
-                    <option value="Chris">Chris</option>
-                    <option value="Graham">Graham</option>
-                    <option value="Jay">Jay</option>
-                    <option value="John">John</option>
-                    <option value="Leonard">Leonard</option>
-                    <option value="Modi">Modi</option>
-                    <option value="Somchai">Somchai</option>
-                    <option value="Van">Van</option>
-                    <option value="Vinnie">Vinnie</option>
-                    <option value="Walter">Walter</option>
+                    <option value="Winner">Winner</option>
                 </select>
                 <input type="text" title="Winner Name" class="form-control" id="winnerNameTyped">
             </div>
@@ -68,20 +55,7 @@
                 <span class="input-group-text">Loser</span>
                 <select class="form-select" title="Loser Name" id="loserName">
                     <option value="Select or edit">Select/Edit</option>
-                    <option value="Ashok">Ashok</option>
-                    <option value="Avi">Avi</option>
-                    <option value="Brian">Brian</option>
-                    <option value="David">David</option>
-                    <option value="Chris">Chris</option>
-                    <option value="Graham">Graham</option>
-                    <option value="Jay">Jay</option>
-                    <option value="John">John</option>
-                    <option value="Leonard">Leonard</option>
-                    <option value="Modi">Modi</option>
-                    <option value="Somchai">Somchai</option>
-                    <option value="Van">Van</option>
-                    <option value="Vinnie">Vinnie</option>
-                    <option value="Walter">Walter</option>
+                    <option value="Loser">Loser</option>
                 </select>
                 <input type="text" title="Loser Name" class="form-control" id="loserNameTyped">
             </div>
@@ -128,7 +102,7 @@
         <p>Warning: After the this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
         <div class="input-group">
             <span class="input-group-text">Rating List</span>
-            <select class="form-select" title="Rating List Selection" id="ratingListSelection">
+            <select class="form-select" title="Rating List Selection" id="ratingListSelection" onchange="fetchFrequentPlayers()">
                 <option value="GitHub-Actions">Fake Rating List</option>
                 <option value="bkk-bg-rating-list">BKK BG Rating List</option>
             </select>
@@ -146,6 +120,11 @@
         let newSubmission = false;
         let anotherSubmissionActive = false;
         let previousRunID = '';
+
+        let latestRunID = '';
+        let latestRunConclusion = '';
+        let latestRunStatus = '';
+        let latestRunUpdatedAt = '';
 
         function decreaseTimeouts() {
             // show the status of a new submission until the status is Completed
@@ -251,11 +230,6 @@
             }
         });
 
-        let latestRunID = '';
-        let latestRunConclusion = '';
-        let latestRunStatus = '';
-        let latestRunUpdatedAt = '';
-
         // Fetch the Runs Status
         async function  refreshRunsStatus() {
             const repoName = document.getElementById('ratingListSelection').value;
@@ -310,7 +284,7 @@
         });
 
         function refreshRatingList() {
-            FetchMarkDownFromRepo('RatingList', 'ratingList');
+            fetchMarkDownFromRepo('RatingList', 'ratingList');
         }
 
         // Fetch the rating list from README.md
@@ -341,9 +315,8 @@
         
 
         // Fetch a markdown file from the repository
-        function FetchMarkDownFromRepo(fileName, divName) {
+        function fetchMarkDownFromRepo(fileName, divName) {
             const repoName = document.getElementById('ratingListSelection').value;
-
             const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}.md?timestamp=${Date.now()}`;
 
             const options = {
@@ -367,9 +340,44 @@
             .catch(error => console.error('Error:', error));
         };
 
+        // Fetch the Frequent Players
+        function fetchFrequentPlayers() {
+            const repoName = document.getElementById('ratingListSelection').value;
+            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/FrequentPlayers.md?timestamp=${Date.now()}`;
+
+            const options = {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            };
+
+            fetch(url, options)
+            .then(response => response.json())
+            .then(data => {
+                if (data.content) {
+                    const fileContent = decodeURIComponent(escape(window.atob( data.content )));
+
+                    var frequentPlayers = fileContent.split("\n");
+                    var playerOptions = '<option value="Select or edit">Select/Edit</option>\n';
+
+                    for (var i = 0; i < frequentPlayers.length; i++) {
+                        if (frequentPlayers[i].length > 0) {
+                            playerOptions = playerOptions.concat(`<option value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`);
+                        }
+                    }
+                    document.getElementById("winnerName").innerHTML = playerOptions;
+                    document.getElementById("loserName").innerHTML = playerOptions;
+                } else {
+                    console.log('Failed to fetch Frequent Players');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        };
+
         document.addEventListener("DOMContentLoaded", (event) => {
-            FetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
-            FetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+            fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
+            fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+            fetchFrequentPlayers();
             refreshRatingList();
         });
 
