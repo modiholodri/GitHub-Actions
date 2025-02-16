@@ -4,3 +4,4 @@
 |2025-2-16|Master|Awful|5|
 |2025-2-16|Moto|Yuki|5|
 |2025-2-16|Beginner|Master|5|
+|2025-2-16|Master|Newbie|11|
