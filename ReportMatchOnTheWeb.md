@@ -8,14 +8,10 @@ When a player, who is not included in dropdown menus is involved, the name of th
 - Select the Match Length.
 - Click on Submit to submit the match report.
 
-The Submit button is disabled for 20 seconds after a match has been reported.
+The Submit button is disabled until the match report submission is Complete.
 
 ### Rating List Update
 
-After the a new match is submitted the rating list will be refreshed automatically after 20 seconds.
-During that 20 seconds the Refresh button is disabled.
-If the rating list is refreshed more than once per minute the fetched rating list might be a buffered version and a little bit obsolete.
+After a new match had been submitted successfully the rating list will be refreshed automatically.
 
 - Click on Refresh to refresh the rating list manually.
-
-The Refesh button is disable for 20 seconds after a match has been submitted and for 60 seconds after Refresh has been clicked.
