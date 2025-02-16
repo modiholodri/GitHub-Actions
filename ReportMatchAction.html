@@ -10,7 +10,7 @@
             background-color: #0d0064;
             color: #ffffff;
         }
-        h1, h3 {
+        h1, h2, h3, h4, h5 {
             color:#5c5ff8;
         }
         .container {
@@ -21,6 +21,7 @@
             border-color: #1eff29;
         }
         .btn-secondary {
+            color:#5c5ff8;
             background-color: #0d0064;
         }
         .input-group-text {
@@ -102,13 +103,13 @@
             </div>
         </form>
 
-        <h3>Last Submission <button id="getRunsStatus" class="btn btn-secondary">Get Status</button></h3>
+        <h5>Last Submission <button id="getRunsStatus" class="btn btn-secondary">Get Status</button></h5>
         <div id="statuses">
             <p id="submissionStatus"></p>
             <p id="runsInfo"></p>
         </div>
 
-        <h3><br>Rating List <button id="refresh" class="btn btn-secondary">Refresh</button></h3>
+        <h3>Rating List <button id="refreshRatingList" class="btn btn-secondary">Refresh</button></h3>
         <div id="ratingList"></div>
 
         <p><br></p>
@@ -143,6 +144,7 @@
         let oneSecondInterval = setInterval(decreaseTimeouts, 1000);
 
         let newSubmission = false;
+        let anotherSubmissionActive = false;
         let previousRunID = '';
 
         function decreaseTimeouts() {
@@ -164,7 +166,7 @@
                 refreshRunsStatus();
                 setRunsInfo(`${latestRunID}: ${latestRunStatus} -> ${latestRunConclusion}`);
                 if (latestRunStatus == 'Completed') {
-                    anotherSubmissionActive = false
+                    anotherSubmissionActive = false;
                     document.getElementById("submit").disabled = false;
                 }
             }
@@ -210,7 +212,7 @@
                 setRunsInfo('Hold on a sec...');
                 previousRunID = latestRunID;
                 if ( latestRunStatus != 'Completed') {
-                    setSubmissionStatus('Another submission in progress. Try again in a few seconds...');
+                    setSubmissionStatus('Another submission in progress.\nTry again in a few seconds...');
                     anotherSubmissionActive = true;
                     document.getElementById("submit").disabled = true;
                 }
@@ -302,8 +304,9 @@
 
         document.getElementById("getRunsStatus").addEventListener("click", async () => {
             await refreshRunsStatus();
-            setSubmissionStatus(`${latestRunID}: ${latestRunUpdatedAt}`);
+            setSubmissionStatus(`Last Submission:\n${latestRunID}: ${latestRunUpdatedAt}`);
             setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
+            document.getElementById("getRunsStatus").blur();
         });
 
         function refreshRatingList() {
@@ -311,12 +314,18 @@
         }
 
         // Fetch the rating list from README.md
-        document.getElementById('refresh').onclick = function() {
+        document.getElementById('refreshRatingList').onclick = function() {
             refreshRatingList();
         };
 
         function setRunsInfo (runsInfo) {
             document.getElementById("runsInfo").innerText = runsInfo;
+            if (runsInfo.includes('Success')) {
+                setSubmissionStatus(document.getElementById("submissionStatus").innerText.replace('Submitting', 'Submitted'));
+                document.getElementById("runsInfo").style.color = 'green';
+            }
+            else if (runsInfo.includes('Failure')) document.getElementById("runsInfo").style.color = 'red';
+            else document.getElementById("runsInfo").style.color = 'white';
         }
 
         function setSubmissionStatus (submissionStatus) {
@@ -352,6 +361,8 @@
                 } else {
                     console.log('Failed to fetch file content');
                 }
+                
+                if(fileName == 'RatingList')  document.getElementById("refreshRatingList").blur();
             })
             .catch(error => console.error('Error:', error));
         };
