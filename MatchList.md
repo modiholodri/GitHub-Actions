@@ -6,3 +6,4 @@
 |2025-2-16|Beginner|Master|5|
 |2025-2-16|Master|Newbie|11|
 |2025-2-16|Loser|Beginner|5|
+|2025-2-16|Awful|Expert|5|
