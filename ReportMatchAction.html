@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BKK-BG Match Result</title>
+    <title>BKK BG Rating List</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -11,7 +11,7 @@
             color: #ffffff;
         }
         h1, h2, h3, h4, h5 {
-            color:#5c5ff8;
+            color:#61e7ff;
         }
         .container {
             margin-top: 15px;
@@ -19,10 +19,12 @@
         .btn-primary {
             background-color: #0004fd;
             border-color: #1eff29;
+            margin-top: 15px;
         }
         .btn-secondary {
-            color:#5c5ff8;
+            color:#6e6e6e;
             background-color: #0d0064;
+            margin-top: 15px;
         }
         .input-group-text {
             margin-top: 15px;
@@ -33,16 +35,21 @@
         .form-control {
             margin-top: 15px;
         }
-        .btn {
-            margin-top: 15px;
+        hr.rounded {
+            border-top: 8px solid #000;
+            border-radius: 5px;
+        }
+        hr.dotted {
+            border-top: 3px dotted #000;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Bangkok BG</h1>
+        <h1 id="ratingListTitle">Bangkok BG</h1>
         <h3>Match Report</h3>
         <form id="matchForm">
+            <!-- Winner -->
             <div class="input-group">
                 <span class="input-group-text">Winner</span>
                 <select class="form-select" title="Winner Name" id="winnerName">
@@ -51,6 +58,7 @@
                 </select>
                 <input type="text" title="Winner Name" class="form-control" id="winnerNameTyped">
             </div>
+            <!-- Loser -->
             <div class="input-group">
                 <span class="input-group-text">Loser</span>
                 <select class="form-select" title="Loser Name" id="loserName">
@@ -59,6 +67,7 @@
                 </select>
                 <input type="text" title="Loser Name" class="form-control" id="loserNameTyped">
             </div>
+            <!-- Match Length -->
             <div class="input-group">
                 <span class="input-group-text">Match Length</span>
                 <select class="form-select" title="Match Length" id="matchLength">
@@ -77,23 +86,43 @@
             </div>
         </form>
 
-        <h5>Last Submission <button id="getRunsStatus" class="btn btn-secondary">Get Status</button></h5>
+        <!-- Last Submission -->
+        <hr class="dotted">
+        <h5>Last Submission <button id="getRunsStatus" class="btn-xs btn-secondary">Get Status</button></h5>
         <div id="statuses">
             <p id="submissionStatus"></p>
             <p id="runsInfo"></p>
         </div>
 
-        <h3>Rating List <button id="refreshRatingList" class="btn btn-secondary">Refresh</button></h3>
+        <!-- Rating List -->
+        <hr class="dotted">
+        <h3>Rating List <button id="refreshRatingList" class="btn-xs btn-secondary">Refresh</button></h3>
         <div id="ratingList"></div>
 
-        <p><br></p>
+        <!-- Match List Check -->
+        <hr class="rounded">
+        <h3>Match List <button id="fetchMatchList" class="btn-xs btn-secondary">Fetch</button></h3>
+        <div class="input-group">
+            <span class="input-group-text">Match Day</span>
+            <input type="text" title="Match Day" class="form-control" id="matchDayTyped" value="">
+            <select class="form-select" title="Match List Day Selection" id="matchListDaySelection" onchange="matchListDaySelectionChanged()">
+                <option value="Fetch Matches">Fetch Matches</option>
+            </select>
+        </div>
+        <hr class="dotted">
+        <div id="matchListSummary"></div>
+        <hr class="dotted">
+        <div id="matchList"></div>
+
+        <hr class="rounded">
         <div id="reportingGuidelines">
             <h3>Connection Issue</h3>
             <p>If you can see this you might have internet connection issues or your access token might be expired.</p>
         </div>
         <div id="reportMatchOnTheWeb"></div>
 
-        <p><br></p>
+        <!-- Submission Test -->
+        <hr class="rounded">
         <h3>Submission Test</h3>
         <p>To test/exercise match submissions you can change to a Fake Rating List below.
            It should work the same as the BKK BG Rating List, but matches will be cleared from time to time.
@@ -102,9 +131,9 @@
         <p>Warning: After the this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
         <div class="input-group">
             <span class="input-group-text">Rating List</span>
-            <select class="form-select" title="Rating List Selection" id="ratingListSelection" onchange="fetchFrequentPlayers()">
-                <option value="GitHub-Actions">Fake Rating List</option>
-                <option value="bkk-bg-rating-list">BKK BG Rating List</option>
+            <select class="form-select" title="Rating List Selection" id="ratingListSelection" onchange="ratingListSelectionChanged()">
+                <option value="GitHub-Actions">Fake Rating</option>
+                <option value="bkk-bg-rating-list">BKK BG Rating</option>
             </select>
         </div>
         <p><br></p>
@@ -287,7 +316,7 @@
             fetchMarkDownFromRepo('RatingList', 'ratingList');
         }
 
-        // Fetch the rating list from README.md
+        // Fetch the rating list
         document.getElementById('refreshRatingList').onclick = function() {
             refreshRatingList();
         };
@@ -312,7 +341,121 @@
                 text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
             );
         }
-        
+
+        function matchListDaySelectionChanged() {
+            populateMatchDayList();
+        }
+
+        var matchRecords = '';
+
+        // Fetch the match list
+        function fetchMatchList() {
+            // fetchMarkDownFromRepo('MatchList', 'matchList');
+            const repoName = document.getElementById('ratingListSelection').value;
+            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
+
+            const options = {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            };
+
+            fetch(url, options)
+            .then(response => response.json())
+            .then(data => {
+                if (data.content) {
+                    const fileContent = decodeURIComponent(escape(window.atob( data.content )));
+
+                    matchRecords = fileContent.split("\n");
+                    var matchDayOptions = '';
+                    var matchDays = 0;
+
+                    var lastMatchDate = '';
+                    for (var i = matchRecords.length-1; i > 1 && matchDays < 10; i--) {
+                        if (matchRecords[i].length > 0) {
+                            var matchInfo = matchRecords[i].split('|');
+                            var matchDate = matchInfo[1];
+                            if (matchDate != lastMatchDate) {
+                                matchDays++;
+                                matchDayOptions += `<option value="${matchDate}">${matchDate}</option>\n`;
+                            }
+                            lastMatchDate = matchDate;
+                        }
+                    }
+                    document.getElementById("matchListDaySelection").innerHTML = matchDayOptions;
+                    
+                    if (matchDays > 0) {
+                        populateMatchDayList();
+                    }
+                } else {
+                    console.log('Failed to fetch Match List!');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function summarizeMatchDayList() {
+            const daySummary = {};
+
+            var matchRecords = matchDayList.split("\n");
+
+            for (var i = 2; i < matchRecords.length; i++) {
+                if (matchRecords[i].length > 0) {
+                    var matchInfo = matchRecords[i].split('|');
+                    var winner = matchInfo[2];
+                    var loser = matchInfo[3];
+
+                    // Initialize player daySummary if not already present
+                    if (!daySummary[winner]) {
+                        daySummary[winner] = { played: 0, won: 0 };
+                    }
+                    if (!daySummary[loser]) {
+                        daySummary[loser] = { played: 0, won: 0 };
+                    }
+                    // Increment played count for both players
+                    daySummary[winner].played++;
+                    daySummary[loser].played++;
+                    // Increment won count for the winner
+                    daySummary[winner].won++;
+                }
+            }
+
+            var matchDayListSummary = '|Player|Matches|Wins|\n'; // add the table header
+            matchDayListSummary += `|:---:|:---:|:---:|\n`;
+
+            for (const [player, stats] of Object.entries(daySummary)) {
+                matchDayListSummary += `|${player}|${stats.played}|${stats.won}|\n`; // Add each player's stats
+            }   
+
+            document.getElementById('matchListSummary').innerHTML = marked.parse(matchDayListSummary);
+        }
+
+        var matchDayList = '';
+
+        function populateMatchDayList() {
+            var matchDayDate = document.getElementById("matchListDaySelection").value;
+
+            matchDayList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
+
+            for (var i = matchRecords.length-1; i > 1; i--) {
+                if (matchRecords[i].length > 0) {
+                    var matchInfo = matchRecords[i].split('|');
+                    var matchDate = matchInfo[1];
+                    if (matchDate == matchDayDate) {
+                        matchDayList += `${matchRecords[i]}\n`;
+                    }
+                }
+            }
+            document.getElementById('matchList').innerHTML = marked.parse(matchDayList);
+
+            summarizeMatchDayList();
+        }
+
+        // Fetch the match list
+        document.getElementById('fetchMatchList').onclick = function() {
+            fetchMatchList();
+        }
+
 
         // Fetch a markdown file from the repository
         function fetchMarkDownFromRepo(fileName, divName) {
@@ -332,13 +475,24 @@
                     const fileContent = decodeURIComponent(escape(window.atob( data.content )));
                     document.getElementById(divName).innerHTML = marked.parse(fileContent);
                 } else {
-                    console.log('Failed to fetch file content');
+                    console.log(`Failed to fetch file ${fileName}.md!`);
                 }
                 
                 if(fileName == 'RatingList')  document.getElementById("refreshRatingList").blur();
             })
             .catch(error => console.error('Error:', error));
-        };
+        }
+
+        function refreshRatingListTitle () {
+            var sel = document.getElementById('ratingListSelection');
+            document.getElementById('ratingListTitle').innerText = sel.options[sel.selectedIndex].text;
+        }
+
+        function ratingListSelectionChanged() {
+            refreshRatingListTitle();
+            refreshRatingList();
+            fetchFrequentPlayers();
+        }
 
         // Fetch the Frequent Players
         function fetchFrequentPlayers() {
@@ -362,23 +516,25 @@
 
                     for (var i = 0; i < frequentPlayers.length; i++) {
                         if (frequentPlayers[i].length > 0) {
-                            playerOptions = playerOptions.concat(`<option value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`);
+                            playerOptions += `<option value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
                         }
                     }
                     document.getElementById("winnerName").innerHTML = playerOptions;
                     document.getElementById("loserName").innerHTML = playerOptions;
                 } else {
-                    console.log('Failed to fetch Frequent Players');
+                    console.log('Failed to fetch Frequent Players!');
                 }
             })
             .catch(error => console.error('Error:', error));
-        };
+        }
 
         document.addEventListener("DOMContentLoaded", (event) => {
+            refreshRatingListTitle();
+            refreshRatingList();
+            fetchFrequentPlayers();
+
             fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
             fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
-            fetchFrequentPlayers();
-            refreshRatingList();
         });
 
     </script>
