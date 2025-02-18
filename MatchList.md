@@ -28,3 +28,4 @@
 |2025-2-18|Expert|Winner|17|
 |2025-2-18|Loser|Awful|17|
 |2025-2-18|Expert|Loser|5|
+|2025-2-18|Awful|Loser|5|
