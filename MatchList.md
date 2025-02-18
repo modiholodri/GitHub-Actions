@@ -30,3 +30,4 @@
 |2025-2-18|Expert|Loser|5|
 |2025-2-18|Awful|Loser|5|
 |2025-2-18|Expert|Master|5|
+|2025-2-18|Awful|Master|5|
