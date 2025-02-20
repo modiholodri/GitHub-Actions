@@ -16,8 +16,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const date = new Date();
-            const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            const datetime = new Date();
+            const formattedDate = datetime.toISOString().split('T')[0];
             const winner = `${{ github.event.client_payload.winner_name }}`;
             const loser = `${{ github.event.client_payload.loser_name }}`;
             const match_length = `${{ github.event.client_payload.match_length }}`;
