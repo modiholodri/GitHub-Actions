@@ -100,8 +100,8 @@ jobs:
         with:
           script: |
             const inputs = context.payload.inputs
-            const date = new Date();
-            const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            const datetime = new Date();
+            const formattedDate = datetime.toISOString().split('T')[0];
             var winner = inputs.winner_name;
             if (inputs.winner_name == `Select or edit`) winner = inputs.new_winner_name
             var loser = inputs.loser_name;
