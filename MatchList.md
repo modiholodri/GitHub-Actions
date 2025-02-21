@@ -36,3 +36,4 @@
 |2025-02-20|Awful|Master|5|
 |2025-02-20|Expert|Beginner|5|
 |2025-02-20|Awful|Expert|5|
+|2025-02-21|Awful|Loser|17|
