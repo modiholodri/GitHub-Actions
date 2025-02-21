@@ -12,10 +12,29 @@
         }
         h1, h2, h3, h4, h5 {
             color:#61e7ff;
+            text-align:center;
         }
+        table {
+            margin: auto; 
+            width: fit-content;
+        }
+        tr:nth-child(odd){background-color: #1600a8;}
+        th {
+            padding-top: 6px;
+            padding-bottom: 6px;
+            text-align: center;
+            background-color: #0d0064;
+            color: #61e7ff;
+        }
+        td {
+            padding-left: 3px;
+            padding-right: 3px;
+        }
+
         .container {
             margin-top: 15px;
         }
+        
         .btn-primary {
             background-color: #0004fd;
             border-color: #1eff29;
@@ -26,15 +45,11 @@
             background-color: #0d0064;
             margin-top: 15px;
         }
-        .input-group-text {
-            margin-top: 15px;
-        }
-        .form-select {
-            margin-top: 15px;
-        }
-        .form-control {
-            margin-top: 15px;
-        }
+        
+        .input-group-text {margin-top: 15px;}
+        .form-select {margin-top: 15px;}
+        .form-control {margin-top: 15px;}
+        
         hr.rounded {
             border-top: 8px solid #000;
             border-radius: 5px;
@@ -51,7 +66,7 @@
         <form id="matchForm">
             <!-- Winner -->
             <div class="input-group">
-                <span class="input-group-text">Winner</span>
+                <span class="input-group-text" id="winnerLabel">Winner</span>
                 <select class="form-select" title="Winner Name" id="winnerName">
                     <option value="Select or edit">Select/Edit</option>
                     <option value="Winner">Winner</option>
@@ -86,12 +101,12 @@
             </div>
         </form>
 
-        <!-- Last Submission -->
+        <!-- Submission Status -->
         <hr class="dotted">
-        <h5>Last Submission <button id="getRunsStatus" class="btn-xs btn-secondary">Get Status</button></h5>
+        <h5>Submission Status <button id="updateSubmissionStatus" class="btn-xs btn-secondary">Update</button></h5>
         <div id="statuses">
-            <p id="submissionStatus"></p>
-            <p id="runsInfo"></p>
+            <p id="submissionStatus" style="text-align: center"></p>
+            <h5 id="runsInfo"></h5>
         </div>
 
         <!-- Rating List -->
@@ -103,9 +118,9 @@
         <hr class="rounded">
         <h3>Match List <button id="fetchMatchList" class="btn-xs btn-secondary">Fetch</button></h3>
         <div class="input-group">
-            <span class="input-group-text">Match Day</span>
-            <input type="text" title="Match Day" class="form-control" id="matchDayTyped" value="">
-            <select class="form-select" title="Match List Day Selection" id="matchListDaySelection" onchange="matchListDaySelectionChanged()">
+            <span class="input-group-text">Played on</span>
+            <input type="text" title="Match Day" class="form-control" id="playedOn" value="">
+            <select class="form-select" title="Match List Day Selection" id="playedOnSelection" onchange="playedOnSelectionChanged()">
                 <option value="Fetch Matches">Fetch Matches</option>
             </select>
         </div>
@@ -114,6 +129,7 @@
         <hr class="dotted">
         <div id="matchList"></div>
 
+        <!-- Reporting Guidelines -->
         <hr class="rounded">
         <div id="reportingGuidelines">
             <h3>Connection Issue</h3>
@@ -131,9 +147,10 @@
         <p>Warning: After the this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
         <div class="input-group">
             <span class="input-group-text">Rating List</span>
+            <input type="text" title="Spacer" class="form-control" id="spacer" value="">
             <select class="form-select" title="Rating List Selection" id="ratingListSelection" onchange="ratingListSelectionChanged()">
-                <option value="GitHub-Actions">Fake Rating</option>
                 <option value="bkk-bg-rating-list">BKK BG Rating</option>
+                <option value="GitHub-Actions">Fake Rating</option>
             </select>
         </div>
         <p><br></p>
@@ -305,11 +322,11 @@
             return `${dateString} ${timeString}`;
         }
 
-        document.getElementById("getRunsStatus").addEventListener("click", async () => {
+        document.getElementById("updateSubmissionStatus").addEventListener("click", async () => {
             await refreshRunsStatus();
             setSubmissionStatus(`Last Submission:\n${latestRunID}: ${latestRunUpdatedAt}`);
             setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
-            document.getElementById("getRunsStatus").blur();
+            document.getElementById("updateSubmissionStatus").blur();
         });
 
         function refreshRatingList() {
@@ -342,11 +359,12 @@
             );
         }
 
-        function matchListDaySelectionChanged() {
-            populateMatchDayList();
+        function playedOnSelectionChanged() {
+            populatePlayedOnDayList();
         }
 
         var matchRecords = '';
+        const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
         // Fetch the match list
         function fetchMatchList() {
@@ -371,25 +389,27 @@
                     var matchDays = 0;
 
                     var lastMatchDate = '';
-                    for (var i = matchRecords.length-1; i > 1 && matchDays < 10; i--) {
+                    for (var i = matchRecords.length-1; i > 1; i--) {
                         if (matchRecords[i].length > 0) {
                             var matchInfo = matchRecords[i].split('|');
                             var matchDate = matchInfo[1];
                             if (matchDate != lastMatchDate) {
                                 matchDays++;
-                                matchDayOptions += `<option value="${matchDate}">${matchDate}</option>\n`;
+                                const datetime = new Date(matchDate);
+                                matchDayOptions += `<option value="${matchDate}">${matchDate} ${weekday[datetime.getDay()]}</option>\n`;
                             }
                             lastMatchDate = matchDate;
                         }
                     }
-                    document.getElementById("matchListDaySelection").innerHTML = matchDayOptions;
+                    document.getElementById("playedOnSelection").innerHTML = matchDayOptions;
                     
                     if (matchDays > 0) {
-                        populateMatchDayList();
+                        populatePlayedOnDayList();
                     }
                 } else {
                     console.log('Failed to fetch Match List!');
                 }
+                document.getElementById("fetchMatchList").blur();
             })
             .catch(error => console.error('Error:', error));
         }
@@ -432,8 +452,8 @@
 
         var matchDayList = '';
 
-        function populateMatchDayList() {
-            var matchDayDate = document.getElementById("matchListDaySelection").value;
+        function populatePlayedOnDayList() {
+            var matchDayDate = document.getElementById("playedOnSelection").value;
 
             matchDayList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
 
@@ -478,7 +498,9 @@
                     console.log(`Failed to fetch file ${fileName}.md!`);
                 }
                 
-                if(fileName == 'RatingList')  document.getElementById("refreshRatingList").blur();
+                if(fileName == 'RatingList')  {
+                    document.getElementById("refreshRatingList").blur();
+                }
             })
             .catch(error => console.error('Error:', error));
         }
@@ -488,9 +510,22 @@
             document.getElementById('ratingListTitle').innerText = sel.options[sel.selectedIndex].text;
         }
 
+        function clearMatchList() {
+            document.getElementById('playedOnSelection').innerHTML = '<option value="Fetch Matches">Fetch Matches</option>';
+            document.getElementById('matchListSummary').innerHTML = '';
+            document.getElementById('matchList').innerHTML = '';
+        }
+
+        function clearSubmissionStatus() {
+            document.getElementById('submissionStatus').innerHTML = '';
+            document.getElementById('runsInfo').innerHTML = '';
+        }
+
         function ratingListSelectionChanged() {
             refreshRatingListTitle();
             refreshRatingList();
+            clearMatchList();
+            clearSubmissionStatus();
             fetchFrequentPlayers();
         }
 
