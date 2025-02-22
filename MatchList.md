@@ -47,3 +47,4 @@
 |2025-02-22|Expert|Master|11|
 |2025-02-22|Loser|Winner|5|
 |2025-02-22|Ostavius gurka|Manfalang|5|
+|2025-02-22|Ostavius Gurkka|Manfalang|17|
