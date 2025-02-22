@@ -53,3 +53,4 @@
 |2025-02-22|Ostavius Gurka|Ostavius Gurkka|11|
 |2025-02-22|Awful|Loser|13|
 |2025-02-22|Awful|Winner|5|
+|2025-02-22|Awful|Master|5|
