@@ -50,3 +50,4 @@
 |2025-02-22|Ostavius Gurkka|Manfalang|17|
 |2025-02-22|Ostavius Gurka|Expert|11|
 |2025-02-22|Ostavius Gurka|Expert|5|
+|2025-02-22|Ostavius Gurka|Ostavius Gurkka|11|
