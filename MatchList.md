@@ -54,3 +54,4 @@
 |2025-02-22|Awful|Loser|13|
 |2025-02-22|Awful|Winner|5|
 |2025-02-22|Awful|Master|5|
+|2025-02-23|Awful|Seppy|9|
