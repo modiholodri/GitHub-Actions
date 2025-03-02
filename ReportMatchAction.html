@@ -427,24 +427,25 @@
 
                     // Initialize player daySummary if not already present
                     if (!daySummary[winner]) {
-                        daySummary[winner] = { played: 0, won: 0 };
+                        daySummary[winner] = { played: 0, won: 0, lost: 0 };
                     }
                     if (!daySummary[loser]) {
-                        daySummary[loser] = { played: 0, won: 0 };
+                        daySummary[loser] = { played: 0, won: 0, lost: 0 };
                     }
                     // Increment played count for both players
                     daySummary[winner].played++;
                     daySummary[loser].played++;
                     // Increment won count for the winner
                     daySummary[winner].won++;
+                    daySummary[loser].lost++;
                 }
             }
 
-            var matchDayListSummary = '|Player|Matches|Wins|\n'; // add the table header
+            var matchDayListSummary = '|Player|Matches|Result|\n'; // add the table header
             matchDayListSummary += `|:---:|:---:|:---:|\n`;
 
-            for (const [player, stats] of Object.entries(daySummary)) {
-                matchDayListSummary += `|${player}|${stats.played}|${stats.won}|\n`; // Add each player's stats
+            for (const [player, stats] of Object.entries(daySummary).sort()) {
+                matchDayListSummary += `|${player}|${stats.played}|${stats.won} - ${stats.lost}|\n`; // Add each player's stats
             }   
 
             document.getElementById('matchListSummary').innerHTML = marked.parse(matchDayListSummary);
