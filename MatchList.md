@@ -61,3 +61,4 @@
 |2025-03-02|Ostavius Gurka|Awful|17|
 |2025-03-02|Aladdin|Bumba|11|
 |2025-03-02|Master|Beginner|13|
+|2025-03-02|Awful|Beginner|13|
