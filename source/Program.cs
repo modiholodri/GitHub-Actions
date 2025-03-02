@@ -187,9 +187,9 @@ namespace bigeloCLI
             DataTable dataSortedRatingList = dataRatingList.DefaultView.ToTable();
 
             swRatingList.WriteLine("| |Name|Rating|+/-|Exp|");
-            swRatingList.WriteLine("|-|:--:|:----:|:-:|:-:|");
+            swRatingList.WriteLine("|-|:---|:----:|:-:|--:|");
             swReadme.WriteLine("| |Name|Rating|+/-|Exp|");
-            swReadme.WriteLine("|-|:--:|:----:|:-:|:-:|");
+            swReadme.WriteLine("|-|:---|:----:|:-:|--:|");
 
             int iRank = 1;
             foreach (DataRow drPlayer in dataSortedRatingList.Rows)
