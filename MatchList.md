@@ -57,3 +57,4 @@
 |2025-02-23|Awful|Seppy|9|
 |2025-02-23|Loser|Runni|7|
 |2025-03-02|Awful|Expert|5|
+|2025-03-02|alibaba|lazada|8|
