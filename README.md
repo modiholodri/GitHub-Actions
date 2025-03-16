@@ -1,8 +1,8 @@
 | |Name|Rating|+/-|Exp|
 |-|:---|:----:|:-:|--:|
-|1|Awful|1,837|+6.7|219|
-|2|Ostavius Gurka|1,831|+8.6|49|
-|3|Expert|1,828|-4.5|176|
+|1|Awful|1,833|-4.5|224|
+|2|Expert|1,832|+4.5|181|
+|3|Ostavius Gurka|1,831|+8.6|49|
 |4|Azerty|1,812|+11.7|34|
 |5|Aladdin|1,807|+6.6|11|
 |6|Alibaba|1,806|+5.7|8|
@@ -23,6 +23,11 @@
 |21|Master|1,783|+7.6|137|
 |22|Loser|1,773|+5.6|172|
 
+
+### Additional Stuff
+
+[Rating Charts](https://github.com/modiholodri/bkk-bg-rating-list/discussions/2) and 
+[Tournaments 2025](https://github.com/modiholodri/bkk-bg-rating-list/discussions/5) are updated every few weeks.
 
 ### Reporting Guidelines
 

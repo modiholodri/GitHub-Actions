@@ -62,3 +62,4 @@
 |2025-03-02|Aladdin|Bumba|11|
 |2025-03-02|Master|Beginner|13|
 |2025-03-02|Awful|Beginner|13|
+|2025-03-16|Expert|Awful|5|
