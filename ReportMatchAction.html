@@ -117,17 +117,35 @@
         <!-- Match List Check -->
         <hr class="rounded">
         <h3>Match List <button id="fetchMatchList" class="btn-xs btn-secondary">Fetch</button></h3>
+        
+        <!-- Played On Stuff -->
         <div class="input-group">
             <span class="input-group-text">Played on</span>
             <input type="text" title="Match Day" class="form-control" id="playedOn" value="">
-            <select class="form-select" title="Match List Day Selection" id="playedOnSelection" onchange="playedOnSelectionChanged()">
+            <select class="form-select" title="Played On Selection" id="playedOnSelection" onchange="playedOnSelectionChanged()">
                 <option value="Fetch Matches">Fetch Matches</option>
             </select>
         </div>
         <hr class="dotted">
-        <div id="matchListSummary"></div>
+        <div id="playedOnSummary"></div>
         <hr class="dotted">
-        <div id="matchList"></div>
+        <div id="playedOnMatchList"></div>
+
+        <!-- Player Stuff -->
+        <hr class="dotted">
+        <div class="input-group">
+            <span class="input-group-text">Player</span>
+            <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
+                <option value="Select or edit">Select/Edit</option>
+                <option value="Loser">Loser</option>
+            </select>
+            <input type="text" title="Player Name" class="form-control" id="playerNameTyped" onchange="playerNameTypedChanged()">
+
+        </div>
+        <hr class="dotted">
+        <div id="playerSummary"></div>
+        <hr class="dotted">
+        <div id="playerMatchList"></div>
 
         <!-- Reporting Guidelines -->
         <hr class="rounded">
@@ -360,7 +378,17 @@
         }
 
         function playedOnSelectionChanged() {
-            populatePlayedOnDayList();
+            populatePlayedOnList();
+        }
+
+        function playerSelectionChanged() {
+            document.getElementById("playerNameTyped").value = '';
+            populatePlayerList();
+        }
+
+        function playerNameTypedChanged() {
+            document.getElementById("playerName").selectedIndex = 0;
+            populatePlayerList();
         }
 
         var matchRecords = '';
@@ -368,7 +396,7 @@
 
         // Fetch the match list
         function fetchMatchList() {
-            // fetchMarkDownFromRepo('MatchList', 'matchList');
+            // fetchMarkDownFromRepo('MatchList', 'playedOnMatchList');
             const repoName = document.getElementById('ratingListSelection').value;
             const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
 
@@ -404,7 +432,7 @@
                     document.getElementById("playedOnSelection").innerHTML = matchDayOptions;
                     
                     if (matchDays > 0) {
-                        populatePlayedOnDayList();
+                        populatePlayedOnList();
                     }
                 } else {
                     console.log('Failed to fetch Match List!');
@@ -414,10 +442,10 @@
             .catch(error => console.error('Error:', error));
         }
 
-        function summarizeMatchDayList() {
+        function summarizeMatchList(summaryElement, matchList) {
             const daySummary = {};
 
-            var matchRecords = matchDayList.split("\n");
+            var matchRecords = matchList.split("\n");
 
             for (var i = 2; i < matchRecords.length; i++) {
                 if (matchRecords[i].length > 0) {
@@ -448,15 +476,13 @@
                 matchDayListSummary += `|${player}|${stats.played}|${stats.won} - ${stats.lost}|\n`; // Add each player's stats
             }   
 
-            document.getElementById('matchListSummary').innerHTML = marked.parse(matchDayListSummary);
+            document.getElementById(summaryElement).innerHTML = marked.parse(matchDayListSummary);
         }
 
-        var matchDayList = '';
-
-        function populatePlayedOnDayList() {
+        function populatePlayedOnList() {
             var matchDayDate = document.getElementById("playedOnSelection").value;
 
-            matchDayList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
+            var matchDayList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
 
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
@@ -467,9 +493,36 @@
                     }
                 }
             }
-            document.getElementById('matchList').innerHTML = marked.parse(matchDayList);
+            document.getElementById('playedOnMatchList').innerHTML = marked.parse(matchDayList);
 
-            summarizeMatchDayList();
+            summarizeMatchList('playedOnSummary', matchDayList);
+        }
+
+        function populatePlayerList() {
+            var playerName = document.getElementById("playerNameTyped").value;
+            if (playerName == '') playerName = document.getElementById('playerName').value;
+            if (playerName == 'Select or Edit') {
+                document.getElementById('playerSummary').innerHTML = '';
+                document.getElementById('playerMatchList').innerHTML = '';
+                return;
+            }
+
+
+            var playerMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
+
+            for (var i = matchRecords.length-1; i > 1; i--) {
+                if (matchRecords[i].length > 0) {
+                    const matchInfo = matchRecords[i].split('|');
+                    const winnerName = matchInfo[2];
+                    const loserName = matchInfo[3];
+                    if (winnerName == playerName || loserName == playerName) {
+                        playerMatchList += `${matchRecords[i]}\n`;
+                    }
+                }
+            }
+            document.getElementById('playerMatchList').innerHTML = marked.parse(playerMatchList);
+
+            summarizeMatchList('playerSummary', playerMatchList);
         }
 
         // Fetch the match list
@@ -511,10 +564,12 @@
             document.getElementById('ratingListTitle').innerText = sel.options[sel.selectedIndex].text;
         }
 
-        function clearMatchList() {
+        function clearMatchLists() {
             document.getElementById('playedOnSelection').innerHTML = '<option value="Fetch Matches">Fetch Matches</option>';
-            document.getElementById('matchListSummary').innerHTML = '';
-            document.getElementById('matchList').innerHTML = '';
+            document.getElementById('playedOnSummary').innerHTML = '';
+            document.getElementById('playedOnMatchList').innerHTML = '';
+            document.getElementById('playerSummary').innerHTML = '';
+            document.getElementById('playerMatchList').innerHTML = '';
         }
 
         function clearSubmissionStatus() {
@@ -525,7 +580,7 @@
         function ratingListSelectionChanged() {
             refreshRatingListTitle();
             refreshRatingList();
-            clearMatchList();
+            clearMatchLists();
             clearSubmissionStatus();
             fetchFrequentPlayers();
         }
@@ -557,6 +612,7 @@
                     }
                     document.getElementById("winnerName").innerHTML = playerOptions;
                     document.getElementById("loserName").innerHTML = playerOptions;
+                    document.getElementById("playerName").innerHTML = playerOptions;
                 } else {
                     console.log('Failed to fetch Frequent Players!');
                 }
