@@ -442,7 +442,7 @@
             .catch(error => console.error('Error:', error));
         }
 
-        function summarizeMatchList(summaryElement, matchList) {
+        function summarizeMatchList(summaryElement, matchList, vipPlayerName) {
             const daySummary = {};
 
             var matchRecords = matchList.split("\n");
@@ -469,36 +469,63 @@
                 }
             }
 
-            var matchDayListSummary = '|Player|Matches|Result|\n'; // add the table header
-            matchDayListSummary += `|:---:|:---:|:---:|\n`;
+            var opponentsList = '';
+            var vipPlayer = '';
 
             for (const [player, stats] of Object.entries(daySummary).sort()) {
-                matchDayListSummary += `|${player}|${stats.played}|${stats.won} - ${stats.lost}|\n`; // Add each player's stats
+                if (player == vipPlayerName) {
+                    vipPlayer += `|${player}|${stats.won} - ${stats.lost}|${stats.played}|\n`;    
+                }
+                else {
+                    if (vipPlayerName == null) {
+                        opponentsList += `|${player}|${stats.won} - ${stats.lost}|${stats.played}|\n`; // Add each player's stats    
+                    }
+                    else {
+                        opponentsList += `|${stats.lost} - ${stats.won}|${player}|${stats.played}|\n`; // Add each player's stats    
+                    }
+                }
             }   
+
+            var matchDayListSummary = (vipPlayerName == null) ? '|   |Result|Matches|\n' : '|   |   |Matches|\n'; // add the table header
+            matchDayListSummary += `|:---:|:---:|:---:|\n`;
+            if (vipPlayer.length > 0) {
+                matchDayListSummary += vipPlayer;
+                matchDayListSummary += `|--------|--------|--------|\n`;
+            }
+            matchDayListSummary += opponentsList;
 
             document.getElementById(summaryElement).innerHTML = marked.parse(matchDayListSummary);
         }
 
         function populatePlayedOnList() {
+            if (matchRecords.length == 0) {
+                alert('Fetch Match List first!');
+                return;
+            }
+
             var matchDayDate = document.getElementById("playedOnSelection").value;
 
-            var matchDayList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
-
+            var playedOnMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     var matchInfo = matchRecords[i].split('|');
                     var matchDate = matchInfo[1];
                     if (matchDate == matchDayDate) {
-                        matchDayList += `${matchRecords[i]}\n`;
+                        playedOnMatchList += `${matchRecords[i]}\n`;
                     }
                 }
             }
-            document.getElementById('playedOnMatchList').innerHTML = marked.parse(matchDayList);
+            document.getElementById('playedOnMatchList').innerHTML = marked.parse(playedOnMatchList);
 
-            summarizeMatchList('playedOnSummary', matchDayList);
+            summarizeMatchList('playedOnSummary', playedOnMatchList);
         }
 
         function populatePlayerList() {
+            if (matchRecords.length == 0) {
+                alert('Fetch Match List first!');
+                return;
+            }
+
             var playerName = document.getElementById("playerNameTyped").value;
             if (playerName == '') playerName = document.getElementById('playerName').value;
             if (playerName == 'Select or Edit') {
@@ -507,9 +534,7 @@
                 return;
             }
 
-
             var playerMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
-
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     const matchInfo = matchRecords[i].split('|');
@@ -522,7 +547,7 @@
             }
             document.getElementById('playerMatchList').innerHTML = marked.parse(playerMatchList);
 
-            summarizeMatchList('playerSummary', playerMatchList);
+            summarizeMatchList('playerSummary', playerMatchList, playerName);
         }
 
         // Fetch the match list
