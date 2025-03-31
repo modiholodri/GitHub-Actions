@@ -47,7 +47,6 @@
         }
         
         .input-group-text {margin-top: 15px;}
-        .form-check-input {margin-top: 30px;padding-left: 1px;}
         .form-select {margin-top: 15px;}
         .form-control {margin-top: 15px;}
         
@@ -211,6 +210,7 @@
                     setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
                     if (latestRunStatus == 'Completed') {
                         refreshRatingList();
+                        fetchMatchList();
                         newSubmission = false;
                         document.getElementById("submit").disabled = false;
                     }
@@ -413,6 +413,9 @@
                 case 'matchesPlayed':
                     createMatchesPlayedRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
                     break;
+                case 'lastTimeActive':
+                    createLastTimeActiveRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    break;
             }
         }
 
@@ -480,37 +483,41 @@
 
             for (var i = 2; i < matchRecords.length; i++) {
                 if (matchRecords[i].length > 0) {
-                    var matchInfo = matchRecords[i].split('|');
-                    var winner = matchInfo[2];
-                    var loser = matchInfo[3];
+                    const matchInfo = matchRecords[i].split('|');
+                    const date = matchInfo[1];
+                    const winner = matchInfo[2];
+                    const loser = matchInfo[3];
 
                     // Initialize player playerSummary if not already present
                     if (!playerSummary[winner]) {
-                        playerSummary[winner] = { played: 0, 
+                        playerSummary[winner] = { played: 0, lastTimeActive: '-',
                                                   won: 0, currentWon: 0, longestWon: 0, 
                                                   lost: 0, currentLost: 0, longestLost: 0 };
                     }
                     if (!playerSummary[loser]) {
-                        playerSummary[loser] = { played: 0, 
+                        playerSummary[loser] = { played: 0, lastTimeActive: '-',
                                                  won: 0, currentWon: 0, longestWon: 0, 
                                                  lost: 0, currentLost: 0, longestLost: 0 };
                     }
                     
                     // Increment played/won/lost counts
+                    
+                    // winner
                     playerSummary[winner].played++;
                     playerSummary[winner].won++;
-                    playerSummary[loser].played++;
-                    playerSummary[loser].lost++;
-                    
-                    // longest winning streak
                     playerSummary[winner].currentLost = 0;
                     playerSummary[winner].currentWon++;
+                    playerSummary[winner].lastTimeActive = date;
                     if (playerSummary[winner].currentWon > playerSummary[winner].longestWon) {
                         playerSummary[winner].longestWon = playerSummary[winner].currentWon;
                     }
-                    // longest losing streak
+
+                    // loser
+                    playerSummary[loser].played++;
+                    playerSummary[loser].lost++;
                     playerSummary[loser].currentWon = 0;
                     playerSummary[loser].currentLost++;
+                    playerSummary[loser].lastTimeActive = date;
                     if (playerSummary[loser].currentLost > playerSummary[loser].longestLost) {
                         playerSummary[loser].longestLost = playerSummary[loser].currentLost;
                     }
@@ -588,6 +595,21 @@
             var rank = 1;
             for (const [player, stats] of Object.entries(playerSummary).sort((a,b) => b[1].played-a[1].played)) {
                 rankingList += `|${rank++}|${player}|${stats.played}|${stats.won} - ${stats.lost}|\n`;
+            }   
+            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+        }
+
+        function createLastTimeActiveRankingList(summaryElement, playerSummary) {
+            var rankingList = '|   |   |Idle Days|Date|\n|:---:|:---:|:---:|:---:|\n';
+
+            var rank = 1;
+            for (const [player, stats] of Object.entries(playerSummary).sort((a,b) => a[1].lastTimeActive>b[1].lastTimeActive ? -1 : 1)) {
+                var today = new Date();
+                var lastDateActive = new Date(stats.lastTimeActive);
+                var timeInMS = today.getTime() - lastDateActive.getTime();
+                const inactiveDays = Math.ceil(timeInMS / (1000 * 60 * 60 * 24));
+
+                rankingList += `|${rank++}|${player}|${inactiveDays}|${stats.lastTimeActive}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
