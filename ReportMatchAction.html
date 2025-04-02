@@ -137,10 +137,10 @@
             <select class="form-select" title="Ranking List Selection" id="rankingListSelection" onchange="rankingListSelectionChanged()">
                 <option value="Select">Select</option>
                 <option value="matchesPlayed">Matches Played</option>
-                <option value="percentMatchesWon">Percent Matches Won</option>
-                <option value="longestWinningStreak">Longest Winning Streak</option>
-                <option value="longestLosingStreak">Longest Losing Streak</option>
-                <option value="lastTimeActive">Last Time Active</option>
+                <option value="percentMatchesWon">% Matches Won</option>
+                <option value="longestWinningStreak">> Winning Streak</option>
+                <option value="longestLosingStreak">> Losing Streak</option>
+                <option value="daysInactive">Days Inactive</option>
             </select>
         </div>
         <div id="rankingListSummary"></div>
@@ -413,8 +413,10 @@
                 case 'matchesPlayed':
                     createMatchesPlayedRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
                     break;
-                case 'lastTimeActive':
+                case 'daysInactive':
                     createLastTimeActiveRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    break;
+                default:
                     break;
             }
         }
@@ -474,6 +476,8 @@
                 document.getElementById("fetchMatchList").blur();
             })
             .catch(error => console.error('Error:', error));
+
+            rankingListSelectionChanged();
         }
 
         function summarizeMatchList(matchList) {
@@ -490,12 +494,12 @@
 
                     // Initialize player playerSummary if not already present
                     if (!playerSummary[winner]) {
-                        playerSummary[winner] = { played: 0, lastTimeActive: '-',
+                        playerSummary[winner] = { played: 0, lastDateActive: '-',
                                                   won: 0, currentWon: 0, longestWon: 0, 
                                                   lost: 0, currentLost: 0, longestLost: 0 };
                     }
                     if (!playerSummary[loser]) {
-                        playerSummary[loser] = { played: 0, lastTimeActive: '-',
+                        playerSummary[loser] = { played: 0, lastDateActive: '-',
                                                  won: 0, currentWon: 0, longestWon: 0, 
                                                  lost: 0, currentLost: 0, longestLost: 0 };
                     }
@@ -507,7 +511,7 @@
                     playerSummary[winner].won++;
                     playerSummary[winner].currentLost = 0;
                     playerSummary[winner].currentWon++;
-                    playerSummary[winner].lastTimeActive = date;
+                    playerSummary[winner].lastDateActive = date;
                     if (playerSummary[winner].currentWon > playerSummary[winner].longestWon) {
                         playerSummary[winner].longestWon = playerSummary[winner].currentWon;
                     }
@@ -517,7 +521,7 @@
                     playerSummary[loser].lost++;
                     playerSummary[loser].currentWon = 0;
                     playerSummary[loser].currentLost++;
-                    playerSummary[loser].lastTimeActive = date;
+                    playerSummary[loser].lastDateActive = date;
                     if (playerSummary[loser].currentLost > playerSummary[loser].longestLost) {
                         playerSummary[loser].longestLost = playerSummary[loser].currentLost;
                     }
@@ -603,13 +607,13 @@
             var rankingList = '|   |   |Idle Days|Date|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playerSummary).sort((a,b) => a[1].lastTimeActive>b[1].lastTimeActive ? -1 : 1)) {
+            for (const [player, stats] of Object.entries(playerSummary).sort((a,b) => a[1].lastDateActive>b[1].lastDateActive ? -1 : 1)) {
                 var today = new Date();
-                var lastDateActive = new Date(stats.lastTimeActive);
+                var lastDateActive = new Date(stats.lastDateActive);
                 var timeInMS = today.getTime() - lastDateActive.getTime();
                 const inactiveDays = Math.ceil(timeInMS / (1000 * 60 * 60 * 24));
 
-                rankingList += `|${rank++}|${player}|${inactiveDays}|${stats.lastTimeActive}|\n`;
+                rankingList += `|${rank++}|${player}|${inactiveDays}|${stats.lastDateActive}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
