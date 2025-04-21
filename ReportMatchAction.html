@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BKK BG Rating List</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!--   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
         body {
             background-color: #0d0064;
@@ -55,7 +56,24 @@
         .input-group-text, .form-select, .form-control {
             margin-top: 15px;
         }
-        
+
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+        .input-group-text {
+            flex: 0 0 auto;
+        }
+        .form-control {
+            flex: 1 1 auto;
+            flex-shrink: 1; /* Allow the input to shrink */
+            min-width: 0; /* Ensure it can shrink to 0 */
+        }
+        .form-select {
+            flex: 0 0 auto;
+            white-space: nowrap; /* Prevent the select from shrinking */
+        }
+
         hr.rounded {
             border-top: 8px solid #000;
             border-radius: 5px;
@@ -129,20 +147,36 @@
         <!-- Played On -->
         <div class="input-group">
             <span class="input-group-text">Played on</span>
-            <input type="text" title="Match Day" class="form-control" id="playedOn" value="">
             <select class="form-select" title="Played On Selection" id="playedOnSelection" onchange="playedOnSelectionChanged()">
                 <option value="Fetch Matches">Fetch Matches</option>
             </select>
         </div>
         <div id="playedOnSummary"></div>
-        <hr class="dotted">
-        <div id="playedOnMatchList"></div>
+        <p style="text-align: center;">
+            <button class="btn-xs btn-secondary" id="playedOnMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedOnMatchList" aria-expanded="false" aria-controls="playedOnMatchList">
+                Expand/Collapse Match List
+            </button>
+        </p>
+        <div class="collapse" id="playedOnMatchList"></div>
+
+        <!-- Played Month -->
+        <div class="input-group">
+            <span class="input-group-text">Monthly</span>
+            <select class="form-select" title="Monthly Selection" id="playedMonthlySelection" onchange="playedMonthSelectionChanged()">
+                <option value="Fetch Matches">Fetch Matches</option>
+            </select>
+        </div>
+        <div id="playedMonthSummary"></div>
+        <p style="text-align: center;">
+            <button class="btn-xs btn-secondary" id="playedMonthMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedMonthMatchList" aria-expanded="false" aria-controls="playedMonthMatchList">
+                Expand/Collapse Match List
+            </button>
+        </p>
+        <div class="collapse" id="playedMonthMatchList"></div>
 
         <!-- Ranking List -->
-        <hr class="dotted">
         <div class="input-group">
             <span class="input-group-text">Ranking List</span>
-            <input type="text" title="Ranking List" class="form-control" id="rankingList" value="">
             <select class="form-select" title="Ranking List Selection" id="rankingListSelection" onchange="rankingListSelectionChanged()">
                 <option value="Select">Select</option>
                 <option value="matchesPlayed">Matches Played</option>
@@ -160,14 +194,17 @@
         <div class="input-group">
             <span class="input-group-text">Player</span>
             <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
-                <option value="Select or edit">Select/Edit</option>
+                <option value="Select">Select/Edit</option>
                 <option value="Loser">Loser</option>
             </select>
-            <input type="text" title="Player Name" class="form-control" id="playerNameTyped" onchange="playerNameTypedChanged()">
         </div>
         <div id="playerSummary"></div>
-        <hr class="dotted">
-        <div id="playerMatchList"></div>
+        <p style="text-align: center;">
+            <button class="btn-xs btn-secondary" id="playerMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playerMatchList" aria-expanded="false" aria-controls="playerMatchList">
+                Expand/Collapse Match List
+            </button>
+        </p>
+        <div class="collapse" id="playerMatchList"></div>
 
         <!-- Additional Stuff / Rating Formula  / Reporting Guidelines-->
         <hr class="rounded">
@@ -187,7 +224,7 @@
         <p>Warning: After this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
         <div class="input-group">
             <span class="input-group-text">Rating List</span>
-            <input type="text" title="Spacer" class="form-control" id="spacer" value="">
+            <!-- <input type="text" title="Spacer" class="form-control" id="spacer" value=""> -->
             <select class="form-select" title="Rating List Selection" id="ratingListSelection" onchange="ratingListSelectionChanged()">
                 <option value="bkk-bg-rating-list">BKK BG Rating</option>
                 <option value="GitHub-Actions">Fake Rating</option>
@@ -404,8 +441,11 @@
             populatePlayedOnList();
         }
 
+        function playedMonthSelectionChanged() {
+            populatePlayedMonthList();
+        }
+
         function playerSelectionChanged() {
-            document.getElementById("playerNameTyped").value = '';
             populatePlayerList();
         }
 
@@ -442,6 +482,7 @@
 
         var matchRecords = '';
         const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         var totalMatchList = '';
 
         // Fetch the Match List
@@ -465,8 +506,10 @@
                     matchRecords = totalMatchList.split("\n");
                     var matchDayOptions = '';
                     var matchDays = 0;
+                    var matchMonthOptions = '';
 
                     var lastMatchDate = '';
+                    var lastMatchMonth = -1;
                     for (var i = matchRecords.length-1; i > 1; i--) {
                         if (matchRecords[i].length > 0) {
                             var matchInfo = matchRecords[i].split('|');
@@ -475,14 +518,22 @@
                                 matchDays++;
                                 const datetime = new Date(matchDate);
                                 matchDayOptions += `<option value="${matchDate}">${matchDate} ${weekday[datetime.getDay()]}</option>\n`;
+                                const matchMonth = datetime.getMonth();
+                                if (matchMonth != lastMatchMonth) {
+                                    const matchYearMonth = matchDate.substring(0,7)
+                                    matchMonthOptions += `<option value="${matchYearMonth}">${matchYearMonth} ${month[matchMonth]}</option>\n`;
+                                    lastMatchMonth = matchMonth;
+                                }
                             }
                             lastMatchDate = matchDate;
                         }
                     }
                     document.getElementById("playedOnSelection").innerHTML = matchDayOptions;
+                    document.getElementById("playedMonthlySelection").innerHTML = matchMonthOptions;
                     
                     if (matchDays > 0) {
                         populatePlayedOnList();
+                        populatePlayedMonthList();
                     }
                 } else {
                     console.log('Failed to fetch Match List!');
@@ -685,6 +736,30 @@
             createPlayedOnList('playedOnSummary', summarizeMatchList(playedOnMatchList));
         }
 
+        // Populate the Played Month List
+        function populatePlayedMonthList() {
+            if (matchRecords.length === 0) {
+                alert('Fetch Match List first!');
+                return;
+            }
+
+            var matchYearMonth = document.getElementById("playedMonthlySelection").value;
+
+            var playedMonthMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
+            for (var i = matchRecords.length-1; i > 1; i--) {
+                if (matchRecords[i].length > 0) {
+                    var matchInfo = matchRecords[i].split('|');
+                    var matchYearMonthDate = matchInfo[1].substring(0,7);
+                    if (matchYearMonth === matchYearMonthDate) {
+                        playedMonthMatchList += `${matchRecords[i]}\n`;
+                    }
+                }
+            }
+            document.getElementById('playedMonthMatchList').innerHTML = marked.parse(playedMonthMatchList);
+
+            createPercentMatchesWonRankingList('playedMonthSummary', summarizeMatchList(playedMonthMatchList));
+        }
+
         // Populate the Player List
         function populatePlayerList() {
             if (matchRecords.length === 0) {
@@ -692,8 +767,7 @@
                 return;
             }
 
-            var playerName = document.getElementById("playerNameTyped").value;
-            if (playerName === '') playerName = document.getElementById('playerName').value;
+            playerName = document.getElementById('playerName').value;
             if (playerName === 'Select or Edit') {
                 document.getElementById('playerSummary').innerHTML = '';
                 document.getElementById('playerMatchList').innerHTML = '';
@@ -799,7 +873,7 @@
                     const fileContent = decodeURIComponent(escape(window.atob( data.content )));
 
                     var frequentPlayers = fileContent.split("\n");
-                    var playerOptions = '<option value="Select or edit">Select/Edit</option>\n';
+                    var playerOptions = '<option value="Select">Select</option>\n';
 
                     for (var i = 0; i < frequentPlayers.length; i++) {
                         if (frequentPlayers[i].length > 0) {
@@ -828,5 +902,23 @@
         });
 
     </script>
+    
+    <!-- Bootstrap Expand/Collapse Section -->
+    <script>
+        document.getElementById('playedOnMatchListToggleButton').addEventListener('click', function() {
+            var collapseElement = document.getElementById('playedOnMatchList');
+            collapseElement.classList.toggle('show');
+        });
+        document.getElementById('playedMonthMatchListToggleButton').addEventListener('click', function() {
+            var collapseElement = document.getElementById('playedMonthMatchList');
+            collapseElement.classList.toggle('show');
+        });
+        document.getElementById('playerMatchListToggleButton').addEventListener('click', function() {
+            var collapseElement = document.getElementById('playerMatchList');
+            collapseElement.classList.toggle('show');
+        });
+    </script>
+        
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 </body>
 </html>
