@@ -10,25 +10,30 @@
             background-color: #0d0064;
             color: #ffffff;
         }
+
         h1, h2, h3, h4, h5 {
             color:#61e7ff;
             text-align:center;
         }
+
         table {
             margin: auto; 
             width: fit-content;
         }
-        tr:nth-child(odd){background-color: #1600a8;}
+
+        tr:nth-child(odd) {
+            background-color: #1600a8;
+        }
+
         th {
-            padding-top: 6px;
-            padding-bottom: 6px;
+            padding: 6px 0;
             text-align: center;
             background-color: #0d0064;
             color: #61e7ff;
         }
+
         td {
-            padding-left: 3px;
-            padding-right: 3px;
+            padding: 3px;
         }
 
         .container {
@@ -40,20 +45,22 @@
             border-color: #1eff29;
             margin-top: 15px;
         }
+
         .btn-secondary {
             color:#6e6e6e;
             background-color: #0d0064;
             margin-top: 15px;
         }
         
-        .input-group-text {margin-top: 15px;}
-        .form-select {margin-top: 15px;}
-        .form-control {margin-top: 15px;}
+        .input-group-text, .form-select, .form-control {
+            margin-top: 15px;
+        }
         
         hr.rounded {
             border-top: 8px solid #000;
             border-radius: 5px;
         }
+
         hr.dotted {
             border-top: 3px dotted #000;
         }
@@ -62,6 +69,8 @@
 <body>
     <div class="container">
         <h1 id="ratingListTitle">Bangkok BG</h1>
+
+        <!-- Match Report -->
         <h3>Match Report</h3>
         <form id="matchForm">
             <!-- Winner -->
@@ -113,11 +122,11 @@
         <h3>Rating List <button id="refreshRatingList" class="btn-xs btn-secondary">Refresh</button></h3>
         <div id="ratingList"></div>
 
-        <!-- Match List Check -->
+        <!-- Match List -->
         <hr class="rounded">
         <h3>Match List <button id="fetchMatchList" class="btn-xs btn-secondary">Fetch</button></h3>
         
-        <!-- Played On Stuff -->
+        <!-- Played On -->
         <div class="input-group">
             <span class="input-group-text">Played on</span>
             <input type="text" title="Match Day" class="form-control" id="playedOn" value="">
@@ -129,7 +138,7 @@
         <hr class="dotted">
         <div id="playedOnMatchList"></div>
 
-        <!-- Ranking List Stuff -->
+        <!-- Ranking List -->
         <hr class="dotted">
         <div class="input-group">
             <span class="input-group-text">Ranking List</span>
@@ -138,6 +147,7 @@
                 <option value="Select">Select</option>
                 <option value="matchesPlayed">Matches Played</option>
                 <option value="percentMatchesWon">% Matches Won</option>
+                <option value="currentStreak">Current Streak</option>
                 <option value="longestWinningStreak">> Winning Streak</option>
                 <option value="longestLosingStreak">> Losing Streak</option>
                 <option value="daysInactive">Days Inactive</option>
@@ -145,7 +155,7 @@
         </div>
         <div id="rankingListSummary"></div>
         
-        <!-- Player Stuff -->
+        <!-- Player -->
         <hr class="dotted">
         <div class="input-group">
             <span class="input-group-text">Player</span>
@@ -159,7 +169,7 @@
         <hr class="dotted">
         <div id="playerMatchList"></div>
 
-        <!-- Reporting Guidelines -->
+        <!-- Additional Stuff / Rating Formula  / Reporting Guidelines-->
         <hr class="rounded">
         <div id="reportingGuidelines">
             <h3>Connection Issue</h3>
@@ -174,7 +184,7 @@
            It should work the same as the BKK BG Rating List, but matches will be cleared from time to time.
            To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
         </p>
-        <p>Warning: After the this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
+        <p>Warning: After this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
         <div class="input-group">
             <span class="input-group-text">Rating List</span>
             <input type="text" title="Spacer" class="form-control" id="spacer" value="">
@@ -191,7 +201,7 @@
         const repoOwner = 'modiholodri';
         const githubToken = '';  // Fill in the token before distributing the file to others
 
-        let oneSecondInterval = setInterval(decreaseTimeouts, 1000);
+        let oneSecondInterval = setInterval(showSubmissionStatus, 1000);
 
         let newSubmission = false;
         let anotherSubmissionActive = false;
@@ -202,13 +212,14 @@
         let latestRunStatus = '';
         let latestRunUpdatedAt = '';
 
-        function decreaseTimeouts() {
+        // show the submission status when a submission is going on
+        function showSubmissionStatus() {
             // show the status of a new submission until the status is Completed
             if (newSubmission) {
                 refreshRunsStatus();
-                if (latestRunID != previousRunID) {
+                if (latestRunID !== previousRunID) {
                     setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
-                    if (latestRunStatus == 'Completed') {
+                    if (latestRunStatus === 'Completed') {
                         refreshRatingList();
                         fetchMatchList();
                         newSubmission = false;
@@ -221,7 +232,7 @@
             if (anotherSubmissionActive) {
                 refreshRunsStatus();
                 setRunsInfo(`${latestRunID}: ${latestRunStatus} -> ${latestRunConclusion}`);
-                if (latestRunStatus == 'Completed') {
+                if (latestRunStatus === 'Completed') {
                     anotherSubmissionActive = false;
                     document.getElementById("submit").disabled = false;
                 }
@@ -233,26 +244,26 @@
             e.preventDefault();
             
             // get the winner name
-            var winnerName = document.getElementById('winnerName').value;
-            if (winnerName == 'Select or edit') winnerName = document.getElementById('winnerNameTyped').value;
+            const winnerName = document.getElementById('winnerName').value;
+            if (winnerName === 'Select or edit') winnerName = document.getElementById('winnerNameTyped').value;
             
             // get the loser name
             var loserName = document.getElementById('loserName').value;
-            if (loserName == 'Select or edit') loserName = document.getElementById('loserNameTyped').value;
+            if (loserName === 'Select or edit') loserName = document.getElementById('loserNameTyped').value;
             
             // get the match length
             var matchLength = document.getElementById('matchLengthTyped').value;
-            if (matchLength == '') matchLength = document.getElementById('matchLength').value;
+            if (matchLength === '') matchLength = document.getElementById('matchLength').value;
 
             const repoName = document.getElementById('ratingListSelection').value;
 
-            if (winnerName == '') {
+            if (!winnerName) {
                 alert('Select or edit the Winner name!');
             }
-            else if (loserName == '') {
+            else if (!loserName) {
                 alert('Select or edit the Loser name!');
             }
-            else if (githubToken == '') {
+            else if (!githubToken) {
                 alert(JSON.stringify({ 
                     event_type: 'match_report', 
                     client_payload: { 
@@ -267,7 +278,7 @@
                 setSubmissionStatus(`Submitting match...\n ${winnerName} > ${loserName} -> ${matchLength}`);
                 setRunsInfo('Hold on a sec...');
                 previousRunID = latestRunID;
-                if ( latestRunStatus != 'Completed') {
+                if ( latestRunStatus !== 'Completed') {
                     setSubmissionStatus('Another submission in progress.\nTry again in a few seconds...');
                     anotherSubmissionActive = true;
                     document.getElementById("submit").disabled = true;
@@ -332,27 +343,24 @@
                 latestRunID = workflowRuns[0].id;
                 latestRunStatus = toTitleCase(workflowRuns[0].status.replaceAll('_', ' '));
                 
-                latestRunUpdatedAt = formattedTimestamp(workflowRuns[0].updated_at);
+                latestRunUpdatedAt = formatTimestamp(workflowRuns[0].updated_at);
                 
-                if(workflowRuns[0].conclusion === null) {
-                    latestRunConclusion = 'Wait...';
-                }
-                else {
-                    latestRunConclusion = toTitleCase(workflowRuns[0].conclusion.toUpperCase());
-                }
+                latestRunConclusion = workflowRuns[0].conclusion ? toTitleCase(workflowRuns[0].conclusion.toUpperCase()) : 'Wait...';;
             } 
             catch (error) { 
                 alert('Error triggering GitHub Action: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
             }
         }
 
-        const formattedTimestamp = (timestamp)=> {
+        // format the UTC time stamp in a nicer way
+        const formatTimestamp = (timestamp)=> {
             const datetime = new Date(timestamp)
             const dateString = datetime.toISOString().split('T')[0];
             const timeString = datetime.toTimeString().split(' ')[0];
             return `${dateString} ${timeString}`;
         }
 
+        // Update the Submission Status
         document.getElementById("updateSubmissionStatus").addEventListener("click", async () => {
             await refreshRunsStatus();
             setSubmissionStatus(`Last Submission:\n${latestRunID}: ${latestRunUpdatedAt}`);
@@ -360,29 +368,31 @@
             document.getElementById("updateSubmissionStatus").blur();
         });
 
+        // Refresh the Rating List
         function refreshRatingList() {
             fetchMarkDownFromRepo('RatingList', 'ratingList');
         }
 
-        // Fetch the rating list
+        // Refresh the Rating List
         document.getElementById('refreshRatingList').onclick = function() {
             refreshRatingList();
         };
 
+        // Set the last Runs Info
         function setRunsInfo (runsInfo) {
             document.getElementById("runsInfo").innerText = runsInfo;
             if (runsInfo.includes('Success')) {
                 setSubmissionStatus(document.getElementById("submissionStatus").innerText.replace('Submitting', 'Submitted'));
-                document.getElementById("runsInfo").style.color = 'green';
             }
-            else if (runsInfo.includes('Failure')) document.getElementById("runsInfo").style.color = 'red';
-            else document.getElementById("runsInfo").style.color = 'white';
+            document.getElementById("runsInfo").style.color = runsInfo.includes('Success') ? 'green' : runsInfo.includes('Failure') ? 'red' : 'white';
         }
 
+        // Set the Submission Status
         function setSubmissionStatus (submissionStatus) {
             document.getElementById("submissionStatus").innerText = submissionStatus;
         }
 
+        // Convert a string to Title Case
         function toTitleCase(str) {
             return str.replace(
                 /\w\S*/g,
@@ -404,6 +414,9 @@
                 case 'percentMatchesWon': 
                     createPercentMatchesWonRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
                     break;
+                case 'currentStreak':
+                    createCurrentStreakRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    break;
                 case 'longestWinningStreak':
                     createLongestWinningStreakRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
                     break;
@@ -421,6 +434,7 @@
             }
         }
 
+        // the typed player name changed
         function playerNameTypedChanged() {
             document.getElementById("playerName").selectedIndex = 0;
             populatePlayerList();
@@ -430,7 +444,7 @@
         const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
         var totalMatchList = '';
 
-        // Fetch the match list
+        // Fetch the Match List
         function fetchMatchList() {
             // fetchMarkDownFromRepo('MatchList', 'playedOnMatchList');
             const repoName = document.getElementById('ratingListSelection').value;
@@ -480,6 +494,7 @@
             rankingListSelectionChanged();
         }
 
+        // Summarize the Match List
         function summarizeMatchList(matchList) {
             const playerSummary = {};
 
@@ -495,11 +510,13 @@
                     // Initialize player playerSummary if not already present
                     if (!playerSummary[winner]) {
                         playerSummary[winner] = { played: 0, lastDateActive: '-',
+                                                  currentStreak: 0,
                                                   won: 0, currentWon: 0, longestWon: 0, 
                                                   lost: 0, currentLost: 0, longestLost: 0 };
                     }
                     if (!playerSummary[loser]) {
                         playerSummary[loser] = { played: 0, lastDateActive: '-',
+                                                 currentStreak: 0,
                                                  won: 0, currentWon: 0, longestWon: 0, 
                                                  lost: 0, currentLost: 0, longestLost: 0 };
                     }
@@ -511,6 +528,7 @@
                     playerSummary[winner].won++;
                     playerSummary[winner].currentLost = 0;
                     playerSummary[winner].currentWon++;
+                    playerSummary[winner].currentStreak = playerSummary[winner].currentWon;
                     playerSummary[winner].lastDateActive = date;
                     if (playerSummary[winner].currentWon > playerSummary[winner].longestWon) {
                         playerSummary[winner].longestWon = playerSummary[winner].currentWon;
@@ -521,6 +539,7 @@
                     playerSummary[loser].lost++;
                     playerSummary[loser].currentWon = 0;
                     playerSummary[loser].currentLost++;
+                    playerSummary[loser].currentStreak = -playerSummary[loser].currentLost;
                     playerSummary[loser].lastDateActive = date;
                     if (playerSummary[loser].currentLost > playerSummary[loser].longestLost) {
                         playerSummary[loser].longestLost = playerSummary[loser].currentLost;
@@ -530,13 +549,14 @@
             return playerSummary;
         }
 
+        // Create the Player Info
         function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
             var opponentsList = '';
             var vipPlayer = '';
             const opponents = {};
 
             for (const [player, stats] of Object.entries(playerSummary).sort()) {
-                if (player == vipPlayerName) {
+                if (player === vipPlayerName) {
                     const winPercentage = Math.round(stats.won*100/stats.played);
                     vipPlayer += `|${player}|${stats.won} - ${stats.lost}|${stats.played}|${winPercentage}|\n`;    
                 }
@@ -569,6 +589,18 @@
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
+
+        // Current Streak
+        function createCurrentStreakRankingList(summaryElement, playerSummary) {
+            var rankingList = '|   |   |Current Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
+
+            var rank = 1;
+            for (const [player, stats] of Object.entries(playerSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak)) {
+                rankingList += `|${rank++}|${player}|${stats.currentStreak}|${stats.won} - ${stats.lost}|\n`;
+            }   
+            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+        }
+
 
         // Longest Winning Streak
         function createLongestWinningStreakRankingList(summaryElement, playerSummary) {
@@ -603,6 +635,7 @@
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
+        // Create Lsat Time Active Ranking List
         function createLastTimeActiveRankingList(summaryElement, playerSummary) {
             var rankingList = '|   |   |Idle Days|Date|\n|:---:|:---:|:---:|:---:|\n';
 
@@ -628,8 +661,9 @@
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
+        // Populate the Played On List
         function populatePlayedOnList() {
-            if (matchRecords.length == 0) {
+            if (matchRecords.length === 0) {
                 alert('Fetch Match List first!');
                 return;
             }
@@ -641,7 +675,7 @@
                 if (matchRecords[i].length > 0) {
                     var matchInfo = matchRecords[i].split('|');
                     var matchDate = matchInfo[1];
-                    if (matchDate == matchDayDate) {
+                    if (matchDate === matchDayDate) {
                         playedOnMatchList += `${matchRecords[i]}\n`;
                     }
                 }
@@ -651,15 +685,16 @@
             createPlayedOnList('playedOnSummary', summarizeMatchList(playedOnMatchList));
         }
 
+        // Populate the Player List
         function populatePlayerList() {
-            if (matchRecords.length == 0) {
+            if (matchRecords.length === 0) {
                 alert('Fetch Match List first!');
                 return;
             }
 
             var playerName = document.getElementById("playerNameTyped").value;
-            if (playerName == '') playerName = document.getElementById('playerName').value;
-            if (playerName == 'Select or Edit') {
+            if (playerName === '') playerName = document.getElementById('playerName').value;
+            if (playerName === 'Select or Edit') {
                 document.getElementById('playerSummary').innerHTML = '';
                 document.getElementById('playerMatchList').innerHTML = '';
                 return;
@@ -671,7 +706,7 @@
                     const matchInfo = matchRecords[i].split('|');
                     const winnerName = matchInfo[2];
                     const loserName = matchInfo[3];
-                    if (winnerName == playerName || loserName == playerName) {
+                    if (winnerName === playerName || loserName === playerName) {
                         playerMatchList += `${matchRecords[i]}\n`;
                     }
                 }
@@ -681,7 +716,7 @@
             createPlayerInfoList('playerSummary', summarizeMatchList(playerMatchList), playerName);
         }
 
-        // Fetch the match list
+        // Fetch the Match List
         document.getElementById('fetchMatchList').onclick = function() {
             fetchMatchList();
         }
@@ -708,18 +743,20 @@
                     console.log(`Failed to fetch file ${fileName}.md!`);
                 }
                 
-                if(fileName == 'RatingList')  {
+                if(fileName === 'RatingList')  {
                     document.getElementById("refreshRatingList").blur();
                 }
             })
             .catch(error => console.error('Error:', error));
         }
 
+        // Refresh the Rating List Title
         function refreshRatingListTitle () {
             var sel = document.getElementById('ratingListSelection');
             document.getElementById('ratingListTitle').innerText = sel.options[sel.selectedIndex].text;
         }
 
+        // Clear the Match Lists
         function clearMatchLists() {
             document.getElementById('playedOnSelection').innerHTML = '<option value="Fetch Matches">Fetch Matches</option>';
             document.getElementById('playedOnSummary').innerHTML = '';
@@ -728,15 +765,18 @@
             document.getElementById('playerMatchList').innerHTML = '';
         }
 
+        // Clear the Submission Status
         function clearSubmissionStatus() {
             document.getElementById('submissionStatus').innerHTML = '';
             document.getElementById('runsInfo').innerHTML = '';
         }
 
+        // Rating List Selection Changed
         function ratingListSelectionChanged() {
             refreshRatingListTitle();
             refreshRatingList();
-            clearMatchLists();
+            //clearMatchLists();
+            fetchMatchList();
             clearSubmissionStatus();
             fetchFrequentPlayers();
         }
@@ -776,7 +816,8 @@
             .catch(error => console.error('Error:', error));
         }
 
-        document.addEventListener("DOMContentLoaded", (event) => {
+        // Add DOM Content Loaded Event Listener
+        document.addEventListener("DOMContentLoaded", () => {
             refreshRatingListTitle();
             refreshRatingList();
             fetchFrequentPlayers();
