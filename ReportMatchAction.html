@@ -27,7 +27,7 @@
         }
 
         th {
-            padding: 6px 0;
+            padding: 3px;
             text-align: center;
             background-color: #0d0064;
             color: #61e7ff;
@@ -77,10 +77,6 @@
         hr.rounded {
             border-top: 8px solid #000;
             border-radius: 5px;
-        }
-
-        hr.dotted {
-            border-top: 3px dotted #000;
         }
 
         .centered {
@@ -140,7 +136,7 @@
         </div>
 
         <!-- Rating List -->
-        <hr class="dotted">
+        <hr class="rounded">
         <h3>Rating List <button id="refreshRatingList" class="btn-xs btn-secondary">Refresh</button></h3>
         <div id="ratingList"></div>
 
@@ -170,6 +166,7 @@
                 <option value="longestLosingStreak">> Losing Streak</option>
                 <option value="daysInactive">Days Inactive</option>
                 <option value="playerInfo">Player Info</option>
+                <option value="rangliste">Rangliste</option>
             </select>
         </div>
         <div class="input-group" id="playerNameInput" style="display:none">
@@ -462,6 +459,9 @@
                     summarizeMatchList(playedTimeSpanMatchList);  
                     playerSelectionChanged();
                     break;
+                case 'rangliste':
+                    createRanglisteRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
+                    break;
                 default:
                     break;
             }
@@ -493,7 +493,6 @@
                     if (matchID != lastMatchID) {
                         matchDays++;
                         const datetime = new Date(matchDate);
-
 
                         if (interval === "Daily") {
                             matchDayOptions += `<option value="${matchID}">${matchID} ${weekday[datetime.getDay()]}</option>\n`;
@@ -553,36 +552,45 @@
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     const matchInfo = matchRecords[i].split('|');
-                    const date = matchInfo[1];
+                    const matchDate = matchInfo[1];
                     const winner = matchInfo[2];
                     const loser = matchInfo[3];
+                    const matchLength = matchInfo[4];
 
                     // Initialize player playerSummary if not already present
                     if (!playerSummary[winner]) {
                         playerSummary[winner] = { played: 0, lastDateActive: '-',
                                                   currentStreak: 0,
+                                                  punkte: 0,
                                                   won: 0, currentWon: 0, longestWon: 0, 
                                                   lost: 0, currentLost: 0, longestLost: 0 };
                     }
                     if (!playerSummary[loser]) {
                         playerSummary[loser] = { played: 0, lastDateActive: '-',
                                                  currentStreak: 0,
+                                                 punkte: 0,
                                                  won: 0, currentWon: 0, longestWon: 0, 
                                                  lost: 0, currentLost: 0, longestLost: 0 };
                     }
                     
                     // Increment played/won/lost counts
-                    
+                    const datetime = new Date(matchDate);
+                    let bonusPunkte = 1;  // for playing any day
+                    if (datetime.getDay() == 3) bonusPunkte = 3;  // for playing on Wednesday
+                    else if (datetime.getDay() == 6) bonusPunkte = 5;  // for playing on Saturday
+
                     // winner
                     playerSummary[winner].played++;
                     playerSummary[winner].won++;
                     playerSummary[winner].currentLost = 0;
                     playerSummary[winner].currentWon++;
                     playerSummary[winner].currentStreak = playerSummary[winner].currentWon;
-                    playerSummary[winner].lastDateActive = date;
                     if (playerSummary[winner].currentWon > playerSummary[winner].longestWon) {
                         playerSummary[winner].longestWon = playerSummary[winner].currentWon;
                     }
+                    playerSummary[winner].punkte += +matchLength;
+                    if (playerSummary[winner].lastDateActive !== matchDate) playerSummary[winner].punkte += bonusPunkte;
+                    playerSummary[winner].lastDateActive = matchDate;
 
                     // loser
                     playerSummary[loser].played++;
@@ -590,10 +598,11 @@
                     playerSummary[loser].currentWon = 0;
                     playerSummary[loser].currentLost++;
                     playerSummary[loser].currentStreak = -playerSummary[loser].currentLost;
-                    playerSummary[loser].lastDateActive = date;
                     if (playerSummary[loser].currentLost > playerSummary[loser].longestLost) {
                         playerSummary[loser].longestLost = playerSummary[loser].currentLost;
                     }
+                    if (playerSummary[loser].lastDateActive !== matchDate) playerSummary[loser].punkte += bonusPunkte;
+                    playerSummary[loser].lastDateActive = matchDate;
                 }
             }
             return playerSummary;
@@ -608,7 +617,7 @@
             for (const [player, stats] of Object.entries(playerSummary).sort()) {
                 if (player === vipPlayerName) {
                     const winPercentage = Math.round(stats.won*100/stats.played);
-                    vipPlayer += `|${player}|${stats.won} - ${stats.lost}|${stats.played}|${winPercentage}|\n`;    
+                    vipPlayer += `|${player}|${stats.won} - ${stats.lost}|${winPercentage}|${stats.played}|\n`;    
                 }
                 else {
                     opponents[player] = stats;
@@ -617,10 +626,10 @@
 
             for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].won/a[1].played)-(b[1].won/b[1].played))) {
                 const winPercentage = Math.round(stats.lost*100/stats.played);
-                opponentsList += `|${stats.lost} - ${stats.won}|${player}|${stats.played}|${winPercentage}|\n`;
+                opponentsList += `|${stats.lost} - ${stats.won}|${player}|${winPercentage}|${stats.played}|\n`;
             }
 
-            var playerInfoList = '|   |Result|Matches|% Won|\n|:---:|:---:|:---:|:---:|\n';
+            var playerInfoList = '|   |Result|% Won|Matches|\n|:---:|:---:|:---:|:---:|\n';
             playerInfoList += vipPlayer;
             playerInfoList += `|--------|--------|--------|---|---|\n`;
             playerInfoList += opponentsList;
@@ -685,7 +694,7 @@
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
-        // Create Lsat Time Active Ranking List
+        // Create Last Time Active Ranking List
         function createLastTimeActiveRankingList(summaryElement, playerSummary) {
             var rankingList = '|   |   |Idle Days|Date|\n|:---:|:---:|:---:|:---:|\n';
 
@@ -697,6 +706,17 @@
                 const inactiveDays = Math.ceil(timeInMS / (1000 * 60 * 60 * 24)) - 1;
 
                 rankingList += `|${rank++}|${player}|${inactiveDays}|${stats.lastDateActive}|\n`;
+            }   
+            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+        }
+
+        // Create Rangliste Ranking List
+        function createRanglisteRankingList(summaryElement, playerSummary) {
+            var rankingList = '|   |   |Punkte|Result|\n|:---:|:---:|:---:|:---:|\n';
+
+            var rank = 1;
+            for (const [player, stats] of Object.entries(playerSummary).sort((a,b) => b[1].punkte-a[1].punkte)) {
+                rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.won} - ${stats.lost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
