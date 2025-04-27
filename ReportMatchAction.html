@@ -144,41 +144,21 @@
         <hr class="rounded">
         <h3>Match List <button id="fetchMatchList" class="btn-xs btn-secondary">Fetch</button></h3>
         
-        <!-- Played On -->
+        <!-- Played Time Span -->
         <div class="input-group">
-            <span class="input-group-text">Played on</span>
-            <select class="form-select" title="Played On Selection" id="playedOnSelection" onchange="playedOnSelectionChanged()">
+            <select class="form-select" title="Interval Selection" id="intervalSelection" onchange="intervalSelectionChanged()">
+                <option value="Daily">Daily</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Yearly">Yearly</option>
+                <option value="Eternally">Eternally</option>
+            </select>
+            <select class="form-select" title="Played Time Span Selection" id="timeSpanSelection" onchange="playedTimeSpanSelectionChanged()">
                 <option value="Fetch Matches">Fetch Matches</option>
             </select>
         </div>
-        <div id="playedOnSummary"></div>
-        <p style="text-align: center;">
-            <button class="btn-xs btn-secondary" id="playedOnMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedOnMatchList" aria-expanded="false" aria-controls="playedOnMatchList">
-                Expand/Collapse Match List
-            </button>
-        </p>
-        <div class="collapse" id="playedOnMatchList"></div>
-
-        <!-- Played Month -->
-        <div class="input-group">
-            <span class="input-group-text">Monthly</span>
-            <select class="form-select" title="Monthly Selection" id="playedMonthlySelection" onchange="playedMonthSelectionChanged()">
-                <option value="Fetch Matches">Fetch Matches</option>
-            </select>
-        </div>
-        <div id="playedMonthSummary"></div>
-        <p style="text-align: center;">
-            <button class="btn-xs btn-secondary" id="playedMonthMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedMonthMatchList" aria-expanded="false" aria-controls="playedMonthMatchList">
-                Expand/Collapse Match List
-            </button>
-        </p>
-        <div class="collapse" id="playedMonthMatchList"></div>
-
-        <!-- Ranking List -->
         <div class="input-group">
             <span class="input-group-text">Ranking List</span>
             <select class="form-select" title="Ranking List Selection" id="rankingListSelection" onchange="rankingListSelectionChanged()">
-                <option value="Select">Select</option>
                 <option value="matchesPlayed">Matches Played</option>
                 <option value="percentMatchesWon">% Matches Won</option>
                 <option value="currentStreak">Current Streak</option>
@@ -187,8 +167,16 @@
                 <option value="daysInactive">Days Inactive</option>
             </select>
         </div>
-        <div id="rankingListSummary"></div>
-        
+
+        <div id="playedTimeSpanSummary"></div>
+
+        <p style="text-align: center;">
+            <button class="btn-xs btn-secondary" id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanMatchList" aria-expanded="false" aria-controls="playedTimeSpanMatchList">
+                Expand/Collapse Match List
+            </button>
+        </p>
+        <div class="collapse" id="playedTimeSpanMatchList"></div>
+
         <!-- Player -->
         <hr class="dotted">
         <div class="input-group">
@@ -437,12 +425,13 @@
             );
         }
 
-        function playedOnSelectionChanged() {
-            populatePlayedOnList();
+        function playedTimeSpanSelectionChanged() {
+            populatePlayedTimeSpanMatchList();
         }
 
-        function playedMonthSelectionChanged() {
-            populatePlayedMonthList();
+        function intervalSelectionChanged() {
+            populateTimeSpanSelectionList(matchRecords);
+            populatePlayedTimeSpanMatchList();
         }
 
         function playerSelectionChanged() {
@@ -452,22 +441,22 @@
         function rankingListSelectionChanged() {
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'percentMatchesWon': 
-                    createPercentMatchesWonRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    createPercentMatchesWonRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
                     break;
                 case 'currentStreak':
-                    createCurrentStreakRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    createCurrentStreakRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
                     break;
                 case 'longestWinningStreak':
-                    createLongestWinningStreakRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    createLongestWinningStreakRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
                     break;
                 case 'longestLosingStreak':
-                    createLongestLosingStreakRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    createLongestLosingStreakRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
                     break;
                 case 'matchesPlayed':
-                    createMatchesPlayedRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    createMatchesPlayedRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
                     break;
                 case 'daysInactive':
-                    createLastTimeActiveRankingList('rankingListSummary', summarizeMatchList(totalMatchList));
+                    createLastTimeActiveRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
                     break;
                 default:
                     break;
@@ -481,13 +470,52 @@
         }
 
         var matchRecords = '';
-        const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-        const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         var totalMatchList = '';
+
+        // Populate Time Span List
+        function populateTimeSpanSelectionList(matchRecords) {
+            let interval = document.getElementById("intervalSelection").value;
+            const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+            const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            const intervalLengths = {"Daily":10, "Monthly":7, "Yearly":4, "Eternally":0};
+            const selectedIntervalLength = intervalLengths[interval];
+
+            var matchDayOptions = '';
+            var matchDays = 0;
+            var matchTimeSpanOptions = '';
+
+            var lastMatchDate = '';
+            var lastMatchID = -1;
+            var timeSpanSuffix = '';
+            for (var i = matchRecords.length-1; i > 1; i--) {
+                if (matchRecords[i].length > 0) {
+                    var matchInfo = matchRecords[i].split('|');
+                    const matchDate = matchInfo[1];
+                    const matchID = matchDate.substring(0,selectedIntervalLength);
+                    if (matchID != lastMatchID) {
+                        matchDays++;
+                        const datetime = new Date(matchDate);
+
+
+                        if (interval === "Daily") {
+                            matchDayOptions += `<option value="${matchID}">${matchID} ${weekday[datetime.getDay()]}</option>\n`;
+                            timeSpanSuffix = `${weekday[datetime.getDay()]}`;
+                        }
+                        else if (interval === "Monthly") {
+                            timeSpanSuffix = `${month[datetime.getMonth()]}`;
+                        }
+                        matchTimeSpanOptions += `<option value="${matchID}">${matchID} ${timeSpanSuffix}</option>\n`;
+                    }
+                    lastMatchID = matchID;
+                }
+            }
+            document.getElementById("timeSpanSelection").innerHTML = matchTimeSpanOptions;
+
+            return matchDays;
+        }
 
         // Fetch the Match List
         function fetchMatchList() {
-            // fetchMarkDownFromRepo('MatchList', 'playedOnMatchList');
             const repoName = document.getElementById('ratingListSelection').value;
             const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
 
@@ -504,36 +532,9 @@
                     totalMatchList = decodeURIComponent(escape(window.atob( data.content )));
 
                     matchRecords = totalMatchList.split("\n");
-                    var matchDayOptions = '';
-                    var matchDays = 0;
-                    var matchMonthOptions = '';
-
-                    var lastMatchDate = '';
-                    var lastMatchMonth = -1;
-                    for (var i = matchRecords.length-1; i > 1; i--) {
-                        if (matchRecords[i].length > 0) {
-                            var matchInfo = matchRecords[i].split('|');
-                            var matchDate = matchInfo[1];
-                            if (matchDate != lastMatchDate) {
-                                matchDays++;
-                                const datetime = new Date(matchDate);
-                                matchDayOptions += `<option value="${matchDate}">${matchDate} ${weekday[datetime.getDay()]}</option>\n`;
-                                const matchMonth = datetime.getMonth();
-                                if (matchMonth != lastMatchMonth) {
-                                    const matchYearMonth = matchDate.substring(0,7)
-                                    matchMonthOptions += `<option value="${matchYearMonth}">${matchYearMonth} ${month[matchMonth]}</option>\n`;
-                                    lastMatchMonth = matchMonth;
-                                }
-                            }
-                            lastMatchDate = matchDate;
-                        }
-                    }
-                    document.getElementById("playedOnSelection").innerHTML = matchDayOptions;
-                    document.getElementById("playedMonthlySelection").innerHTML = matchMonthOptions;
                     
-                    if (matchDays > 0) {
-                        populatePlayedOnList();
-                        populatePlayedMonthList();
+                    if (populateTimeSpanSelectionList(matchRecords) > 0) {
+                        populatePlayedTimeSpanMatchList();
                     }
                 } else {
                     console.log('Failed to fetch Match List!');
@@ -551,7 +552,7 @@
 
             var matchRecords = matchList.split("\n");
 
-            for (var i = 2; i < matchRecords.length; i++) {
+            for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     const matchInfo = matchRecords[i].split('|');
                     const date = matchInfo[1];
@@ -702,62 +703,30 @@
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
-        // Played On List
-        function createPlayedOnList(summaryElement, playerSummary) {
-            var rankingList = '|   |Matches|Result|\n|:---:|:---:|:---:|\n';
+        var playedTimeSpanMatchList = '';
 
-            for (const [player, stats] of Object.entries(playerSummary).sort()) {
-                rankingList += `|${player}|${stats.played}|${stats.won} - ${stats.lost}|\n`;
-            }   
-            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
-        }
-
-        // Populate the Played On List
-        function populatePlayedOnList() {
+        // Populate the Played Time Span List
+        function populatePlayedTimeSpanMatchList() {
             if (matchRecords.length === 0) {
                 alert('Fetch Match List first!');
                 return;
             }
 
-            var matchDayDate = document.getElementById("playedOnSelection").value;
+            var matchYearMonth = document.getElementById("timeSpanSelection").value;
 
-            var playedOnMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
+            playedTimeSpanMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     var matchInfo = matchRecords[i].split('|');
-                    var matchDate = matchInfo[1];
-                    if (matchDate === matchDayDate) {
-                        playedOnMatchList += `${matchRecords[i]}\n`;
+                    var matchYearMonthDate = matchInfo[1];
+                    if (matchYearMonthDate.startsWith(matchYearMonth)) {
+                        playedTimeSpanMatchList += `${matchRecords[i]}\n`;
                     }
                 }
             }
-            document.getElementById('playedOnMatchList').innerHTML = marked.parse(playedOnMatchList);
+            document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playedTimeSpanMatchList);
 
-            createPlayedOnList('playedOnSummary', summarizeMatchList(playedOnMatchList));
-        }
-
-        // Populate the Played Month List
-        function populatePlayedMonthList() {
-            if (matchRecords.length === 0) {
-                alert('Fetch Match List first!');
-                return;
-            }
-
-            var matchYearMonth = document.getElementById("playedMonthlySelection").value;
-
-            var playedMonthMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
-            for (var i = matchRecords.length-1; i > 1; i--) {
-                if (matchRecords[i].length > 0) {
-                    var matchInfo = matchRecords[i].split('|');
-                    var matchYearMonthDate = matchInfo[1].substring(0,7);
-                    if (matchYearMonth === matchYearMonthDate) {
-                        playedMonthMatchList += `${matchRecords[i]}\n`;
-                    }
-                }
-            }
-            document.getElementById('playedMonthMatchList').innerHTML = marked.parse(playedMonthMatchList);
-
-            createPercentMatchesWonRankingList('playedMonthSummary', summarizeMatchList(playedMonthMatchList));
+            rankingListSelectionChanged();
         }
 
         // Populate the Player List
@@ -832,9 +801,8 @@
 
         // Clear the Match Lists
         function clearMatchLists() {
-            document.getElementById('playedOnSelection').innerHTML = '<option value="Fetch Matches">Fetch Matches</option>';
-            document.getElementById('playedOnSummary').innerHTML = '';
-            document.getElementById('playedOnMatchList').innerHTML = '';
+            document.getElementById('playedTimeSpanSummary').innerHTML = '';
+            document.getElementById('playedTimeSpanMatchList').innerHTML = '';
             document.getElementById('playerSummary').innerHTML = '';
             document.getElementById('playerMatchList').innerHTML = '';
         }
@@ -905,12 +873,8 @@
     
     <!-- Bootstrap Expand/Collapse Section -->
     <script>
-        document.getElementById('playedOnMatchListToggleButton').addEventListener('click', function() {
-            var collapseElement = document.getElementById('playedOnMatchList');
-            collapseElement.classList.toggle('show');
-        });
-        document.getElementById('playedMonthMatchListToggleButton').addEventListener('click', function() {
-            var collapseElement = document.getElementById('playedMonthMatchList');
+        document.getElementById('playedTimeSpanMatchListToggleButton').addEventListener('click', function() {
+            var collapseElement = document.getElementById('playedTimeSpanMatchList');
             collapseElement.classList.toggle('show');
         });
         document.getElementById('playerMatchListToggleButton').addEventListener('click', function() {
