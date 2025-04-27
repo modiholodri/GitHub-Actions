@@ -14,7 +14,7 @@
 
         h1, h2, h3, h4, h5 {
             color:#61e7ff;
-            text-align:center;
+            text-align: center;
         }
 
         table {
@@ -82,6 +82,10 @@
         hr.dotted {
             border-top: 3px dotted #000;
         }
+
+        .centered {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -95,7 +99,7 @@
             <div class="input-group">
                 <span class="input-group-text" id="winnerLabel">Winner</span>
                 <select class="form-select" title="Winner Name" id="winnerName">
-                    <option value="Select or edit">Select/Edit</option>
+                    <option value="Select or edit">Select</option>
                     <option value="Winner">Winner</option>
                 </select>
                 <input type="text" title="Winner Name" class="form-control" id="winnerNameTyped">
@@ -104,7 +108,7 @@
             <div class="input-group">
                 <span class="input-group-text">Loser</span>
                 <select class="form-select" title="Loser Name" id="loserName">
-                    <option value="Select or edit">Select/Edit</option>
+                    <option value="Select or edit">Select</option>
                     <option value="Loser">Loser</option>
                 </select>
                 <input type="text" title="Loser Name" class="form-control" id="loserNameTyped">
@@ -165,6 +169,14 @@
                 <option value="longestWinningStreak">> Winning Streak</option>
                 <option value="longestLosingStreak">> Losing Streak</option>
                 <option value="daysInactive">Days Inactive</option>
+                <option value="playerInfo">Player Info</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <span class="input-group-text">Player</span>
+            <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
+                <option value="Select">Select</option>
+                <option value="Loser">Loser</option>
             </select>
         </div>
 
@@ -177,22 +189,6 @@
         </p>
         <div class="collapse" id="playedTimeSpanMatchList"></div>
 
-        <!-- Player -->
-        <hr class="dotted">
-        <div class="input-group">
-            <span class="input-group-text">Player</span>
-            <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
-                <option value="Select">Select/Edit</option>
-                <option value="Loser">Loser</option>
-            </select>
-        </div>
-        <div id="playerSummary"></div>
-        <p style="text-align: center;">
-            <button class="btn-xs btn-secondary" id="playerMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playerMatchList" aria-expanded="false" aria-controls="playerMatchList">
-                Expand/Collapse Match List
-            </button>
-        </p>
-        <div class="collapse" id="playerMatchList"></div>
 
         <!-- Additional Stuff / Rating Formula  / Reporting Guidelines-->
         <hr class="rounded">
@@ -432,6 +428,7 @@
         function intervalSelectionChanged() {
             populateTimeSpanSelectionList(matchRecords);
             populatePlayedTimeSpanMatchList();
+            rankingListSelectionChanged();
         }
 
         function playerSelectionChanged() {
@@ -439,6 +436,9 @@
         }
 
         function rankingListSelectionChanged() {
+            // set the played time span match list again, in case it has been overwritten before
+            document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playedTimeSpanMatchList);
+
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'percentMatchesWon': 
                     createPercentMatchesWonRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
@@ -458,15 +458,13 @@
                 case 'daysInactive':
                     createLastTimeActiveRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
                     break;
+                case 'playerInfo':
+                    summarizeMatchList(playedTimeSpanMatchList);  
+                    playerSelectionChanged();
+                    break;
                 default:
                     break;
             }
-        }
-
-        // the typed player name changed
-        function playerNameTypedChanged() {
-            document.getElementById("playerName").selectedIndex = 0;
-            populatePlayerList();
         }
 
         var matchRecords = '';
@@ -712,14 +710,14 @@
                 return;
             }
 
-            var matchYearMonth = document.getElementById("timeSpanSelection").value;
+            var timeSpanSelection = document.getElementById("timeSpanSelection").value;
 
             playedTimeSpanMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     var matchInfo = matchRecords[i].split('|');
-                    var matchYearMonthDate = matchInfo[1];
-                    if (matchYearMonthDate.startsWith(matchYearMonth)) {
+                    const matchDate = matchInfo[1];
+                    if (matchDate.startsWith(timeSpanSelection)) {
                         playedTimeSpanMatchList += `${matchRecords[i]}\n`;
                     }
                 }
@@ -738,25 +736,38 @@
 
             playerName = document.getElementById('playerName').value;
             if (playerName === 'Select or Edit') {
-                document.getElementById('playerSummary').innerHTML = '';
-                document.getElementById('playerMatchList').innerHTML = '';
+                document.getElementById('playedTimeSpanSummary').innerHTML = '';
+                document.getElementById('playedTimeSpanMatchList').innerHTML = '';
                 return;
             }
 
+            var timeSpanSelection = document.getElementById("timeSpanSelection").value;
+
+            let matchesPlayed = 0;
             var playerMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     const matchInfo = matchRecords[i].split('|');
-                    const winnerName = matchInfo[2];
-                    const loserName = matchInfo[3];
-                    if (winnerName === playerName || loserName === playerName) {
-                        playerMatchList += `${matchRecords[i]}\n`;
+                    const matchDate = matchInfo[1];
+                    if (matchDate.startsWith(timeSpanSelection)) {
+                        const winnerName = matchInfo[2];
+                        const loserName = matchInfo[3];
+                        if (winnerName === playerName || loserName === playerName) {
+                            matchesPlayed++;
+                            playerMatchList += `${matchRecords[i]}\n`;
+                        }
                     }
                 }
             }
-            document.getElementById('playerMatchList').innerHTML = marked.parse(playerMatchList);
 
-            createPlayerInfoList('playerSummary', summarizeMatchList(playerMatchList), playerName);
+            if (matchesPlayed > 0 ) {
+                createPlayerInfoList('playedTimeSpanSummary', summarizeMatchList(playerMatchList), playerName);
+                document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playerMatchList);
+            }
+            else {
+                document.getElementById('playedTimeSpanSummary').innerHTML = `<div><p class="centered"><br>${playerName} didn't play...</p></div>`;
+                document.getElementById('playedTimeSpanMatchList').innerHTML = '';
+            }
         }
 
         // Fetch the Match List
@@ -799,14 +810,6 @@
             document.getElementById('ratingListTitle').innerText = sel.options[sel.selectedIndex].text;
         }
 
-        // Clear the Match Lists
-        function clearMatchLists() {
-            document.getElementById('playedTimeSpanSummary').innerHTML = '';
-            document.getElementById('playedTimeSpanMatchList').innerHTML = '';
-            document.getElementById('playerSummary').innerHTML = '';
-            document.getElementById('playerMatchList').innerHTML = '';
-        }
-
         // Clear the Submission Status
         function clearSubmissionStatus() {
             document.getElementById('submissionStatus').innerHTML = '';
@@ -817,7 +820,6 @@
         function ratingListSelectionChanged() {
             refreshRatingListTitle();
             refreshRatingList();
-            //clearMatchLists();
             fetchMatchList();
             clearSubmissionStatus();
             fetchFrequentPlayers();
@@ -875,10 +877,6 @@
     <script>
         document.getElementById('playedTimeSpanMatchListToggleButton').addEventListener('click', function() {
             var collapseElement = document.getElementById('playedTimeSpanMatchList');
-            collapseElement.classList.toggle('show');
-        });
-        document.getElementById('playerMatchListToggleButton').addEventListener('click', function() {
-            var collapseElement = document.getElementById('playerMatchList');
             collapseElement.classList.toggle('show');
         });
     </script>
