@@ -172,7 +172,7 @@
                 <option value="playerInfo">Player Info</option>
             </select>
         </div>
-        <div class="input-group">
+        <div class="input-group" id="playerNameInput" style="display:none">
             <span class="input-group-text">Player</span>
             <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
                 <option value="Select">Select</option>
@@ -875,10 +875,22 @@
     
     <!-- Bootstrap Expand/Collapse Section -->
     <script>
+        // show/hide the match list
         document.getElementById('playedTimeSpanMatchListToggleButton').addEventListener('click', function() {
             var collapseElement = document.getElementById('playedTimeSpanMatchList');
             collapseElement.classList.toggle('show');
         });
+
+        // show/hide the player name input
+        document.getElementById("rankingListSelection").addEventListener("change", function () {
+            const element = document.getElementById("playerNameInput");
+            if (this.value === "playerInfo") {
+                element.style.display = "flex"; // Show the element
+            } else {
+                element.style.display = "none"; // Hide the element
+            }
+        });
+
     </script>
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
