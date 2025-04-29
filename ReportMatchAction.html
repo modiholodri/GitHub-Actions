@@ -602,7 +602,7 @@
                     
                     // Increment played/won/lost counts
                     const datetime = new Date(matchDate);
-                    let bonusPunkte = 1;  // for playing any day
+                    let bonusPunkte = 0;  // for playing any day
                     if (datetime.getDay() == 3) bonusPunkte = 3;  // for playing on Wednesday
                     else if (datetime.getDay() == 6) bonusPunkte = 5;  // for playing on Saturday
 
@@ -758,7 +758,7 @@
             }
 
             var timeSpanSelection = document.getElementById("timeSpanSelection").value;
-
+            let gotMatches = false
             playedTimeSpanMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
@@ -766,7 +766,9 @@
                     const matchDate = matchInfo[1];
                     if (matchDate.startsWith(timeSpanSelection)) {
                         playedTimeSpanMatchList += `${matchRecords[i]}\n`;
+                        gotMatches = true
                     }
+                    else if (gotMatches) break;
                 }
             }
             document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playedTimeSpanMatchList);
