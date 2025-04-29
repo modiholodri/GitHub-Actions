@@ -113,15 +113,15 @@
             <div class="input-group">
                 <span class="input-group-text">Match Length</span>
                 <select class="form-select" title="Match Length" id="matchLength">
-                    <option value="1">1</option>
-                    <option value="3">3</option>
-                    <option value="5" selected>5</option>
-                    <option value="7">7</option>
-                    <option value="9">9</option>
-                    <option value="11">11</option>
-                    <option value="13">13</option>
-                    <option value="15">15</option>
-                    <option value="17">17</option>
+                    <option class="centered" value="1">1</option>
+                    <option class="centered" value="3">3</option>
+                    <option class="centered" value="5" selected>5</option>
+                    <option class="centered" value="7">7</option>
+                    <option class="centered" value="9">9</option>
+                    <option class="centered" value="11">11</option>
+                    <option class="centered" value="13">13</option>
+                    <option class="centered" value="15">15</option>
+                    <option class="centered" value="17">17</option>
                 </select>
                 <input type="text" title="Match Length" class="form-control" id="matchLengthTyped" value="">
                 <button type="submit" id="submit" class="btn btn-primary float-right">Submit</button>
@@ -142,40 +142,37 @@
         <div id="ratingList"></div>
 
 
-        <!-- Match List -->
+        <!-- Ranking Lists -->
         <hr class="rounded">
-        <h3>Match List <button id="fetchMatchList" class="btn-xs btn-secondary">Fetch</button></h3>
+        <h3>Ranking Lists <button id="fetchMatchList" class="btn-xs btn-secondary">Fetch</button></h3>
 
         <!-- Played Time Span -->
         <div class="input-group">
-            <select class="form-select" title="Interval Selection" id="intervalSelection" onchange="intervalSelectionChanged()">
-                <option value="Daily">Daily</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-                <option value="Eternally">Eternally</option>
-            </select>
-            <select class="form-select" title="Played Time Span Selection" id="timeSpanSelection" onchange="playedTimeSpanSelectionChanged()">
-                <option value="Fetch Matches">Fetch Matches</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <span class="input-group-text">Ranking List</span>
             <select class="form-select" title="Ranking List Selection" id="rankingListSelection" onchange="rankingListSelectionChanged()">
-                <option value="matchesPlayed">Matches Played</option>
-                <option value="percentMatchesWon">% Matches Won</option>
-                <option value="currentStreak">Current Streak</option>
-                <option value="longestWinningStreak">> Winning Streak</option>
-                <option value="longestLosingStreak">> Losing Streak</option>
-                <option value="daysInactive">Days Inactive</option>
-                <option value="playerInfo">Player Info</option>
-                <option value="rangliste">Rangliste</option>
+                <option class="centered" value="matchesPlayed">Matches Played</option>
+                <option class="centered" value="percentMatchesWon">% Matches Won</option>
+                <option class="centered" value="currentStreak">Current Streak</option>
+                <option class="centered" value="longestWinningStreak">> Winning Streak</option>
+                <option class="centered" value="longestLosingStreak">> Losing Streak</option>
+                <option class="centered" value="daysInactive">Days Inactive</option>
+                <option class="centered" value="playerInfo">Player Info</option>
+                <option class="centered" value="rangliste">Rangliste</option>
             </select>
         </div>
         <div class="input-group" id="playerNameInput" style="display:none">
-            <span class="input-group-text">Player</span>
             <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
                 <option value="Select">Select</option>
-                <option value="Loser">Loser</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <select class="form-select" style="flex: 0 0 40%;" title="Interval Selection" id="intervalSelection" onchange="intervalSelectionChanged()">
+                <option class="centered" value="Daily">Daily</option>
+                <option class="centered" value="Monthly">Monthly</option>
+                <option class="centered" value="Yearly">Yearly</option>
+                <option class="centered" value="Eternally">Eternally</option>
+            </select>
+            <select class="form-select" style="flex: 0 0 60%;" title="Played Time Span Selection" id="timeSpanSelection" onchange="playedTimeSpanSelectionChanged()">
+                <option class="centered" value="Fetch Matches">Fetch Matches</option>
             </select>
         </div>
 
@@ -197,11 +194,11 @@
             <div class="collapse" id="settingsSection">
                 <div class="input-group">
                     <span class="input-group-text">Your Name</span>
-                    <input type="text" class="form-control" id="yourNameSetting" placeholder="Enter your name">
+                    <input type="text" class="form-control centered" id="yourNameSetting" placeholder="Enter your name">
                 </div>
                 <div class="input-group">
                     <span class="input-group-text">Default Interval</span>
-                    <input type="text" class="form-control" id="defaultIntervalSetting" placeholder="Enter default interval settings">
+                    <input type="text" class="form-control centered" id="defaultIntervalSetting" placeholder="Enter default interval settings">
                 </div>
                 <p class="centered">MP %MW CS >WS >LS DI PI RL</p>
                 <button class="btn btn-primary mt-3" id="saveSettingsButton">Save Settings</button>
@@ -510,7 +507,6 @@
             const intervalLengths = {"Daily":10, "Monthly":7, "Yearly":4, "Eternally":0};
             const selectedIntervalLength = intervalLengths[interval];
 
-            var matchDayOptions = '';
             var matchDays = 0;
             var matchTimeSpanOptions = '';
 
@@ -527,13 +523,12 @@
                         const datetime = new Date(matchDate);
 
                         if (interval === "Daily") {
-                            matchDayOptions += `<option value="${matchID}">${matchID} ${weekday[datetime.getDay()]}</option>\n`;
                             timeSpanSuffix = `${weekday[datetime.getDay()]}`;
                         }
                         else if (interval === "Monthly") {
                             timeSpanSuffix = `${month[datetime.getMonth()]}`;
                         }
-                        matchTimeSpanOptions += `<option value="${matchID}">${matchID} ${timeSpanSuffix}</option>\n`;
+                        matchTimeSpanOptions += `<option class="centered" value="${matchID}">${matchID} ${timeSpanSuffix}</option>\n`;
                     }
                     lastMatchID = matchID;
                 }
@@ -895,11 +890,11 @@
                     const fileContent = decodeURIComponent(escape(window.atob( data.content )));
 
                     var frequentPlayers = fileContent.split("\n");
-                    var playerOptions = '<option value="Select">Select</option>\n';
+                    var playerOptions = '<option class="centered" value="Select">Select</option>\n';
 
                     for (var i = 0; i < frequentPlayers.length; i++) {
                         if (frequentPlayers[i].length > 0) {
-                            playerOptions += `<option value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
+                            playerOptions += `<option class="centered" value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
                         }
                     }
                     document.getElementById("winnerName").innerHTML = playerOptions;
