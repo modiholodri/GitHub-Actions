@@ -12,18 +12,16 @@
             color: #ffffff;
         }
 
-        h1, h2, h3, h4, h5 {
+        h1, h2, h3, h4, h5, h6 {
             color:#61e7ff;
             text-align: center;
+            margin-top: 15px;
         }
 
         table {
             margin: auto; 
             width: fit-content;
-        }
-
-        tr:nth-child(odd) {
-            background-color: #1600a8;
+            margin-top: 15px;
         }
 
         th {
@@ -37,6 +35,10 @@
             padding: 3px;
         }
 
+        tr:nth-child(odd) {
+            background-color: #1600a8;
+        }
+
         .container {
             margin-top: 15px;
         }
@@ -47,12 +49,6 @@
             margin-top: 15px;
         }
 
-        .btn-secondary {
-            color:#6e6e6e;
-            background-color: #0d0064;
-            margin-top: 15px;
-        }
-        
         .input-group-text, .form-select, .form-control {
             margin-top: 15px;
         }
@@ -129,7 +125,7 @@
         </form>
 
         <!-- Submission Status -->
-        <h5>Submission Status <button id="updateSubmissionStatus" class="btn-xs btn-secondary">Update</button></h5>
+        <h5 id="updateSubmissionStatus" type="button">Submission Status ⟳</h5>
         <div id="statuses">
             <p id="submissionStatus" style="text-align: center"></p>
             <h5 id="runsInfo"></h5>
@@ -138,13 +134,13 @@
 
         <!-- Rating List -->
         <hr class="rounded">
-        <h3>Rating List <button id="refreshRatingList" class="btn-xs btn-secondary">Refresh</button></h3>
+        <h3 id="refreshRatingList" type="button">Rating List ⟳</h3>
         <div id="ratingList"></div>
 
 
         <!-- Ranking Lists -->
         <hr class="rounded">
-        <h3>Ranking Lists <button id="fetchMatchList" class="btn-xs btn-secondary">Fetch</button></h3>
+        <h3 id="fetchMatchList" type="button">Ranking Lists ⟳</h3>
 
         <!-- Played Time Span -->
         <div class="input-group">
@@ -179,17 +175,18 @@
         <div id="playedTimeSpanSummary"></div>
 
         <p style="text-align: center;">
-            <button class="btn-xs btn-secondary" id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanMatchList" aria-expanded="false" aria-controls="playedTimeSpanMatchList">
-                Expand/Collapse Match List
-            </button>
+            <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanMatchList" aria-expanded="false" aria-controls="playedTimeSpanMatchList">
+                Match List 🡙
+            </h5>
         </p>
         <div class="collapse" id="playedTimeSpanMatchList"></div>
 
 
         <!-- Settings Section -->
+        <hr class="rounded">
         <div class="container">
-            <h3>Settings <button class="btn-xs btn-secondary" id="settingsToggleButton" type="button" data-toggle="collapse" data-target="#settingsSection" aria-expanded="false" aria-controls="settingsSection">
-                Expand/Collapse
+            <h3 id="settingsToggleButton" type="button" data-toggle="collapse" data-target="#settingsSection" aria-expanded="false" aria-controls="settingsSection">
+                ⚙ Settings 🡙
             </button></h3>
             <div class="collapse" id="settingsSection">
                 <div class="input-group">
@@ -226,8 +223,8 @@
             <span class="input-group-text">Rating List</span>
             <!-- <input type="text" title="Spacer" class="form-control" id="spacer" value=""> -->
             <select class="form-select" title="Rating List Selection" id="ratingListSelection" onchange="ratingListSelectionChanged()">
-                <option value="bkk-bg-rating-list">BKK BG Rating</option>
-                <option value="GitHub-Actions">Fake Rating</option>
+                <option class="centered" value="bkk-bg-rating-list">BKK BG Rating</option>
+                <option class="centered" value="GitHub-Actions">Fake Rating</option>
             </select>
         </div>
         <p><br></p>
@@ -397,23 +394,10 @@
             return `${dateString} ${timeString}`;
         }
 
-        // Update the Submission Status
-        document.getElementById("updateSubmissionStatus").addEventListener("click", async () => {
-            await refreshRunsStatus();
-            setSubmissionStatus(`Last Submission:\n${latestRunID}: ${latestRunUpdatedAt}`);
-            setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
-            document.getElementById("updateSubmissionStatus").blur();
-        });
-
         // Refresh the Rating List
         function refreshRatingList() {
             fetchMarkDownFromRepo('RatingList', 'ratingList');
         }
-
-        // Refresh the Rating List
-        document.getElementById('refreshRatingList').onclick = function() {
-            refreshRatingList();
-        };
 
         // Set the last Runs Info
         function setRunsInfo (runsInfo) {
@@ -819,11 +803,6 @@
             }
         }
 
-        // Fetch the Match List
-        document.getElementById('fetchMatchList').onclick = function() {
-            fetchMatchList();
-        }
-
 
         // Fetch a markdown file from the repository
         function fetchMarkDownFromRepo(fileName, divName) {
@@ -922,8 +901,25 @@
 
     </script>
     
-    <!-- Bootstrap Expand/Collapse Section -->
+    <!-- Events Section -->
     <script>
+        // Update the Submission Status
+        document.getElementById("updateSubmissionStatus").addEventListener("click", async () => {
+            await refreshRunsStatus();
+            setSubmissionStatus(`Last Submission:\n${latestRunID}: ${latestRunUpdatedAt}`);
+            setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
+        });
+
+        // Refresh the Rating List
+        document.getElementById('refreshRatingList').onclick = function() {
+            refreshRatingList();
+        };
+
+        // Fetch the Match List
+        document.getElementById('fetchMatchList').onclick = function() {
+            fetchMatchList();
+        }
+
         // show/hide the player name input
         document.getElementById("rankingListSelection").addEventListener("change", function () {
             const element = document.getElementById("playerNameInput");
