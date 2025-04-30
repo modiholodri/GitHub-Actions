@@ -432,7 +432,7 @@
         }
 
         function playerSelectionChanged() {
-            populatePlayerList();
+            populatePlayerMatchList();
         }
 
         function rankingListSelectionChanged() {
@@ -459,16 +459,7 @@
                     createLastTimeActiveRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
                     break;
                 case 'playerInfo':
-                    const yourName = document.getElementById('yourNameSetting').value;
-                    if (yourName) {
-                        const playerOptions = document.getElementById("playerName").options;
-                        for (let i = 0; i < playerOptions.length; i++) {
-                            if (playerOptions[i].value === yourName) {
-                                playerOptions[i].selected = true;
-                                break;
-                            }
-                        }
-                    }
+                    selectDefaultPlayer();
                     summarizeMatchList(playedTimeSpanMatchList);  
                     playerSelectionChanged();
                     break;
@@ -477,6 +468,19 @@
                     break;
                 default:
                     break;
+            }
+        }
+
+        function selectDefaultPlayer() {
+            const yourName = document.getElementById('yourNameSetting').value;
+            if (yourName) {
+                const playerOptions = document.getElementById("playerName").options;
+                for (let i = 0; i < playerOptions.length; i++) {
+                    if (playerOptions[i].value === yourName) {
+                        playerOptions[i].selected = true;
+                        break;
+                    }
+                }
             }
         }
 
@@ -547,7 +551,6 @@
                 } else {
                     console.log('Failed to fetch Match List!');
                 }
-                document.getElementById("fetchMatchList").blur();
             })
             .catch(error => console.error('Error:', error));
 
@@ -760,8 +763,8 @@
             rankingListSelectionChanged();
         }
 
-        // Populate the Player List
-        function populatePlayerList() {
+        // Populate the Player Match List
+        function populatePlayerMatchList() {
             if (matchRecords.length === 0) {
                 alert('Fetch Match List first!');
                 return;
@@ -823,10 +826,6 @@
                     document.getElementById(divName).innerHTML = marked.parse(fileContent);
                 } else {
                     console.log(`Failed to fetch file ${fileName}.md!`);
-                }
-                
-                if(fileName === 'RatingList')  {
-                    document.getElementById("refreshRatingList").blur();
                 }
             })
             .catch(error => console.error('Error:', error));
@@ -890,9 +889,9 @@
 
         // Add DOM Content Loaded Event Listener
         document.addEventListener("DOMContentLoaded", () => {
+            fetchFrequentPlayers();
             refreshRatingListTitle();
             refreshRatingList();
-            fetchFrequentPlayers();
             fetchMatchList();
 
             fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
@@ -953,10 +952,19 @@
             const intervalSelection = localStorage.getItem('intervalSelection') || 'Daily';
             const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
 
-            document.getElementById('yourNameSetting').value = yourName;
             document.getElementById('defaultIntervalSetting').value = defaultInterval;
             document.getElementById('intervalSelection').value = intervalSelection;
+
             document.getElementById('rankingListSelection').value = rankingListSelection;
+            const element = document.getElementById("playerNameInput");
+            if (rankingListSelection === "playerInfo") {
+                element.style.display = "flex"; // Show the element
+            } else {
+                element.style.display = "none"; // Hide the element
+            }
+
+            document.getElementById('yourNameSetting').value = yourName;
+            selectDefaultPlayer();
         }
 
         document.addEventListener('DOMContentLoaded', loadSettings);
