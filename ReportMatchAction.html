@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BKK BG Rating List</title>
-    <!--   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
         body {
@@ -454,7 +453,6 @@
                     createLastTimeActiveRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
                     break;
                 case 'playerInfo':
-                    selectDefaultPlayer();
                     playerSelectionChanged();
                     break;
                 case 'rangliste':
@@ -474,6 +472,9 @@
                         playerOptions[i].selected = true;
                         break;
                     }
+                }
+                if ( document.getElementById('rankingListSelection').value === 'playerInfo') {
+                    playerSelectionChanged();
                 }
             }
         }
@@ -733,7 +734,6 @@
         // Populate the Played Time Span List
         function populatePlayedTimeSpanMatchList() {
             if (matchRecords.length === 0) {
-                alert('Fetch Match List first!');
                 return;
             }
 
@@ -760,7 +760,6 @@
         // Populate the Player Match List
         function populatePlayerMatchList() {
             if (matchRecords.length === 0) {
-                alert('Fetch Match List first!');
                 return;
             }
 
@@ -874,6 +873,7 @@
                     document.getElementById("winnerName").innerHTML = playerOptions;
                     document.getElementById("loserName").innerHTML = playerOptions;
                     document.getElementById("playerName").innerHTML = playerOptions;
+                    selectDefaultPlayer();
                 } else {
                     console.log('Failed to fetch Frequent Players!');
                 }
@@ -944,7 +944,6 @@
             // Player Name Selection
             const yourName = localStorage.getItem('yourName') || '';
             document.getElementById('yourNameSetting').value = yourName;
-            selectDefaultPlayer();
 
             // Ranking List Selection
             const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
