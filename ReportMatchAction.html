@@ -436,30 +436,29 @@
 
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'percentMatchesWon': 
-                    createPercentMatchesWonRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
+                    createPercentMatchesWonRankingList('playedTimeSpanSummary', playerSummary);
                     break;
                 case 'currentStreak':
-                    createCurrentStreakRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
+                    createCurrentStreakRankingList('playedTimeSpanSummary', playerSummary);
                     break;
                 case 'longestWinningStreak':
-                    createLongestWinningStreakRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
+                    createLongestWinningStreakRankingList('playedTimeSpanSummary', playerSummary);
                     break;
                 case 'longestLosingStreak':
-                    createLongestLosingStreakRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
+                    createLongestLosingStreakRankingList('playedTimeSpanSummary', playerSummary);
                     break;
                 case 'matchesPlayed':
-                    createMatchesPlayedRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
+                    createMatchesPlayedRankingList('playedTimeSpanSummary', playerSummary);
                     break;
                 case 'daysInactive':
-                    createLastTimeActiveRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
+                    createLastTimeActiveRankingList('playedTimeSpanSummary', playerSummary);
                     break;
                 case 'playerInfo':
                     selectDefaultPlayer();
-                    summarizeMatchList(playedTimeSpanMatchList);  
                     playerSelectionChanged();
                     break;
                 case 'rangliste':
-                    createRanglisteRankingList('playedTimeSpanSummary', summarizeMatchList(playedTimeSpanMatchList));
+                    createRanglisteRankingList('playedTimeSpanSummary', playerSummary);
                     break;
                 default:
                     break;
@@ -552,9 +551,10 @@
             rankingListSelectionChanged();
         }
 
+
+        const playerSummary = {};
         // Summarize the Match List
         function summarizeMatchList(matchList) {
-            const playerSummary = {};
 
             var matchRecords = matchList.split("\n");
 
@@ -752,6 +752,7 @@
                 }
             }
             document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playedTimeSpanMatchList);
+            summarizeMatchList(playedTimeSpanMatchList);
 
             rankingListSelectionChanged();
         }
