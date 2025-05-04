@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BKK BG Rating Chart</title>
+    <title>BKK BG Ranking Charts</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
         body {
@@ -43,7 +43,7 @@
             height: auto !important; /* Maintain aspect ratio */
         }
         
-        /* Ensure the container takes up 100% of the viewport height in landscape mode */
+        /* Ensure the container takes up 80% of the viewport height in landscape mode */
         @media (orientation: landscape) {
             .container-fluid {
                 position: relative; 
@@ -120,12 +120,12 @@
             </select>
         </div>
 
-        <div class="container-fluid">
-            <canvas id="ranglisteStatsChart"></canvas>
+        <div class="container-fluid" id="ranglistenChartDiv">
+            <canvas id="ranglistenChart"></canvas>
         </div>
 
-        <div class="container-fluid">
-            <canvas id="matchedStatsChart"></canvas>
+        <div class="container-fluid" id="matchesStatsChartDiv">
+            <canvas id="matchesStatsChart"></canvas>
         </div>
 
         <div id="playedTimeSpanSummary"></div>
@@ -175,14 +175,22 @@
 
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'matchesPlayed':
+                    displayElement('ranglistenChartDiv', false);
+                    displayElement('matchesStatsChartDiv', true);
                     createOrUpdateMatchesPlayedChart(playedTimeSpanSummary);
                     createMatchesPlayedRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
                     break;
                 case 'percentMatchesWon': 
+                    displayElement('ranglistenChartDiv', false);
+                    displayElement('matchesStatsChartDiv', true);
                     createOrUpdateMatchesPlayedChart(playedTimeSpanSummary);
                     createPercentMatchesWonRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
                     break;
                 case 'rangliste':
+                    displayElement('ranglistenChartDiv', true);
+                    displayElement('matchesStatsChartDiv', false);
+                    createOrUpdateRanglistenChart(playedTimeSpanSummary);
+
                     createRanglisteRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
                     break;
                 default:
@@ -445,6 +453,15 @@
             collapseElement.classList.toggle('show');
         });
 
+        function displayElement(elementName, showElement) {
+            const element = document.getElementById(elementName);
+            if (showElement) {
+                element.style.display = "flex"; // Show the element
+            } else {
+                element.style.display = "none"; // Hide the element
+            }
+        }
+
     </script>
         
     <!-- Settings handling -->
@@ -484,9 +501,9 @@
     <script>
 
         // Function to create or update the matches chart
-        let matchedStatsChart;
+        let matchesStatsChart;
         function createOrUpdateMatchesPlayedChart(matchListSummary) {
-            const ctx = document.getElementById('matchedStatsChart').getContext('2d');
+            const ctx = document.getElementById('matchesStatsChart').getContext('2d');
 
             // Extract data for the chart
             const players = document.getElementById('rankingListSelection').value === 'matchesPlayed' ?
@@ -498,14 +515,14 @@
             const matchesLost = players.map(player => matchListSummary[player].matchesLost);
 
             // If the chart already exists, update its data
-            if (matchedStatsChart) {
-                matchedStatsChart.data.labels = players;
-                matchedStatsChart.data.datasets[0].data = matchesWon;
-                matchedStatsChart.data.datasets[1].data = matchesLost;
-                matchedStatsChart.update(); // Update the chart
+            if (matchesStatsChart) {
+                matchesStatsChart.data.labels = players;
+                matchesStatsChart.data.datasets[0].data = matchesWon;
+                matchesStatsChart.data.datasets[1].data = matchesLost;
+                matchesStatsChart.update(); // Update the chart
             } else {
                 // Create the chart if it doesn't exist
-                matchedStatsChart = new Chart(ctx, {
+                matchesStatsChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: players, // Player names
@@ -513,8 +530,8 @@
                             {
                                 label: 'Matches Won',
                                 data: matchesWon,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
                                 borderWidth: 1
                             },
                             {
@@ -554,6 +571,93 @@
                                 title: {
                                     display: true,
                                     text: 'Number of Matches'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+
+
+            // Function to create or update the matches chart
+        let ranglistenChart;
+        function createOrUpdateRanglistenChart(matchListSummary) {
+            const ctx = document.getElementById('ranglistenChart').getContext('2d');
+
+            // Extract data for the chart
+            const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].punkte - matchListSummary[a].punkte);
+            
+            const punkteWon = players.map(player => matchListSummary[player].punkteWon);
+            const punkteBonus = players.map(player => matchListSummary[player].punkteBonus);
+            const punkteLost = players.map(player => matchListSummary[player].punkteLost);
+
+            // If the chart already exists, update its data
+            if (ranglistenChart) {
+                ranglistenChart.data.labels = players;
+                ranglistenChart.data.datasets[0].data = punkteWon;
+                ranglistenChart.data.datasets[1].data = punkteBonus;
+                ranglistenChart.data.datasets[2].data = punkteLost;
+                ranglistenChart.update(); // Update the chart
+            } else {
+                // Create the chart if it doesn't exist
+                ranglistenChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: players, // Player names
+                        datasets: [
+                            {
+                                label: 'Punkte Won',
+                                data: punkteWon,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Punkte Bonus',
+                                data: punkteWon,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Punkte Lost',
+                                data: punkteLost,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Allow the chart to resize freely
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Ranglisten Statistics'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                stacked: true,
+                                ticks: {
+                                    autoSkip: false, // Ensure all labels are displayed
+                                    maxRotation: 90, // Rotate labels if needed to fit
+                                    minRotation: 45  // Minimum rotation angle
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                stacked: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Punkte'
                                 }
                             }
                         }
