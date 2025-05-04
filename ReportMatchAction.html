@@ -155,7 +155,7 @@
                 <option class="centered" value="rangliste">Rangliste</option>
             </select>
         </div>
-        <div class="input-group" id="playerNameInput" style="display:none">
+        <div class="input-group" id="playerNameSelection" style="display:none">
             <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
                 <option value="Select">Select</option>
             </select>
@@ -165,7 +165,7 @@
                 <option class="centered" value="Daily">Daily</option>
                 <option class="centered" value="Monthly">Monthly</option>
                 <option class="centered" value="Yearly">Yearly</option>
-                <option class="centered" value="Eternally">Eternally</option>
+                <option class="centered" value="ET">ET</option>
             </select>
             <select class="form-select" style="flex: 0 0 60%;" title="Played Time Span Selection" id="timeSpanSelection" onchange="playedTimeSpanSelectionChanged()">
                 <option class="centered" value="Fetch Matches">Fetch Matches</option>
@@ -176,7 +176,7 @@
 
         <p style="text-align: center;">
             <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanMatchList" aria-expanded="false" aria-controls="playedTimeSpanMatchList">
-                Match List 🡙
+                Match List ⇅
             </h5>
         </p>
         <div class="collapse" id="playedTimeSpanMatchList"></div>
@@ -186,18 +186,13 @@
         <hr class="rounded">
         <div class="container">
             <h3 id="settingsToggleButton" type="button" data-toggle="collapse" data-target="#settingsSection" aria-expanded="false" aria-controls="settingsSection">
-                ⚙ Settings 🡙
+                ⚙ Settings ⇅
             </button></h3>
             <div class="collapse" id="settingsSection">
                 <div class="input-group">
                     <span class="input-group-text">Your Name</span>
                     <input type="text" class="form-control centered" id="yourNameSetting" placeholder="Enter your name">
                 </div>
-                <div class="input-group">
-                    <span class="input-group-text">Default Interval</span>
-                    <input type="text" class="form-control centered" id="defaultIntervalSetting" placeholder="Enter default interval settings">
-                </div>
-                <p class="centered">MP %MW CS >WS >LS DI PI RL</p>
                 <button class="btn btn-primary mt-3" id="saveSettingsButton">Save Settings</button>
             </div>
         </div>
@@ -492,7 +487,7 @@
             let interval = document.getElementById("intervalSelection").value;
             const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
             const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-            const intervalLengths = {"Daily":10, "Monthly":7, "Yearly":4, "Eternally":0};
+            const intervalLengths = {"Daily":10, "Monthly":7, "Yearly":4, "ET":0};
             const selectedIntervalLength = intervalLengths[interval];
 
             var matchDays = 0;
@@ -589,9 +584,7 @@
                     
                     // Increment played/won/lost counts
                     const datetime = new Date(matchDate);
-                    let bonusPunkte = 0;  // for playing any day
-                    if (datetime.getDay() == 3) bonusPunkte = 3;  // for playing on Wednesday
-                    else if (datetime.getDay() == 6) bonusPunkte = 5;  // for playing on Saturday
+                    let bonusPunkte = datetime.getDay() == 6 ? 5 : 0;  // for playing on Saturday
 
                     // winner
                     playerSummary[winner].played++;
@@ -921,7 +914,7 @@
 
         // show/hide the player name input
         document.getElementById("rankingListSelection").addEventListener("change", function () {
-            const element = document.getElementById("playerNameInput");
+            const element = document.getElementById("playerNameSelection");
             if (this.value === "playerInfo") {
                 element.style.display = "flex"; // Show the element
             } else {
@@ -947,39 +940,44 @@
     <script>
         // Load settings from localStorage
         function loadSettings() {
+            // Player Name Selection
             const yourName = localStorage.getItem('yourName') || '';
-            const defaultInterval = localStorage.getItem('defaultInterval') || 'D M Y Y Y Y E Y';
-            const intervalSelection = localStorage.getItem('intervalSelection') || 'Daily';
+            document.getElementById('yourNameSetting').value = yourName;
+            selectDefaultPlayer();
+
+            // Ranking List Selection
             const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
-
-            document.getElementById('defaultIntervalSetting').value = defaultInterval;
-            document.getElementById('intervalSelection').value = intervalSelection;
-
             document.getElementById('rankingListSelection').value = rankingListSelection;
-            const element = document.getElementById("playerNameInput");
+
+            // Expand/Collapse the Player Name Selection depending on the Ranking List Selection
+            const element = document.getElementById("playerNameSelection");
             if (rankingListSelection === "playerInfo") {
                 element.style.display = "flex"; // Show the element
             } else {
                 element.style.display = "none"; // Hide the element
             }
 
-            document.getElementById('yourNameSetting').value = yourName;
-            selectDefaultPlayer();
+            // Interval Selection
+            const intervalSelection = localStorage.getItem('intervalSelection') || 'Daily';
+            document.getElementById('intervalSelection').value = intervalSelection;
         }
 
+        // load the settings once the DOM is ready
         document.addEventListener('DOMContentLoaded', loadSettings);
 
         // Save settings to localStorage
         function saveSettings() {
+            // Player Name Selection
             const yourName = document.getElementById('yourNameSetting').value;
-            const defaultInterval = document.getElementById('defaultIntervalSetting').value;
-            const intervalSelection = document.getElementById('intervalSelection').value;
-            const rankingListSelection = document.getElementById('rankingListSelection').value;
-
             localStorage.setItem('yourName', yourName);
-            localStorage.setItem('defaultInterval', defaultInterval);
-            localStorage.setItem('intervalSelection', intervalSelection);
+
+            // Ranking List Selection
+            const rankingListSelection = document.getElementById('rankingListSelection').value;
             localStorage.setItem('rankingListSelection', rankingListSelection);
+
+            // Interval Selection
+            const intervalSelection = document.getElementById('intervalSelection').value;
+            localStorage.setItem('intervalSelection', intervalSelection);
         }
 
         // Save the settings when the button is clicked
