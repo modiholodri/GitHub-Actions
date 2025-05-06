@@ -312,17 +312,20 @@
                     
                     // Increment played/won/lost counts
                     const datetime = new Date(matchDate);
-                    let bonusPunkte = datetime.getDay() == 6 ? 5 : 0;  // for playing on Saturday
+                    const isSaturday = datetime.getDay() == 6;
+                    let bonusPunkte = isSaturday ? 5 : 0;  // for playing on Saturday
 
                     // winner
                     matchListSummary[winner].matchesPlayed++;
                     matchListSummary[winner].matchesWon++;
 
-                    matchListSummary[winner].punkte += +matchLength;
-                    matchListSummary[winner].punkteWon += +matchLength;
-                    if (matchListSummary[winner].lastDateActive !== matchDate) {
-                        matchListSummary[winner].punkte += bonusPunkte;
-                        matchListSummary[winner].punkteBonus += bonusPunkte;
+                    if (isSaturday) {
+                        matchListSummary[winner].punkte += +matchLength;
+                        matchListSummary[winner].punkteWon += +matchLength;
+                        if (matchListSummary[winner].lastDateActive !== matchDate) {
+                            matchListSummary[winner].punkte += bonusPunkte;
+                            matchListSummary[winner].punkteBonus += bonusPunkte;
+                        }
                     }
                     matchListSummary[winner].lastDateActive = matchDate;
 
@@ -330,10 +333,12 @@
                     matchListSummary[loser].matchesPlayed++;
                     matchListSummary[loser].matchesLost++;
 
-                    matchListSummary[loser].punkteLost += +matchLength;
-                    if (matchListSummary[loser].lastDateActive !== matchDate) {
-                        matchListSummary[loser].punkte += bonusPunkte;
-                        matchListSummary[loser].punkteBonus += bonusPunkte;
+                    if (isSaturday) {
+                        matchListSummary[loser].punkteLost += +matchLength;
+                        if (matchListSummary[loser].lastDateActive !== matchDate) {
+                            matchListSummary[loser].punkte += bonusPunkte;
+                            matchListSummary[loser].punkteBonus += bonusPunkte;
+                        }
                     }
                     matchListSummary[loser].lastDateActive = matchDate;
                 }
