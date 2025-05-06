@@ -7,6 +7,11 @@
     <meta http-equiv="expires" max-age="86400">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
         body {
             background-color: #0d0064;
             color: #ffffff;
@@ -38,20 +43,21 @@
         tr:nth-child(odd) {
             background-color: #1600a8;
         }
+
         canvas {
             display: block; /* Prevent inline-block spacing issues */
             width: 100% !important; /* Force the canvas to take up the full width */
-            height: 60vh !important; /* Maintain aspect ratio */
+            height: 100% !important; /* Maintain aspect ratio */
+            padding: 0;
         }
-        
-        /* Ensure the container takes up 80% of the viewport height in landscape mode */
-        @media (orientation: landscape) {
-            .container-fluid {
-                position: relative; 
-                width: 100%; 
-                height: 80vh; /* Set height based on the viewport height */
-            }
+        .container-fluid {
+            position: relative; 
+            width: 100%; 
+            height: 80vh; /* Set height based on the viewport height */
+            margin: 0;
+            padding: 0;
         }
+
         .container {
             margin-top: 15px;
         }
@@ -675,7 +681,7 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Ranglisten Statistics'
+                                text: 'Ranglisten Punkte'
                             }
                         },
                         scales: {
