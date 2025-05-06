@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>BKK BG Rating List</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BKK BG Rating List</title>
+    <meta http-equiv="expires" max-age="86400">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
         body {
@@ -84,8 +85,11 @@
         <h1 id="ratingListTitle">Bangkok BG</h1>
 
         <!-- Match Report -->
-        <h3>Match Report</h3>
-        <form id="matchForm">
+        <h3 id="matchReportFormToggleButton" type="button" data-toggle="collapse" data-target="#matchReportForm" aria-expanded="false" aria-controls="matchReportForm">
+            Match Report ⇅
+        </h3>
+
+        <form id="matchReportForm" class="collapse">
             <!-- Winner -->
             <div class="input-group">
                 <span class="input-group-text" id="winnerLabel">Winner</span>
@@ -121,14 +125,13 @@
                 <input type="text" title="Match Length" class="form-control" id="matchLengthTyped" value="">
                 <button type="submit" id="submit" class="btn btn-primary float-right">Submit</button>
             </div>
+            <!-- Submission Status -->
+            <h5 id="updateSubmissionStatus" type="button">Submission Status ⟳</h5>
+            <div id="statuses">
+                <p id="submissionStatus" style="text-align: center"></p>
+                <h5 id="runsInfo"></h5>
+            </div>
         </form>
-
-        <!-- Submission Status -->
-        <h5 id="updateSubmissionStatus" type="button">Submission Status ⟳</h5>
-        <div id="statuses">
-            <p id="submissionStatus" style="text-align: center"></p>
-            <h5 id="runsInfo"></h5>
-        </div>
 
 
         <!-- Rating List -->
@@ -173,11 +176,9 @@
 
         <div id="playedTimeSpanSummary"></div>
 
-        <p style="text-align: center;">
-            <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanMatchList" aria-expanded="false" aria-controls="playedTimeSpanMatchList">
-                Match List ⇅
-            </h5>
-        </p>
+        <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanMatchList" aria-expanded="false" aria-controls="playedTimeSpanMatchList">
+            Match List ⇅
+        </h5>
         <div class="collapse" id="playedTimeSpanMatchList"></div>
 
 
@@ -268,7 +269,7 @@
         }
 
         // Submit a match report
-        document.getElementById('matchForm').addEventListener('submit', async (e) => {
+        document.getElementById('matchReportForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             // get the winner name
@@ -913,6 +914,12 @@
             fetchMatchList();
         }
 
+        // show/hide the match report form
+        document.getElementById('matchReportFormToggleButton').addEventListener('click', function() {
+            const collapseElement = document.getElementById('matchReportForm');
+            collapseElement.classList.toggle('show');
+        });
+
         // show/hide the player name input
         document.getElementById("rankingListSelection").addEventListener("change", function () {
             const element = document.getElementById("playerNameSelection");
@@ -925,13 +932,13 @@
 
         // show/hide the time span match list
         document.getElementById('playedTimeSpanMatchListToggleButton').addEventListener('click', function() {
-            var collapseElement = document.getElementById('playedTimeSpanMatchList');
+            const collapseElement = document.getElementById('playedTimeSpanMatchList');
             collapseElement.classList.toggle('show');
         });
 
         // show/hide the settings section
         document.getElementById('settingsToggleButton').addEventListener('click', function() {
-            var collapseElement = document.getElementById('settingsSection');
+            const collapseElement = document.getElementById('settingsSection');
             collapseElement.classList.toggle('show');
         });
 
@@ -941,13 +948,22 @@
     <script>
         // Load settings from localStorage
         function loadSettings() {
-            // Player Name Selection
-            const yourName = localStorage.getItem('yourName') || '';
-            document.getElementById('yourNameSetting').value = yourName;
+            // Match Report Form Collapse State
+            const matchReportFormState = localStorage.getItem('matchReportFormState') || 'expanded';
+            const matchReportForm = document.getElementById('matchReportForm');
+            if (matchReportFormState === 'expanded') {
+                matchReportForm.classList.add('show');
+            } else {
+                matchReportForm.classList.remove('show');
+            }
 
             // Ranking List Selection
             const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
             document.getElementById('rankingListSelection').value = rankingListSelection;
+
+            // Player Name Selection
+            const yourName = localStorage.getItem('yourName') || '';
+            document.getElementById('yourNameSetting').value = yourName;
 
             // Expand/Collapse the Player Name Selection depending on the Ranking List Selection
             const element = document.getElementById("playerNameSelection");
@@ -967,13 +983,17 @@
 
         // Save settings to localStorage
         function saveSettings() {
-            // Player Name Selection
-            const yourName = document.getElementById('yourNameSetting').value;
-            localStorage.setItem('yourName', yourName);
+            // Match Report Form Collapse State
+            const matchReportFormCollapsed = document.getElementById('matchReportForm').classList.contains('show') ? 'expanded' : 'collapsed';
+            localStorage.setItem('matchReportFormState', matchReportFormCollapsed);
 
             // Ranking List Selection
             const rankingListSelection = document.getElementById('rankingListSelection').value;
             localStorage.setItem('rankingListSelection', rankingListSelection);
+
+            // Player Name Selection
+            const yourName = document.getElementById('yourNameSetting').value;
+            localStorage.setItem('yourName', yourName);
 
             // Interval Selection
             const intervalSelection = document.getElementById('intervalSelection').value;
