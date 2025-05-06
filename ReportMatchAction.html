@@ -85,7 +85,7 @@
         <h1 id="ratingListTitle">Bangkok BG</h1>
 
         <!-- Match Report -->
-        <h3 id="matchReportFormToggleButton" type="button" data-toggle="collapse" data-target="#matchReportForm" aria-expanded="false" aria-controls="matchReportForm">
+        <h3 id="matchReportFormToggleButton" type="button" data-toggle="collapse" data-target="#matchReportForm" aria-expanded="true" aria-controls="matchReportForm">
             Match Report ⇅
         </h3>
 
@@ -136,8 +136,10 @@
 
         <!-- Rating List -->
         <hr class="rounded">
-        <h3 id="refreshRatingList" type="button">Rating List ⟳</h3>
-        <div id="ratingList"></div>
+        <h3 id="ratingListToggleButton" type="button" data-toggle="collapse" data-target="#ratingList" aria-expanded="true" aria-controls="ratingList">
+            Rating List ⇅
+        </h3>
+        <div id="ratingList" class="collapse"></div>
 
 
         <!-- Ranking Lists -->
@@ -904,11 +906,6 @@
             setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
         });
 
-        // Refresh the Rating List
-        document.getElementById('refreshRatingList').onclick = function() {
-            refreshRatingList();
-        };
-
         // Fetch the Match List
         document.getElementById('fetchMatchList').onclick = function() {
             fetchMatchList();
@@ -920,14 +917,16 @@
             collapseElement.classList.toggle('show');
         });
 
+        // show/hide the Rating List
+        document.getElementById('ratingListToggleButton').addEventListener('click', function() {
+            const collapseElement = document.getElementById('ratingList');
+            collapseElement.classList.toggle('show');
+        });
+
         // show/hide the player name input
         document.getElementById("rankingListSelection").addEventListener("change", function () {
             const element = document.getElementById("playerNameSelection");
-            if (this.value === "playerInfo") {
-                element.style.display = "flex"; // Show the element
-            } else {
-                element.style.display = "none"; // Hide the element
-            }
+            this.value === "playerInfo" ? element.style.display = "flex" : element.style.display = "none";
         });
 
         // show/hide the time span match list
@@ -951,11 +950,12 @@
             // Match Report Form Collapse State
             const matchReportFormState = localStorage.getItem('matchReportFormState') || 'expanded';
             const matchReportForm = document.getElementById('matchReportForm');
-            if (matchReportFormState === 'expanded') {
-                matchReportForm.classList.add('show');
-            } else {
-                matchReportForm.classList.remove('show');
-            }
+            matchReportFormState === 'expanded' ? matchReportForm.classList.add('show') : matchReportForm.classList.remove('show');
+
+            // Match Report Form Collapse State
+            const ratingListState = localStorage.getItem('matchReportFormState') || 'expanded';
+            const ratingList = document.getElementById('ratingList');
+            ratingListState === 'expanded' ? ratingList.classList.add('show') : ratingList.classList.remove('show');
 
             // Ranking List Selection
             const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
@@ -986,6 +986,10 @@
             // Match Report Form Collapse State
             const matchReportFormCollapsed = document.getElementById('matchReportForm').classList.contains('show') ? 'expanded' : 'collapsed';
             localStorage.setItem('matchReportFormState', matchReportFormCollapsed);
+
+            // Match Report Form Collapse State
+            const ratingListCollapsed = document.getElementById('ratingList').classList.contains('show') ? 'expanded' : 'collapsed';
+            localStorage.setItem('ratingListState', ratingListCollapsed);
 
             // Ranking List Selection
             const rankingListSelection = document.getElementById('rankingListSelection').value;
