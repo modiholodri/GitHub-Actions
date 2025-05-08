@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>BKK BG Rating List</title>
+    <title>Bangkok Backgammon</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="expires" max-age="86400">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
         body {
             background-color: #0d0064;
             color: #ffffff;
@@ -37,6 +42,18 @@
 
         tr:nth-child(odd) {
             background-color: #1600a8;
+        }
+
+        canvas {
+            display: block; /* Prevent inline-block spacing issues */
+            padding: 0;
+            height: auto; /* Adjust height automatically based on content */
+        }
+        .container-fluid {
+            position: relative; 
+            width: 100%; 
+            margin: 0;
+            padding: 0;
         }
 
         .container {
@@ -151,12 +168,12 @@
             <select class="form-select" title="Ranking List Selection" id="rankingListSelection" onchange="rankingListSelectionChanged()">
                 <option class="centered" value="matchesPlayed">Matches Played</option>
                 <option class="centered" value="percentMatchesWon">% Matches Won</option>
+                <option class="centered" value="rangliste">Rangliste</option>
+                <option class="centered" value="playerInfo">Player Info</option>
                 <option class="centered" value="currentStreak">Current Streak</option>
                 <option class="centered" value="longestWinningStreak">> Winning Streak</option>
                 <option class="centered" value="longestLosingStreak">> Losing Streak</option>
                 <option class="centered" value="daysInactive">Days Inactive</option>
-                <option class="centered" value="playerInfo">Player Info</option>
-                <option class="centered" value="rangliste">Rangliste</option>
             </select>
         </div>
         <div class="input-group" id="playerNameSelection" style="display:none">
@@ -176,7 +193,22 @@
             </select>
         </div>
 
-        <div id="playedTimeSpanSummary"></div>
+        <h5 id="rankingChartToggleButton" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
+            Ranking Chart ⇅
+        </h5>
+        <div class="collapse" id="rankingChart">
+            <div class="container-fluid" id="ranglistenChartDiv">
+                <canvas id="ranglistenChart"></canvas>
+            </div>
+            <div class="container-fluid" id="matchesStatsChartDiv">
+                <canvas id="matchesStatsChart"></canvas>
+            </div>
+        </div>
+
+        <h5 id="rankingSummaryToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanSummary" aria-expanded="false" aria-controls="playedTimeSpanSummary">
+            Ranking Summary ⇅
+        </h5>
+        <div class="collapse" id="playedTimeSpanSummary"></div>
 
         <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanMatchList" aria-expanded="false" aria-controls="playedTimeSpanMatchList">
             Match List ⇅
@@ -437,8 +469,27 @@
             document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playedTimeSpanMatchList);
 
             switch ( document.getElementById('rankingListSelection').value) {
+                case 'matchesPlayed':
+                displayElement('ranglistenChartDiv', false);
+                    displayElement('matchesStatsChartDiv', true);
+                    createOrUpdateMatchesPlayedChart(playedTimeSpanSummary);
+                    createMatchesPlayedRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    break;
                 case 'percentMatchesWon': 
+                displayElement('ranglistenChartDiv', false);
+                    displayElement('matchesStatsChartDiv', true);
+                    createOrUpdateMatchesPlayedChart(playedTimeSpanSummary);
                     createPercentMatchesWonRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    break;
+                case 'rangliste':
+                    displayElement('ranglistenChartDiv', true);
+                    displayElement('matchesStatsChartDiv', false);
+                    createOrUpdateRanglistenChart(playedTimeSpanSummary);
+
+                    createRanglisteRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    break;
+                case 'playerInfo':
+                    playerSelectionChanged();
                     break;
                 case 'currentStreak':
                     createCurrentStreakRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
@@ -449,17 +500,8 @@
                 case 'longestLosingStreak':
                     createLongestLosingStreakRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
                     break;
-                case 'matchesPlayed':
-                    createMatchesPlayedRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
-                    break;
                 case 'daysInactive':
                     createLastTimeActiveRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
-                    break;
-                case 'playerInfo':
-                    playerSelectionChanged();
-                    break;
-                case 'rangliste':
-                    createRanglisteRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
                     break;
                 default:
                     break;
@@ -572,40 +614,62 @@
 
                     // Initialize player matchListSummary if not already present
                     if (!matchListSummary[winner]) {
-                        matchListSummary[winner] = { played: 0, lastDateActive: '-',
-                                                  currentStreak: 0,
-                                                  punkte: 0,
-                                                  won: 0, currentWon: 0, longestWon: 0, 
-                                                  lost: 0, currentLost: 0, longestLost: 0 };
+                        matchListSummary[winner] = { lastDateActive: '-',
+                                                     matchesPlayed: 0, matchesWon: 0, matchesLost: 0, 
+                                                     punkte: 0, punkteWon: 0, punkteLost: 0, punkteBonus: 0,
+                                                     currentStreak: 0,
+                                                     currentWon: 0, longestWon: 0, 
+                                                     currentLost: 0, longestLost: 0 };
                     }
                     if (!matchListSummary[loser]) {
-                        matchListSummary[loser] = { played: 0, lastDateActive: '-',
-                                                 currentStreak: 0,
-                                                 punkte: 0,
-                                                 won: 0, currentWon: 0, longestWon: 0, 
-                                                 lost: 0, currentLost: 0, longestLost: 0 };
+                        matchListSummary[loser] = { lastDateActive: '-',
+                                                    matchesPlayed: 0, matchesWon: 0, matchesLost: 0, 
+                                                    punkte: 0, punkteWon: 0, punkteLost: 0, punkteBonus: 0,
+                                                    currentStreak: 0,
+                                                    currentWon: 0, longestWon: 0, 
+                                                    currentLost: 0, longestLost: 0 };
                     }
                     
                     // Increment played/won/lost counts
                     const datetime = new Date(matchDate);
-                    let bonusPunkte = datetime.getDay() == 6 ? 5 : 0;  // for playing on Saturday
+                    const isSaturday = datetime.getDay() == 6;
+                    let bonusPunkte = isSaturday ? 5 : 0;  // for playing on Saturday
 
                     // winner
-                    matchListSummary[winner].played++;
-                    matchListSummary[winner].won++;
+                    matchListSummary[winner].matchesPlayed++;
+                    matchListSummary[winner].matchesWon++;
+
+                    if (isSaturday) {
+                        matchListSummary[winner].punkte += +matchLength;
+                        matchListSummary[winner].punkteWon += +matchLength;
+                        if (matchListSummary[winner].lastDateActive !== matchDate) {
+                            matchListSummary[winner].punkte += bonusPunkte;
+                            matchListSummary[winner].punkteBonus += bonusPunkte;
+                        }
+                    }
+                    matchListSummary[winner].lastDateActive = matchDate;
+
                     matchListSummary[winner].currentLost = 0;
                     matchListSummary[winner].currentWon++;
                     matchListSummary[winner].currentStreak = matchListSummary[winner].currentWon;
                     if (matchListSummary[winner].currentWon > matchListSummary[winner].longestWon) {
                         matchListSummary[winner].longestWon = matchListSummary[winner].currentWon;
                     }
-                    matchListSummary[winner].punkte += +matchLength;
                     if (matchListSummary[winner].lastDateActive !== matchDate) matchListSummary[winner].punkte += bonusPunkte;
-                    matchListSummary[winner].lastDateActive = matchDate;
 
                     // loser
-                    matchListSummary[loser].played++;
-                    matchListSummary[loser].lost++;
+                    matchListSummary[loser].matchesPlayed++;
+                    matchListSummary[loser].matchesLost++;
+
+                    if (isSaturday) {
+                        matchListSummary[loser].punkteLost += +matchLength;
+                        if (matchListSummary[loser].lastDateActive !== matchDate) {
+                            matchListSummary[loser].punkte += bonusPunkte;
+                            matchListSummary[loser].punkteBonus += bonusPunkte;
+                        }
+                    }
+                    matchListSummary[loser].lastDateActive = matchDate;
+
                     matchListSummary[loser].currentWon = 0;
                     matchListSummary[loser].currentLost++;
                     matchListSummary[loser].currentStreak = -matchListSummary[loser].currentLost;
@@ -627,20 +691,20 @@
 
             for (const [player, stats] of Object.entries(playerSummary).sort()) {
                 if (player === vipPlayerName) {
-                    const winPercentage = Math.round(stats.won*100/stats.played);
-                    vipPlayer += `|${player}|${stats.won} - ${stats.lost}|${winPercentage}|${stats.played}|\n`;    
+                    const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
+                    vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${stats.matchesPlayed}|\n`;    
                 }
                 else {
                     opponents[player] = stats;
                 }
             }   
 
-            for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].won/a[1].played)-(b[1].won/b[1].played))) {
-                const winPercentage = Math.round(stats.lost*100/stats.played);
-                opponentsList += `|${stats.lost} - ${stats.won}|${player}|${winPercentage}|${stats.played}|\n`;
+            for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].matchesWon/a[1].matchesPlayed)-(b[1].matchesWon/b[1].matchesPlayed))) {
+                const winPercentage = Math.round(stats.matchesLost*100/stats.matchesPlayed);
+                opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${stats.matchesPlayed}|\n`;
             }
 
-            var playerInfoList = '|   |Result|% Won|Matches|\n|:---:|:---:|:---:|:---:|\n';
+            var playerInfoList = '|   |    |% Won|Matches|\n|:---:|:---:|:---:|:---:|\n';
             playerInfoList += vipPlayer;
             playerInfoList += `|--------|--------|--------|---|---|\n`;
             playerInfoList += opponentsList;
@@ -653,9 +717,9 @@
             var rankingList = '|   |   |% Won|Result|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => (b[1].won/b[1].played)-(a[1].won/a[1].played))) {
-                const winPercentage = Math.round(stats.won*100/stats.played);
-                rankingList += `|${rank++}|${player}|${winPercentage}|${stats.won} - ${stats.lost}|\n`;
+            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => (b[1].matchesWon/b[1].matchesPlayed)-(a[1].matchesWon/a[1].matchesPlayed))) {
+                const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
+                rankingList += `|${rank++}|${player}|${winPercentage}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
@@ -666,7 +730,7 @@
 
             var rank = 1;
             for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak)) {
-                rankingList += `|${rank++}|${player}|${stats.currentStreak}|${stats.won} - ${stats.lost}|\n`;
+                rankingList += `|${rank++}|${player}|${stats.currentStreak}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
@@ -678,7 +742,7 @@
 
             var rank = 1;
             for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].longestWon-a[1].longestWon)) {
-                rankingList += `|${rank++}|${player}|${stats.longestWon}|${stats.won} - ${stats.lost}|\n`;
+                rankingList += `|${rank++}|${player}|${stats.longestWon}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
@@ -689,7 +753,7 @@
 
             var rank = 1;
             for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].longestLost-a[1].longestLost)) {
-                rankingList += `|${rank++}|${player}|${stats.longestLost}|${stats.won} - ${stats.lost}|\n`;
+                rankingList += `|${rank++}|${player}|${stats.longestLost}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
@@ -699,8 +763,8 @@
             var rankingList = '|   |   |Matches|Result|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].played-a[1].played)) {
-                rankingList += `|${rank++}|${player}|${stats.played}|${stats.won} - ${stats.lost}|\n`;
+            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].matchesPlayed-a[1].matchesPlayed)) {
+                rankingList += `|${rank++}|${player}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
@@ -727,7 +791,7 @@
 
             var rank = 1;
             for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].punkte-a[1].punkte)) {
-                rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.won} - ${stats.lost}|\n`;
+                rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
@@ -929,11 +993,32 @@
             this.value === "playerInfo" ? element.style.display = "flex" : element.style.display = "none";
         });
 
-        // show/hide the time span match list
+        // show/hide the Ranking Chart
+        document.getElementById('rankingChartToggleButton').addEventListener('click', function() {
+            const collapseElement = document.getElementById('rankingChart');
+            collapseElement.classList.toggle('show');
+        });
+
+        // show/hide the Ranking Summary
+        document.getElementById('rankingSummaryToggleButton').addEventListener('click', function() {
+            const collapseElement = document.getElementById('playedTimeSpanSummary');
+            collapseElement.classList.toggle('show');
+        });
+
+        // show/hide the time span Match List
         document.getElementById('playedTimeSpanMatchListToggleButton').addEventListener('click', function() {
             const collapseElement = document.getElementById('playedTimeSpanMatchList');
             collapseElement.classList.toggle('show');
         });
+
+        function displayElement(elementName, showElement) {
+            const element = document.getElementById(elementName);
+            if (showElement) {
+                element.style.display = "flex"; // Show the element
+            } else {
+                element.style.display = "none"; // Hide the element
+            }
+        }
 
         // show/hide the settings section
         document.getElementById('settingsToggleButton').addEventListener('click', function() {
@@ -976,6 +1061,16 @@
             // Interval Selection
             const intervalSelection = localStorage.getItem('intervalSelection') || 'Daily';
             document.getElementById('intervalSelection').value = intervalSelection;
+
+            // Ranking Chart Collapse State
+            const rankingChartState = localStorage.getItem('rankingChartState') || 'expanded';
+            const rankingChart = document.getElementById('rankingChart');
+            rankingChartState === 'expanded' ? rankingChart.classList.add('show') : rankingChart.classList.remove('show');
+
+            // Ranking Summary Collapse State
+            const rankingSummaryState = localStorage.getItem('rankingSummaryState') || 'collapsed';
+            const rankingSummary = document.getElementById('playedTimeSpanSummary');
+            rankingSummaryState === 'expanded' ? rankingSummary.classList.add('show') : rankingSummary.classList.remove('show');
         }
 
         // load the settings once the DOM is ready
@@ -987,7 +1082,7 @@
             const matchReportFormCollapsed = document.getElementById('matchReportForm').classList.contains('show') ? 'expanded' : 'collapsed';
             localStorage.setItem('matchReportFormState', matchReportFormCollapsed);
 
-            // Match Report Form Collapse State
+            // Rating List Form Collapse State
             const ratingListCollapsed = document.getElementById('ratingList').classList.contains('show') ? 'expanded' : 'collapsed';
             localStorage.setItem('ratingListState', ratingListCollapsed);
 
@@ -1002,6 +1097,14 @@
             // Interval Selection
             const intervalSelection = document.getElementById('intervalSelection').value;
             localStorage.setItem('intervalSelection', intervalSelection);
+
+            // Ranking Chart Collapse State
+            const rankingChartCollapsed = document.getElementById('rankingChart').classList.contains('show') ? 'expanded' : 'collapsed';
+            localStorage.setItem('rankingChartState', rankingChartCollapsed);
+
+            // Ranking Summary Collapse State
+            const rankingSummaryCollapsed = document.getElementById('playedTimeSpanSummary').classList.contains('show') ? 'expanded' : 'collapsed';
+            localStorage.setItem('rankingSummaryState', rankingSummaryCollapsed);
         }
 
         // Save the settings when the button is clicked
@@ -1011,6 +1114,175 @@
 
         // Save settings to localStorage before the page is unloaded
         window.addEventListener('beforeunload', saveSettings);
+    </script>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // If the chart already exists, destroy it before creating a new one
+        function destroyChart(chart) {
+            if (chart) {
+                chart.destroy();
+                chart = null;
+            }
+        }
+
+        // Dynamically adjust canvas height based on the number of players
+        function optimizeChartHeight(chartName, numberOfPlayers) {
+            const heightPerPlayer = 20; // Height per player in pixels
+            const additionalHeight = 100;
+            const minHeight = additionalHeight + heightPerPlayer; // Minimum height for the canvas
+            const calculatedHeight = Math.max(numberOfPlayers * heightPerPlayer + additionalHeight, minHeight);
+
+            document.getElementById(chartName).height = calculatedHeight;
+        }
+        
+        // Function to create or update the Matches chart
+        let matchesStatsChart;
+        function createOrUpdateMatchesPlayedChart(matchListSummary) {
+            const ctx = document.getElementById('matchesStatsChart').getContext('2d');
+
+            // Extract data for the chart
+            const players = document.getElementById('rankingListSelection').value === 'matchesPlayed' ?
+                            Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].matchesPlayed - matchListSummary[a].matchesPlayed) :
+                            Object.keys(matchListSummary).sort((a, b) => (matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed)-(matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed));
+            if (players.length < 1) return;
+            const matchesWon = players.map(player => matchListSummary[player].matchesWon);
+            const matchesLost = players.map(player => matchListSummary[player].matchesLost);
+
+            destroyChart(matchesStatsChart);
+            optimizeChartHeight('matchesStatsChart', players.length);
+
+            // Create the chart if it doesn't exist
+            matchesStatsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: players, // Player names
+                    datasets: [
+                        {
+                            label: 'Won',
+                            data: matchesWon,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Lost',
+                            data: matchesLost,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y', // Set the chart to horizontal
+                    responsive: true,
+                    maintainAspectRatio: false, // Allow the chart to resize freely
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            stacked: true,
+                            position: 'top', // Move the axis label to the top
+                            title: {
+                                display: true,
+                                text: 'Matches',
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            ticks: {
+                                autoSkip: false
+                            },
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to create or update the Ranglisten chart
+        let ranglistenChart;
+        function createOrUpdateRanglistenChart(matchListSummary) {
+            const ctx = document.getElementById('ranglistenChart').getContext('2d');
+
+            // Extract data for the chart
+            const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].punkte - matchListSummary[a].punkte);
+            if (players.length < 1) return;
+            const punkteWon = players.map(player => matchListSummary[player].punkteWon);
+            const punkteBonus = players.map(player => matchListSummary[player].punkteBonus);
+            const punkteLost = players.map(player => matchListSummary[player].punkteLost);
+
+            destroyChart(ranglistenChart);
+            optimizeChartHeight('ranglistenChart', players.length);
+
+            // Create the chart
+            ranglistenChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: players, // Player names
+                    datasets: [
+                        {
+                            label: 'Won',
+                            data: punkteWon,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Bonus',
+                            data: punkteBonus,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Lost',
+                            hidden: true,
+                            data: punkteLost,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y', // Set the chart to horizontal
+                    responsive: true,
+                    maintainAspectRatio: false, // Allow the chart to resize freely
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            stacked: true,
+                            position: 'top',
+                            title: {
+                                display: true,
+                                text: 'Punkte',
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            ticks: {
+                                autoSkip:false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
