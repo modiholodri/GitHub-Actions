@@ -243,17 +243,16 @@
         <!-- Submission Test -->
         <hr class="rounded">
         <h3>Submission Test</h3>
-        <p>To test/exercise match submissions you can change to a Fake Rating List below.
-           It should work the same as the BKK BG Rating List, but matches will be cleared from time to time.
+        <p>To test/exercise match submissions you can change to a Fake Backgammon club below.
+           It should work the same as the Bangkok Backgammon club, but matches will be cleared from time to time.
            To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
         </p>
-        <p>Warning: After this page is refreshed the selection will change back to the actual BKK BG Rating List.</p>
+        <p>Warning: After this page is refreshed the selection will change back to the actual Bangkok Backgammon club.</p>
         <div class="input-group">
             <span class="input-group-text">Rating List</span>
-            <!-- <input type="text" title="Spacer" class="form-control" id="spacer" value=""> -->
             <select class="form-select" title="Rating List Selection" id="ratingListSelection" onchange="ratingListSelectionChanged()">
-                <option class="centered" value="bkk-bg-rating-list">BKK BG Rating</option>
-                <option class="centered" value="GitHub-Actions">Fake Rating</option>
+                <option class="centered" value="bkk-bg-rating-list">Bangkok Backgammon</option>
+                <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
             </select>
         </div>
         <p><br></p>
@@ -1038,7 +1037,7 @@
             matchReportFormState === 'expanded' ? matchReportForm.classList.add('show') : matchReportForm.classList.remove('show');
 
             // Match Report Form Collapse State
-            const ratingListState = localStorage.getItem('matchReportFormState') || 'expanded';
+            const ratingListState = localStorage.getItem('ratingListState') || 'expanded';
             const ratingList = document.getElementById('ratingList');
             ratingListState === 'expanded' ? ratingList.classList.add('show') : ratingList.classList.remove('show');
 
