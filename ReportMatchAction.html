@@ -102,33 +102,33 @@
         <h1 id="webPageTitle">Bangkok Backgammon</h1>
 
         <!-- Match Report -->
-        <h3 id="matchReportFormToggleButton" type="button" data-toggle="collapse" data-target="#matchReportForm" aria-expanded="true" aria-controls="matchReportForm">
+        <h3 id="matchReportFormToggle" type="button" data-toggle="collapse" data-target="#matchReportForm" aria-expanded="true" aria-controls="matchReportForm">
             Match Report ⇅
         </h3>
 
         <form id="matchReportForm" class="collapse">
             <!-- Winner -->
             <div class="input-group">
-                <span class="input-group-text" id="winnerLabel">Winner</span>
-                <select class="form-select" title="Winner Name" id="winnerName">
+                <span id="winnerLabel" class="input-group-text">Winner</span>
+                <select id="winnerName" title="Winner Name" class="form-select">
                     <option value="Select or edit">Select</option>
                     <option value="Winner">Winner</option>
                 </select>
-                <input type="text" title="Winner Name" class="form-control" id="winnerNameTyped">
+                <input id="winnerNameTyped" title="Winner Name" type="text" class="form-control">
             </div>
             <!-- Loser -->
             <div class="input-group">
                 <span class="input-group-text">Loser</span>
-                <select class="form-select" title="Loser Name" id="loserName">
+                <select id="loserName" title="Loser Name" class="form-select">
                     <option value="Select or edit">Select</option>
                     <option value="Loser">Loser</option>
                 </select>
-                <input type="text" title="Loser Name" class="form-control" id="loserNameTyped">
+                <input id="loserNameTyped" title="Loser Name" type="text" class="form-control">
             </div>
             <!-- Match Length -->
             <div class="input-group">
                 <span class="input-group-text">Match Length</span>
-                <select class="form-select" title="Match Length" id="matchLength">
+                <select id="matchLength" title="Match Length" class="form-select">
                     <option class="centered" value="1">1</option>
                     <option class="centered" value="3">3</option>
                     <option class="centered" value="5" selected>5</option>
@@ -139,8 +139,8 @@
                     <option class="centered" value="15">15</option>
                     <option class="centered" value="17">17</option>
                 </select>
-                <input type="text" title="Match Length" class="form-control" id="matchLengthTyped" value="">
-                <button type="submit" id="submit" class="btn btn-primary float-right">Submit</button>
+                <input id="matchLengthTyped" title="Match Length" type="text" class="form-control" value="">
+                <button id="submit" type="submit" class="btn btn-primary float-right">Submit</button>
             </div>
             <!-- Submission Status -->
             <h5 id="updateSubmissionStatus" type="button">Submission Status ⟳</h5>
@@ -153,7 +153,7 @@
 
         <!-- Rating List -->
         <hr class="rounded">
-        <h3 id="ratingListToggleButton" type="button" data-toggle="collapse" data-target="#ratingList" aria-expanded="true" aria-controls="ratingList">
+        <h3 id="ratingListToggle" type="button" data-toggle="collapse" data-target="#ratingList" aria-expanded="true" aria-controls="ratingList">
             Rating List ⇅
         </h3>
         <div id="ratingList" class="collapse"></div>
@@ -161,15 +161,15 @@
 
         <!-- Ranking Lists -->
         <hr class="rounded">
-        <h3 id="rankingListsToggleButton" type="button" data-toggle="collapse" data-target="#rankingListsSection" aria-expanded="false" aria-controls="rankingListsSection">
+        <h3 id="rankingListsToggle" type="button" data-toggle="collapse" data-target="#rankingListsSection" aria-expanded="false" aria-controls="rankingListsSection">
             Ranking Lists ⇅
         </h3>
 
-        <div class="collapse" id="rankingListsSection">
+        <div id="rankingListsSection" class="collapse">
 
             <!-- Played Time Span -->
             <div class="input-group">
-                <select class="form-select" title="Ranking List Selection" id="rankingListSelection" onchange="rankingListSelectionChanged()">
+                <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionChanged()">
                     <option class="centered" value="matchesPlayed">Matches Played</option>
                     <option class="centered" value="percentMatchesWon">% Matches Won</option>
                     <option class="centered" value="rangliste">Rangliste</option>
@@ -180,59 +180,59 @@
                     <option class="centered" value="daysInactive">Days Inactive</option>
                 </select>
             </div>
-            <div class="input-group" id="playerNameSelection" style="display:none">
-                <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
+            <div id="playerNameSelection" class="input-group" style="display:none">
+                <select id="playerName" title="Player Name" class="form-select" onchange="playerSelectionChanged()">
                     <option value="Select">Select</option>
                 </select>
             </div>
             <div class="input-group">
-                <select class="form-select" style="flex: 0 0 40%;" title="Interval Selection" id="intervalSelection" onchange="intervalSelectionChanged()">
+                <select id="intervalSelection" title="Interval Selection" class="form-select" style="flex: 0 0 40%;" onchange="intervalSelectionChanged()">
                     <option class="centered" value="Daily">Daily</option>
                     <option class="centered" value="Monthly">Monthly</option>
                     <option class="centered" value="Yearly">Yearly</option>
                     <option class="centered" value="ET">ET</option>
                 </select>
-                <select class="form-select" style="flex: 0 0 60%;" title="Played Time Span Selection" id="timeSpanSelection" onchange="playedTimeSpanSelectionChanged()">
+                <select id="timeSpanSelection" title="Played Time Span Selection" class="form-select" style="flex: 0 0 60%;" onchange="playedTimeSpanSelectionChanged()">
                     <option class="centered" value="Fetch Matches">Fetch Matches</option>
                 </select>
             </div>
 
-            <h5 id="rankingChartToggleButton" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
+            <h5 id="rankingChartToggle" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
                 Ranking Chart ⇅
             </h5>
-            <div class="collapse" id="rankingChart">
-                <div class="container-fluid" id="ranglistenChartDiv">
+            <div id="rankingChart" class="collapse">
+                <div id="ranglistenChartDiv" class="container-fluid">
                     <canvas id="ranglistenChart"></canvas>
                 </div>
-                <div class="container-fluid" id="matchesStatsChartDiv">
+                <div id="matchesStatsChartDiv" class="container-fluid">
                     <canvas id="matchesStatsChart"></canvas>
                 </div>
             </div>
 
-            <h5 id="rankingSummaryToggleButton" type="button" data-toggle="collapse" data-target="#rankingSummary" aria-expanded="false" aria-controls="rankingSummary">
+            <h5 id="rankingSummaryToggle" type="button" data-toggle="collapse" data-target="#rankingSummary" aria-expanded="false" aria-controls="rankingSummary">
                 Ranking Summary ⇅
             </h5>
-            <div class="collapse" id="rankingSummary"></div>
+            <div id="rankingSummary" class="collapse"></div>
 
-            <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#matchList" aria-expanded="false" aria-controls="matchList">
+            <h5 id="playedTimeSpanMatchListToggle" type="button" data-toggle="collapse" data-target="#matchList" aria-expanded="false" aria-controls="matchList">
                 Match List ⇅
             </h5>
-            <div class="collapse" id="matchList"></div>
+            <div id="matchList" class="collapse"></div>
         
         </div>
 
         <!-- Settings Section -->
         <hr class="rounded">
         <div class="container">
-            <h3 id="settingsToggleButton" type="button" data-toggle="collapse" data-target="#settingsSection" aria-expanded="false" aria-controls="settingsSection">
+            <h3 id="settingsToggle" type="button" data-toggle="collapse" data-target="#settingsSection" aria-expanded="false" aria-controls="settingsSection">
                 ⚙ Settings ⇅
             </button></h3>
-            <div class="collapse" id="settingsSection">
+            <div id="settingsSection" class="collapse">
                 <div class="input-group">
                     <span class="input-group-text">Your Name</span>
-                    <input type="text" class="form-control centered" id="yourNameSetting" placeholder="Enter your name">
+                    <input id="yourName" type="text" class="form-control centered" placeholder="Enter your name">
                 </div>
-                <button class="btn btn-primary mt-3" id="saveSettingsButton">Save Settings</button>
+                <button id="saveSettingsButton" class="btn btn-primary mt-3">Save Settings</button>
             </div>
         </div>
 
@@ -255,7 +255,7 @@
         <p>Warning: After this page is refreshed the selection will change back to the actual Bangkok Backgammon club.</p>
         <div class="input-group">
             <span class="input-group-text">Club</span>
-            <select class="form-select" title="Backgammon Club Selection" id="clubSelection" onchange="clubSelectionChanged()">
+            <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
                 <option class="centered" value="bkk-bg-rating-list">Bangkok Backgammon</option>
                 <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
             </select>
@@ -476,19 +476,19 @@
                 case 'matchesPlayed':
                 displayElement('ranglistenChartDiv', false);
                     displayElement('matchesStatsChartDiv', true);
-                    createOrUpdateMatchesPlayedChart(rankingSummary);
+                    updateMatchesPlayedChart(rankingSummary);
                     createMatchesPlayedRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'percentMatchesWon': 
                 displayElement('ranglistenChartDiv', false);
                     displayElement('matchesStatsChartDiv', true);
-                    createOrUpdateMatchesPlayedChart(rankingSummary);
+                    updateMatchesPlayedChart(rankingSummary);
                     createPercentMatchesWonRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'rangliste':
                     displayElement('ranglistenChartDiv', true);
                     displayElement('matchesStatsChartDiv', false);
-                    createOrUpdateRanglistenChart(rankingSummary);
+                    updateRanglistenChart(rankingSummary);
 
                     createRanglisteRankingList('rankingSummary', rankingSummary);
                     break;
@@ -513,7 +513,7 @@
         }
 
         function selectDefaultPlayer() {
-            const yourName = document.getElementById('yourNameSetting').value;
+            const yourName = document.getElementById('yourName').value;
             if (yourName) {
                 const playerOptions = document.getElementById("playerName").options;
                 for (let i = 0; i < playerOptions.length; i++) {
@@ -967,6 +967,8 @@
     
     <!-- Events Section -->
     <script>
+
+
         // Update the Submission Status
         document.getElementById("updateSubmissionStatus").addEventListener("click", async () => {
             await refreshRunsStatus();
@@ -975,19 +977,19 @@
         });
 
         // show/hide the match report form
-        document.getElementById('rankingListsToggleButton').addEventListener('click', function() {
+        document.getElementById('rankingListsToggle').addEventListener('click', function() {
             const collapseElement = document.getElementById('rankingListsSection');
             collapseElement.classList.toggle('show');
         });
 
         // show/hide the match report form
-        document.getElementById('matchReportFormToggleButton').addEventListener('click', function() {
+        document.getElementById('matchReportFormToggle').addEventListener('click', function() {
             const collapseElement = document.getElementById('matchReportForm');
             collapseElement.classList.toggle('show');
         });
 
         // show/hide the Rating List
-        document.getElementById('ratingListToggleButton').addEventListener('click', function() {
+        document.getElementById('ratingListToggle').addEventListener('click', function() {
             const collapseElement = document.getElementById('ratingList');
             collapseElement.classList.toggle('show');
         });
@@ -999,19 +1001,19 @@
         });
 
         // show/hide the Ranking Chart
-        document.getElementById('rankingChartToggleButton').addEventListener('click', function() {
+        document.getElementById('rankingChartToggle').addEventListener('click', function() {
             const collapseElement = document.getElementById('rankingChart');
             collapseElement.classList.toggle('show');
         });
 
         // show/hide the Ranking Summary
-        document.getElementById('rankingSummaryToggleButton').addEventListener('click', function() {
+        document.getElementById('rankingSummaryToggle').addEventListener('click', function() {
             const collapseElement = document.getElementById('rankingSummary');
             collapseElement.classList.toggle('show');
         });
 
         // show/hide the time span Match List
-        document.getElementById('playedTimeSpanMatchListToggleButton').addEventListener('click', function() {
+        document.getElementById('playedTimeSpanMatchListToggle').addEventListener('click', function() {
             const collapseElement = document.getElementById('matchList');
             collapseElement.classList.toggle('show');
         });
@@ -1026,7 +1028,7 @@
         }
 
         // show/hide the settings section
-        document.getElementById('settingsToggleButton').addEventListener('click', function() {
+        document.getElementById('settingsToggle').addEventListener('click', function() {
             const collapseElement = document.getElementById('settingsSection');
             collapseElement.classList.toggle('show');
         });
@@ -1053,7 +1055,7 @@
 
             // Player Name Selection
             const yourName = localStorage.getItem('yourName') || '';
-            document.getElementById('yourNameSetting').value = yourName;
+            document.getElementById('yourName').value = yourName;
 
             // Expand/Collapse the Player Name Selection depending on the Ranking List Selection
             const element = document.getElementById("playerNameSelection");
@@ -1081,23 +1083,20 @@
             localStorage.setItem(elementName + 'State', matchReportFormCollapsed);
         }
 
+        function saveValueSetting(elementName) {
+            const rankingListSelection = document.getElementById(elementName).value;
+            localStorage.setItem(elementName, rankingListSelection);
+        }
+
         // Save settings to localStorage
         function saveSettings() {
             saveToggleSetting('matchReportForm');
             saveToggleSetting('ratingList');
             saveToggleSetting('rankingListsSection');
 
-            // Ranking List Selection
-            const rankingListSelection = document.getElementById('rankingListSelection').value;
-            localStorage.setItem('rankingListSelection', rankingListSelection);
-
-            // Player Name Setting
-            const yourName = document.getElementById('yourNameSetting').value;
-            localStorage.setItem('yourName', yourName);
-
-            // Interval Selection
-            const intervalSelection = document.getElementById('intervalSelection').value;
-            localStorage.setItem('intervalSelection', intervalSelection);
+            saveValueSetting('rankingListSelection');
+            saveValueSetting('yourName');
+            saveValueSetting('intervalSelection');
 
             saveToggleSetting('rankingChart');
             saveToggleSetting('rankingSummary');
@@ -1137,7 +1136,7 @@
         
         // Function to create or update the Matches chart
         let matchesStatsChart;
-        function createOrUpdateMatchesPlayedChart(matchListSummary) {
+        function updateMatchesPlayedChart(matchListSummary) {
             const ctx = document.getElementById('matchesStatsChart').getContext('2d');
 
             // Extract data for the chart
@@ -1206,7 +1205,7 @@
 
         // Function to create or update the Ranglisten chart
         let ranglistenChart;
-        function createOrUpdateRanglistenChart(matchListSummary) {
+        function updateRanglistenChart(matchListSummary) {
             const ctx = document.getElementById('ranglistenChart').getContext('2d');
 
             // Extract data for the chart
