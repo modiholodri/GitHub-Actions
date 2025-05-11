@@ -1035,22 +1035,17 @@
         
     <!-- Settings handling -->
     <script>
+        function loadToggleSetting(elementName) {
+            const toggleState = localStorage.getItem(elementName + 'State') || 'expanded';
+            const element = document.getElementById(elementName);
+            toggleState === 'expanded' ? element.classList.add('show') : element.classList.remove('show');
+        }
+
         // Load settings from localStorage
         function loadSettings() {
-            // Match Report Form Collapse State
-            const matchReportFormState = localStorage.getItem('matchReportFormState') || 'expanded';
-            const matchReportForm = document.getElementById('matchReportForm');
-            matchReportFormState === 'expanded' ? matchReportForm.classList.add('show') : matchReportForm.classList.remove('show');
-
-            // Rating List Collapse State
-            const ratingListState = localStorage.getItem('ratingListState') || 'expanded';
-            const ratingList = document.getElementById('ratingList');
-            ratingListState === 'expanded' ? ratingList.classList.add('show') : ratingList.classList.remove('show');
-
-            // Ranking Lists Collapse State
-            const rankingListsState = localStorage.getItem('rankingListsState') || 'expanded';
-            const rankingLists = document.getElementById('rankingListsSection');
-            rankingListsState === 'expanded' ? rankingLists.classList.add('show') : rankingLists.classList.remove('show');
+            loadToggleSetting('matchReportForm');
+            loadToggleSetting('ratingList');
+            loadToggleSetting('rankingListsSection');
 
             // Ranking List Selection
             const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
@@ -1072,44 +1067,31 @@
             const intervalSelection = localStorage.getItem('intervalSelection') || 'Daily';
             document.getElementById('intervalSelection').value = intervalSelection;
 
-            // Ranking Chart Collapse State
-            const rankingChartState = localStorage.getItem('rankingChartState') || 'expanded';
-            const rankingChart = document.getElementById('rankingChart');
-            rankingChartState === 'expanded' ? rankingChart.classList.add('show') : rankingChart.classList.remove('show');
-
-            // Ranking Summary Collapse State
-            const rankingSummaryState = localStorage.getItem('rankingSummaryState') || 'expanded';
-            const rankingSummary = document.getElementById('rankingSummary');
-            rankingSummaryState === 'expanded' ? rankingSummary.classList.add('show') : rankingSummary.classList.remove('show');
-
-            // Match List Collapse State
-            const matchListState = localStorage.getItem('matchListState') || 'expanded';
-            const matchList = document.getElementById('matchList');
-            matchListState === 'expanded' ? matchList.classList.add('show') : matchList.classList.remove('show');
+            loadToggleSetting('rankingChart');
+            loadToggleSetting('rankingSummary');
+            loadToggleSetting('matchList');
         }
 
         // load the settings once the DOM is ready
         document.addEventListener('DOMContentLoaded', loadSettings);
 
+
+        function saveToggleSetting(elementName) {
+            const matchReportFormCollapsed = document.getElementById(elementName).classList.contains('show') ? 'expanded' : 'collapsed';
+            localStorage.setItem(elementName + 'State', matchReportFormCollapsed);
+        }
+
         // Save settings to localStorage
         function saveSettings() {
-            // Match Report Form Collapse State
-            const matchReportFormCollapsed = document.getElementById('matchReportForm').classList.contains('show') ? 'expanded' : 'collapsed';
-            localStorage.setItem('matchReportFormState', matchReportFormCollapsed);
-
-            // Rating List Form Collapse State
-            const ratingListCollapsed = document.getElementById('ratingList').classList.contains('show') ? 'expanded' : 'collapsed';
-            localStorage.setItem('ratingListState', ratingListCollapsed);
-
-            // Ranking Lists Collapse State
-            const rankingListsCollapsed = document.getElementById('rankingListsSection').classList.contains('show') ? 'expanded' : 'collapsed';
-            localStorage.setItem('rankingListsState', rankingListsCollapsed);
+            saveToggleSetting('matchReportForm');
+            saveToggleSetting('ratingList');
+            saveToggleSetting('rankingListsSection');
 
             // Ranking List Selection
             const rankingListSelection = document.getElementById('rankingListSelection').value;
             localStorage.setItem('rankingListSelection', rankingListSelection);
 
-            // Player Name Selection
+            // Player Name Setting
             const yourName = document.getElementById('yourNameSetting').value;
             localStorage.setItem('yourName', yourName);
 
@@ -1117,17 +1099,9 @@
             const intervalSelection = document.getElementById('intervalSelection').value;
             localStorage.setItem('intervalSelection', intervalSelection);
 
-            // Ranking Chart Collapse State
-            const rankingChartCollapsed = document.getElementById('rankingChart').classList.contains('show') ? 'expanded' : 'collapsed';
-            localStorage.setItem('rankingChartState', rankingChartCollapsed);
-
-            // Ranking Summary Collapse State
-            const rankingSummaryCollapsed = document.getElementById('rankingSummary').classList.contains('show') ? 'expanded' : 'collapsed';
-            localStorage.setItem('rankingSummaryState', rankingSummaryCollapsed);
-
-            // Match List Collapse State
-            const matchListCollapsed = document.getElementById('matchList').classList.contains('show') ? 'expanded' : 'collapsed';
-            localStorage.setItem('matchListState', matchListCollapsed);
+            saveToggleSetting('rankingChart');
+            saveToggleSetting('rankingSummary');
+            saveToggleSetting('matchList');
         }
 
         // Save the settings when the button is clicked
