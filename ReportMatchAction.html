@@ -205,15 +205,15 @@
             </div>
         </div>
 
-        <h5 id="rankingSummaryToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanSummary" aria-expanded="false" aria-controls="playedTimeSpanSummary">
+        <h5 id="rankingSummaryToggleButton" type="button" data-toggle="collapse" data-target="#rankingSummary" aria-expanded="false" aria-controls="rankingSummary">
             Ranking Summary ⇅
         </h5>
-        <div class="collapse" id="playedTimeSpanSummary"></div>
+        <div class="collapse" id="rankingSummary"></div>
 
-        <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#playedTimeSpanMatchList" aria-expanded="false" aria-controls="playedTimeSpanMatchList">
+        <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#matchList" aria-expanded="false" aria-controls="matchList">
             Match List ⇅
         </h5>
-        <div class="collapse" id="playedTimeSpanMatchList"></div>
+        <div class="collapse" id="matchList"></div>
 
 
         <!-- Settings Section -->
@@ -465,42 +465,42 @@
 
         function rankingListSelectionChanged() {
             // set the played time span match list again, in case it has been overwritten before
-            document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playedTimeSpanMatchList);
+            document.getElementById('matchList').innerHTML = marked.parse(matchList);
 
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'matchesPlayed':
                 displayElement('ranglistenChartDiv', false);
                     displayElement('matchesStatsChartDiv', true);
-                    createOrUpdateMatchesPlayedChart(playedTimeSpanSummary);
-                    createMatchesPlayedRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    createOrUpdateMatchesPlayedChart(rankingSummary);
+                    createMatchesPlayedRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'percentMatchesWon': 
                 displayElement('ranglistenChartDiv', false);
                     displayElement('matchesStatsChartDiv', true);
-                    createOrUpdateMatchesPlayedChart(playedTimeSpanSummary);
-                    createPercentMatchesWonRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    createOrUpdateMatchesPlayedChart(rankingSummary);
+                    createPercentMatchesWonRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'rangliste':
                     displayElement('ranglistenChartDiv', true);
                     displayElement('matchesStatsChartDiv', false);
-                    createOrUpdateRanglistenChart(playedTimeSpanSummary);
+                    createOrUpdateRanglistenChart(rankingSummary);
 
-                    createRanglisteRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    createRanglisteRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'playerInfo':
                     playerSelectionChanged();
                     break;
                 case 'currentStreak':
-                    createCurrentStreakRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    createCurrentStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'longestWinningStreak':
-                    createLongestWinningStreakRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    createLongestWinningStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'longestLosingStreak':
-                    createLongestLosingStreakRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    createLongestLosingStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'daysInactive':
-                    createLastTimeActiveRankingList('playedTimeSpanSummary', playedTimeSpanSummary);
+                    createLastTimeActiveRankingList('rankingSummary', rankingSummary);
                     break;
                 default:
                     break;
@@ -597,7 +597,7 @@
         }
 
 
-        var playedTimeSpanSummary = {};
+        var rankingSummary = {};
         // Summarize the Match List
         function summarizeMatchList(matchList) {
             const matchListSummary = {};
@@ -712,11 +712,11 @@
         }
 
         // Percent Matches Played
-        function createPercentMatchesWonRankingList(summaryElement, playedTimeSpanSummary) {
+        function createPercentMatchesWonRankingList(summaryElement, rankingSummary) {
             var rankingList = '|   |   |% Won|Result|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => (b[1].matchesWon/b[1].matchesPlayed)-(a[1].matchesWon/a[1].matchesPlayed))) {
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => (b[1].matchesWon/b[1].matchesPlayed)-(a[1].matchesWon/a[1].matchesPlayed))) {
                 const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
                 rankingList += `|${rank++}|${player}|${winPercentage}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
@@ -724,11 +724,11 @@
         }
 
         // Current Streak
-        function createCurrentStreakRankingList(summaryElement, playedTimeSpanSummary) {
+        function createCurrentStreakRankingList(summaryElement, rankingSummary) {
             var rankingList = '|   |   |Current Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak)) {
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak)) {
                 rankingList += `|${rank++}|${player}|${stats.currentStreak}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
@@ -736,44 +736,44 @@
 
 
         // Longest Winning Streak
-        function createLongestWinningStreakRankingList(summaryElement, playedTimeSpanSummary) {
+        function createLongestWinningStreakRankingList(summaryElement, rankingSummary) {
             var rankingList = '|   |   |Winning Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].longestWon-a[1].longestWon)) {
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestWon-a[1].longestWon)) {
                 rankingList += `|${rank++}|${player}|${stats.longestWon}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
         // Longest Losing Streak
-        function createLongestLosingStreakRankingList(summaryElement, playedTimeSpanSummary) {
+        function createLongestLosingStreakRankingList(summaryElement, rankingSummary) {
             var rankingList = '|   |   |Losing Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].longestLost-a[1].longestLost)) {
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestLost-a[1].longestLost)) {
                 rankingList += `|${rank++}|${player}|${stats.longestLost}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
         // Matches Played
-        function createMatchesPlayedRankingList(summaryElement, playedTimeSpanSummary) {
+        function createMatchesPlayedRankingList(summaryElement, rankingSummary) {
             var rankingList = '|   |   |Matches|Result|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].matchesPlayed-a[1].matchesPlayed)) {
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].matchesPlayed-a[1].matchesPlayed)) {
                 rankingList += `|${rank++}|${player}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
         // Create Last Time Active Ranking List
-        function createLastTimeActiveRankingList(summaryElement, playedTimeSpanSummary) {
+        function createLastTimeActiveRankingList(summaryElement, rankingSummary) {
             var rankingList = '|   |   |Idle Days|Date|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => a[1].lastDateActive>b[1].lastDateActive ? -1 : 1)) {
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => a[1].lastDateActive>b[1].lastDateActive ? -1 : 1)) {
                 var today = new Date();
                 var lastDateActive = new Date(stats.lastDateActive);
                 var timeInMS = today.getTime() - lastDateActive.getTime();
@@ -785,17 +785,17 @@
         }
 
         // Create Rangliste Ranking List
-        function createRanglisteRankingList(summaryElement, playedTimeSpanSummary) {
+        function createRanglisteRankingList(summaryElement, rankingSummary) {
             var rankingList = '|   |   |Punkte|Result|\n|:---:|:---:|:---:|:---:|\n';
 
             var rank = 1;
-            for (const [player, stats] of Object.entries(playedTimeSpanSummary).sort((a,b) => b[1].punkte-a[1].punkte)) {
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].punkte-a[1].punkte)) {
                 rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
-        var playedTimeSpanMatchList = '';
+        var matchList = '';
 
         // Populate the Played Time Span List
         function populatePlayedTimeSpanMatchList() {
@@ -805,20 +805,20 @@
 
             var timeSpanSelection = document.getElementById("timeSpanSelection").value;
             let gotMatches = false
-            playedTimeSpanMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
+            matchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     var matchInfo = matchRecords[i].split('|');
                     const matchDate = matchInfo[1];
                     if (matchDate.startsWith(timeSpanSelection)) {
-                        playedTimeSpanMatchList += `${matchRecords[i]}\n`;
+                        matchList += `${matchRecords[i]}\n`;
                         gotMatches = true
                     }
                     else if (gotMatches) break;
                 }
             }
-            document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playedTimeSpanMatchList);
-            playedTimeSpanSummary = summarizeMatchList(playedTimeSpanMatchList);
+            document.getElementById('matchList').innerHTML = marked.parse(matchList);
+            rankingSummary = summarizeMatchList(matchList);
 
             rankingListSelectionChanged();
         }
@@ -831,8 +831,8 @@
 
             playerName = document.getElementById('playerName').value;
             if (playerName === 'Select or Edit') {
-                document.getElementById('playedTimeSpanSummary').innerHTML = '';
-                document.getElementById('playedTimeSpanMatchList').innerHTML = '';
+                document.getElementById('rankingSummary').innerHTML = '';
+                document.getElementById('matchList').innerHTML = '';
                 return;
             }
 
@@ -856,12 +856,12 @@
             }
 
             if (matchesPlayed > 0 ) {
-                createPlayerInfoList('playedTimeSpanSummary', summarizeMatchList(playerMatchList), playerName);
-                document.getElementById('playedTimeSpanMatchList').innerHTML = marked.parse(playerMatchList);
+                createPlayerInfoList('rankingSummary', summarizeMatchList(playerMatchList), playerName);
+                document.getElementById('matchList').innerHTML = marked.parse(playerMatchList);
             }
             else {
-                document.getElementById('playedTimeSpanSummary').innerHTML = `<div><p class="centered"><br>${playerName} didn't play...</p></div>`;
-                document.getElementById('playedTimeSpanMatchList').innerHTML = '';
+                document.getElementById('rankingSummary').innerHTML = `<div><p class="centered"><br>${playerName} didn't play...</p></div>`;
+                document.getElementById('matchList').innerHTML = '';
             }
         }
 
@@ -1000,13 +1000,13 @@
 
         // show/hide the Ranking Summary
         document.getElementById('rankingSummaryToggleButton').addEventListener('click', function() {
-            const collapseElement = document.getElementById('playedTimeSpanSummary');
+            const collapseElement = document.getElementById('rankingSummary');
             collapseElement.classList.toggle('show');
         });
 
         // show/hide the time span Match List
         document.getElementById('playedTimeSpanMatchListToggleButton').addEventListener('click', function() {
-            const collapseElement = document.getElementById('playedTimeSpanMatchList');
+            const collapseElement = document.getElementById('matchList');
             collapseElement.classList.toggle('show');
         });
 
@@ -1068,8 +1068,13 @@
 
             // Ranking Summary Collapse State
             const rankingSummaryState = localStorage.getItem('rankingSummaryState') || 'collapsed';
-            const rankingSummary = document.getElementById('playedTimeSpanSummary');
+            const rankingSummary = document.getElementById('rankingSummary');
             rankingSummaryState === 'expanded' ? rankingSummary.classList.add('show') : rankingSummary.classList.remove('show');
+
+            // Match List Collapse State
+            const matchListState = localStorage.getItem('matchListState') || 'expanded';
+            const matchList = document.getElementById('matchList');
+            matchListState === 'expanded' ? matchList.classList.add('show') : matchList.classList.remove('show');
         }
 
         // load the settings once the DOM is ready
@@ -1102,8 +1107,12 @@
             localStorage.setItem('rankingChartState', rankingChartCollapsed);
 
             // Ranking Summary Collapse State
-            const rankingSummaryCollapsed = document.getElementById('playedTimeSpanSummary').classList.contains('show') ? 'expanded' : 'collapsed';
+            const rankingSummaryCollapsed = document.getElementById('rankingSummary').classList.contains('show') ? 'expanded' : 'collapsed';
             localStorage.setItem('rankingSummaryState', rankingSummaryCollapsed);
+
+            // Match List Collapse State
+            const matchListCollapsed = document.getElementById('matchList').classList.contains('show') ? 'expanded' : 'collapsed';
+            localStorage.setItem('matchListState', matchListCollapsed);
         }
 
         // Save the settings when the button is clicked
