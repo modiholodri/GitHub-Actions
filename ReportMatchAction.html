@@ -202,6 +202,7 @@
             </h5>
             <div id="rankingChart" class="collapse container-fluid">
                 <canvas id="rankingChartCanvas"></canvas>
+                <p id="rankingChartMessage" class="centered">Not loaded yet...</p>
             </div>
 
             <h5 id="rankingSummaryToggle" type="button" data-toggle="collapse" data-target="#rankingSummary" aria-expanded="false" aria-controls="rankingSummary">
@@ -481,18 +482,23 @@
                     createRanglisteRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'playerInfo':
+                    destroyChart(rankingChartCanvas, "No chart available...");
                     playerSelectionChanged();
                     break;
                 case 'currentStreak':
+                    destroyChart(rankingChartCanvas, "No chart available...");
                     createCurrentStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'longestWinningStreak':
+                    destroyChart(rankingChartCanvas, "No chart available...");
                     createLongestWinningStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'longestLosingStreak':
+                    destroyChart(rankingChartCanvas, "No chart available...");
                     createLongestLosingStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'daysInactive':
+                    destroyChart(rankingChartCanvas, "No chart available...");
                     createLastTimeActiveRankingList('rankingSummary', rankingSummary);
                     break;
                 default:
@@ -942,6 +948,7 @@
 
         // Add DOM Content Loaded Event Listener
         document.addEventListener("DOMContentLoaded", () => {
+            destroyChart(rankingChartCanvas, "Not loaded yet...");
             fetchFrequentPlayers();
             refreshWebPageTitle();
             fetchRatingList();
@@ -1082,11 +1089,13 @@
 
     <script>
         // If the chart already exists, destroy it before creating a new one
-        function destroyChart(chart) {
+        function destroyChart(chart, message) {
             if (chart) {
                 chart.destroy();
                 chart = null;
             }
+            document.getElementById('rankingChartCanvas').height = 0;
+            document.getElementById('rankingChartMessage').innerText = message;
         }
 
         // Dynamically adjust canvas height based on the number of players
@@ -1098,7 +1107,7 @@
 
             document.getElementById(chartName).height = calculatedHeight;
         }
-        let rankingChartCanvas;
+        var rankingChartCanvas;
         
         // Function to create or update the Matches chart
         function updateMatchesPlayedChart(matchListSummary) {
@@ -1112,7 +1121,7 @@
             const matchesWon = players.map(player => matchListSummary[player].matchesWon);
             const matchesLost = players.map(player => matchListSummary[player].matchesLost);
 
-            destroyChart(rankingChartCanvas);
+            destroyChart(rankingChartCanvas, '');
             optimizeChartHeight('rankingChartCanvas', players.length);
 
             // Create the chart if it doesn't exist
@@ -1184,7 +1193,7 @@
             const punkteBonus = players.map(player => matchListSummary[player].punkteBonus);
             const punkteLost = players.map(player => matchListSummary[player].punkteLost);
 
-            destroyChart(rankingChartCanvas);
+            destroyChart(rankingChartCanvas, '');
             optimizeChartHeight('rankingChartCanvas', players.length);
 
             // Create the chart
