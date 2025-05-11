@@ -161,11 +161,11 @@
 
         <!-- Ranking Lists -->
         <hr class="rounded">
-        <h3 id="rankingListsToggle" type="button" data-toggle="collapse" data-target="#rankingListsSection" aria-expanded="false" aria-controls="rankingListsSection">
+        <h3 id="rankingListsToggle" type="button" data-toggle="collapse" data-target="#rankingLists" aria-expanded="false" aria-controls="rankingLists">
             Ranking Lists ⇅
         </h3>
 
-        <div id="rankingListsSection" class="collapse">
+        <div id="rankingLists" class="collapse">
 
             <!-- Played Time Span -->
             <div class="input-group">
@@ -214,20 +214,20 @@
             </h5>
             <div id="rankingSummary" class="collapse"></div>
 
-            <h5 id="playedTimeSpanMatchListToggle" type="button" data-toggle="collapse" data-target="#matchList" aria-expanded="false" aria-controls="matchList">
+            <h5 id="matchListToggle" type="button" data-toggle="collapse" data-target="#matchList" aria-expanded="false" aria-controls="matchList">
                 Match List ⇅
             </h5>
             <div id="matchList" class="collapse"></div>
         
         </div>
 
-        <!-- Settings Section -->
+        <!-- Settings -->
         <hr class="rounded">
         <div class="container">
-            <h3 id="settingsToggle" type="button" data-toggle="collapse" data-target="#settingsSection" aria-expanded="false" aria-controls="settingsSection">
+            <h3 id="settingsToggle" type="button" data-toggle="collapse" data-target="#settings" aria-expanded="false" aria-controls="settings">
                 ⚙ Settings ⇅
             </button></h3>
-            <div id="settingsSection" class="collapse">
+            <div id="settings" class="collapse">
                 <div class="input-group">
                     <span class="input-group-text">Your Name</span>
                     <input id="yourName" type="text" class="form-control centered" placeholder="Enter your name">
@@ -965,9 +965,14 @@
 
     </script>
     
-    <!-- Events Section -->
+    <!-- Events -->
     <script>
-
+        function addToggleListener(elementName) {
+            document.getElementById(elementName + 'Toggle').addEventListener('click', function() {
+                const collapseElement = document.getElementById(elementName);
+                collapseElement.classList.toggle('show');
+            });
+        }
 
         // Update the Submission Status
         document.getElementById("updateSubmissionStatus").addEventListener("click", async () => {
@@ -976,23 +981,9 @@
             setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
         });
 
-        // show/hide the match report form
-        document.getElementById('rankingListsToggle').addEventListener('click', function() {
-            const collapseElement = document.getElementById('rankingListsSection');
-            collapseElement.classList.toggle('show');
-        });
-
-        // show/hide the match report form
-        document.getElementById('matchReportFormToggle').addEventListener('click', function() {
-            const collapseElement = document.getElementById('matchReportForm');
-            collapseElement.classList.toggle('show');
-        });
-
-        // show/hide the Rating List
-        document.getElementById('ratingListToggle').addEventListener('click', function() {
-            const collapseElement = document.getElementById('ratingList');
-            collapseElement.classList.toggle('show');
-        });
+        addToggleListener('rankingLists');
+        addToggleListener('matchReportForm');
+        addToggleListener('ratingList');
 
         // show/hide the player name input
         document.getElementById("rankingListSelection").addEventListener("change", function () {
@@ -1000,23 +991,9 @@
             this.value === "playerInfo" ? element.style.display = "flex" : element.style.display = "none";
         });
 
-        // show/hide the Ranking Chart
-        document.getElementById('rankingChartToggle').addEventListener('click', function() {
-            const collapseElement = document.getElementById('rankingChart');
-            collapseElement.classList.toggle('show');
-        });
-
-        // show/hide the Ranking Summary
-        document.getElementById('rankingSummaryToggle').addEventListener('click', function() {
-            const collapseElement = document.getElementById('rankingSummary');
-            collapseElement.classList.toggle('show');
-        });
-
-        // show/hide the time span Match List
-        document.getElementById('playedTimeSpanMatchListToggle').addEventListener('click', function() {
-            const collapseElement = document.getElementById('matchList');
-            collapseElement.classList.toggle('show');
-        });
+        addToggleListener('rankingChart');
+        addToggleListener('rankingSummary');
+        addToggleListener('matchList');
 
         function displayElement(elementName, showElement) {
             const element = document.getElementById(elementName);
@@ -1027,11 +1004,7 @@
             }
         }
 
-        // show/hide the settings section
-        document.getElementById('settingsToggle').addEventListener('click', function() {
-            const collapseElement = document.getElementById('settingsSection');
-            collapseElement.classList.toggle('show');
-        });
+        addToggleListener('settings');
 
     </script>
         
@@ -1047,7 +1020,7 @@
         function loadSettings() {
             loadToggleSetting('matchReportForm');
             loadToggleSetting('ratingList');
-            loadToggleSetting('rankingListsSection');
+            loadToggleSetting('rankingLists');
 
             // Ranking List Selection
             const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
@@ -1092,7 +1065,7 @@
         function saveSettings() {
             saveToggleSetting('matchReportForm');
             saveToggleSetting('ratingList');
-            saveToggleSetting('rankingListsSection');
+            saveToggleSetting('rankingLists');
 
             saveValueSetting('rankingListSelection');
             saveValueSetting('yourName');
