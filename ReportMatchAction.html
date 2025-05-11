@@ -200,13 +200,8 @@
             <h5 id="rankingChartToggle" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
                 Ranking Chart ⇅
             </h5>
-            <div id="rankingChart" class="collapse">
-                <div id="ranglistenChartDiv" class="container-fluid">
-                    <canvas id="ranglistenChart"></canvas>
-                </div>
-                <div id="matchesStatsChartDiv" class="container-fluid">
-                    <canvas id="matchesStatsChart"></canvas>
-                </div>
+            <div id="rankingChart" class="collapse container-fluid">
+                <canvas id="rankingChartCanvas"></canvas>
             </div>
 
             <h5 id="rankingSummaryToggle" type="button" data-toggle="collapse" data-target="#rankingSummary" aria-expanded="false" aria-controls="rankingSummary">
@@ -474,22 +469,15 @@
 
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'matchesPlayed':
-                displayElement('ranglistenChartDiv', false);
-                    displayElement('matchesStatsChartDiv', true);
                     updateMatchesPlayedChart(rankingSummary);
                     createMatchesPlayedRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'percentMatchesWon': 
-                displayElement('ranglistenChartDiv', false);
-                    displayElement('matchesStatsChartDiv', true);
                     updateMatchesPlayedChart(rankingSummary);
                     createPercentMatchesWonRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'rangliste':
-                    displayElement('ranglistenChartDiv', true);
-                    displayElement('matchesStatsChartDiv', false);
                     updateRanglistenChart(rankingSummary);
-
                     createRanglisteRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'playerInfo':
@@ -994,18 +982,7 @@
         addToggleListener('rankingChart');
         addToggleListener('rankingSummary');
         addToggleListener('matchList');
-
-        function displayElement(elementName, showElement) {
-            const element = document.getElementById(elementName);
-            if (showElement) {
-                element.style.display = "flex"; // Show the element
-            } else {
-                element.style.display = "none"; // Hide the element
-            }
-        }
-
         addToggleListener('settings');
-
     </script>
         
     <!-- Settings handling -->
@@ -1106,11 +1083,11 @@
 
             document.getElementById(chartName).height = calculatedHeight;
         }
+        let rankingChartCanvas;
         
         // Function to create or update the Matches chart
-        let matchesStatsChart;
         function updateMatchesPlayedChart(matchListSummary) {
-            const ctx = document.getElementById('matchesStatsChart').getContext('2d');
+            const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
             // Extract data for the chart
             const players = document.getElementById('rankingListSelection').value === 'matchesPlayed' ?
@@ -1120,11 +1097,11 @@
             const matchesWon = players.map(player => matchListSummary[player].matchesWon);
             const matchesLost = players.map(player => matchListSummary[player].matchesLost);
 
-            destroyChart(matchesStatsChart);
-            optimizeChartHeight('matchesStatsChart', players.length);
+            destroyChart(rankingChartCanvas);
+            optimizeChartHeight('rankingChartCanvas', players.length);
 
             // Create the chart if it doesn't exist
-            matchesStatsChart = new Chart(ctx, {
+            rankingChartCanvas = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: players, // Player names
@@ -1177,9 +1154,8 @@
         }
 
         // Function to create or update the Ranglisten chart
-        let ranglistenChart;
         function updateRanglistenChart(matchListSummary) {
-            const ctx = document.getElementById('ranglistenChart').getContext('2d');
+            const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
             // Extract data for the chart
             const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].punkte - matchListSummary[a].punkte);
@@ -1188,11 +1164,11 @@
             const punkteBonus = players.map(player => matchListSummary[player].punkteBonus);
             const punkteLost = players.map(player => matchListSummary[player].punkteLost);
 
-            destroyChart(ranglistenChart);
-            optimizeChartHeight('ranglistenChart', players.length);
+            destroyChart(rankingChartCanvas);
+            optimizeChartHeight('rankingChartCanvas', players.length);
 
             // Create the chart
-            ranglistenChart = new Chart(ctx, {
+            rankingChartCanvas = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: players, // Player names
