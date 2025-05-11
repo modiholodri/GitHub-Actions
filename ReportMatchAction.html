@@ -959,6 +959,21 @@
             document.getElementById(elementName + 'Toggle').addEventListener('click', function() {
                 const collapseElement = document.getElementById(elementName);
                 collapseElement.classList.toggle('show');
+                
+                if (elementName === 'rankingChart') {  // refresh the ranking chart if it is made visible
+                    const rankingCharJustShown = document.getElementById(elementName).classList.contains('show');
+                    if (rankingCharJustShown) {
+                        switch ( document.getElementById('rankingListSelection').value) {
+                            case 'matchesPlayed':
+                            case 'percentMatchesWon': 
+                                updateMatchesPlayedChart(rankingSummary);
+                                break;
+                            case 'rangliste':
+                                updateRanglistenChart(rankingSummary);
+                                break;
+                        }
+                    }
+                }
             });
         }
 
