@@ -1155,6 +1155,11 @@
                                 display: true,
                                 text: 'Matches',
                             },
+                            ticks: {
+                                callback: function(value) {  // Show only whole numbers
+                                    return Number.isInteger(value) ? value : null;
+                                }
+                            },                            
                         },
                         y: {
                             beginAtZero: true,
@@ -1230,6 +1235,11 @@
                                 display: true,
                                 text: 'Punkte',
                             },
+                            ticks: {
+                                callback: function(value) {  // Show only whole numbers
+                                    return Number.isInteger(value) ? value : null;
+                                }
+                            },                            
                         },
                         y: {
                             beginAtZero: true,
