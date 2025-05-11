@@ -161,60 +161,65 @@
 
         <!-- Ranking Lists -->
         <hr class="rounded">
-        <h3 id="fetchMatchList" type="button">Ranking Lists ⟳</h3>
+        <h3 id="rankingListsToggleButton" type="button" data-toggle="collapse" data-target="#rankingListsSection" aria-expanded="false" aria-controls="rankingListsSection">
+            Ranking Lists ⇅
+        </h3>
 
-        <!-- Played Time Span -->
-        <div class="input-group">
-            <select class="form-select" title="Ranking List Selection" id="rankingListSelection" onchange="rankingListSelectionChanged()">
-                <option class="centered" value="matchesPlayed">Matches Played</option>
-                <option class="centered" value="percentMatchesWon">% Matches Won</option>
-                <option class="centered" value="rangliste">Rangliste</option>
-                <option class="centered" value="playerInfo">Player Info</option>
-                <option class="centered" value="currentStreak">Current Streak</option>
-                <option class="centered" value="longestWinningStreak">> Winning Streak</option>
-                <option class="centered" value="longestLosingStreak">> Losing Streak</option>
-                <option class="centered" value="daysInactive">Days Inactive</option>
-            </select>
-        </div>
-        <div class="input-group" id="playerNameSelection" style="display:none">
-            <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
-                <option value="Select">Select</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <select class="form-select" style="flex: 0 0 40%;" title="Interval Selection" id="intervalSelection" onchange="intervalSelectionChanged()">
-                <option class="centered" value="Daily">Daily</option>
-                <option class="centered" value="Monthly">Monthly</option>
-                <option class="centered" value="Yearly">Yearly</option>
-                <option class="centered" value="ET">ET</option>
-            </select>
-            <select class="form-select" style="flex: 0 0 60%;" title="Played Time Span Selection" id="timeSpanSelection" onchange="playedTimeSpanSelectionChanged()">
-                <option class="centered" value="Fetch Matches">Fetch Matches</option>
-            </select>
-        </div>
+        <div class="collapse" id="rankingListsSection">
 
-        <h5 id="rankingChartToggleButton" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
-            Ranking Chart ⇅
-        </h5>
-        <div class="collapse" id="rankingChart">
-            <div class="container-fluid" id="ranglistenChartDiv">
-                <canvas id="ranglistenChart"></canvas>
+            <!-- Played Time Span -->
+            <div class="input-group">
+                <select class="form-select" title="Ranking List Selection" id="rankingListSelection" onchange="rankingListSelectionChanged()">
+                    <option class="centered" value="matchesPlayed">Matches Played</option>
+                    <option class="centered" value="percentMatchesWon">% Matches Won</option>
+                    <option class="centered" value="rangliste">Rangliste</option>
+                    <option class="centered" value="playerInfo">Player Info</option>
+                    <option class="centered" value="currentStreak">Current Streak</option>
+                    <option class="centered" value="longestWinningStreak">> Winning Streak</option>
+                    <option class="centered" value="longestLosingStreak">> Losing Streak</option>
+                    <option class="centered" value="daysInactive">Days Inactive</option>
+                </select>
             </div>
-            <div class="container-fluid" id="matchesStatsChartDiv">
-                <canvas id="matchesStatsChart"></canvas>
+            <div class="input-group" id="playerNameSelection" style="display:none">
+                <select class="form-select" title="Player Name" id="playerName" onchange="playerSelectionChanged()">
+                    <option value="Select">Select</option>
+                </select>
             </div>
+            <div class="input-group">
+                <select class="form-select" style="flex: 0 0 40%;" title="Interval Selection" id="intervalSelection" onchange="intervalSelectionChanged()">
+                    <option class="centered" value="Daily">Daily</option>
+                    <option class="centered" value="Monthly">Monthly</option>
+                    <option class="centered" value="Yearly">Yearly</option>
+                    <option class="centered" value="ET">ET</option>
+                </select>
+                <select class="form-select" style="flex: 0 0 60%;" title="Played Time Span Selection" id="timeSpanSelection" onchange="playedTimeSpanSelectionChanged()">
+                    <option class="centered" value="Fetch Matches">Fetch Matches</option>
+                </select>
+            </div>
+
+            <h5 id="rankingChartToggleButton" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
+                Ranking Chart ⇅
+            </h5>
+            <div class="collapse" id="rankingChart">
+                <div class="container-fluid" id="ranglistenChartDiv">
+                    <canvas id="ranglistenChart"></canvas>
+                </div>
+                <div class="container-fluid" id="matchesStatsChartDiv">
+                    <canvas id="matchesStatsChart"></canvas>
+                </div>
+            </div>
+
+            <h5 id="rankingSummaryToggleButton" type="button" data-toggle="collapse" data-target="#rankingSummary" aria-expanded="false" aria-controls="rankingSummary">
+                Ranking Summary ⇅
+            </h5>
+            <div class="collapse" id="rankingSummary"></div>
+
+            <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#matchList" aria-expanded="false" aria-controls="matchList">
+                Match List ⇅
+            </h5>
+            <div class="collapse" id="matchList"></div>
+        
         </div>
-
-        <h5 id="rankingSummaryToggleButton" type="button" data-toggle="collapse" data-target="#rankingSummary" aria-expanded="false" aria-controls="rankingSummary">
-            Ranking Summary ⇅
-        </h5>
-        <div class="collapse" id="rankingSummary"></div>
-
-        <h5 id="playedTimeSpanMatchListToggleButton" type="button" data-toggle="collapse" data-target="#matchList" aria-expanded="false" aria-controls="matchList">
-            Match List ⇅
-        </h5>
-        <div class="collapse" id="matchList"></div>
-
 
         <!-- Settings Section -->
         <hr class="rounded">
@@ -969,10 +974,11 @@
             setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
         });
 
-        // Fetch the Match List
-        document.getElementById('fetchMatchList').onclick = function() {
-            fetchMatchList();
-        }
+        // show/hide the match report form
+        document.getElementById('rankingListsToggleButton').addEventListener('click', function() {
+            const collapseElement = document.getElementById('rankingListsSection');
+            collapseElement.classList.toggle('show');
+        });
 
         // show/hide the match report form
         document.getElementById('matchReportFormToggleButton').addEventListener('click', function() {
@@ -1041,6 +1047,11 @@
             const ratingList = document.getElementById('ratingList');
             ratingListState === 'expanded' ? ratingList.classList.add('show') : ratingList.classList.remove('show');
 
+            // Ranking Lists Collapse State
+            const rankingListsState = localStorage.getItem('rankingListsState') || 'expanded';
+            const rankingLists = document.getElementById('rankingListsSection');
+            rankingListsState === 'expanded' ? rankingLists.classList.add('show') : rankingLists.classList.remove('show');
+
             // Ranking List Selection
             const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
             document.getElementById('rankingListSelection').value = rankingListSelection;
@@ -1067,7 +1078,7 @@
             rankingChartState === 'expanded' ? rankingChart.classList.add('show') : rankingChart.classList.remove('show');
 
             // Ranking Summary Collapse State
-            const rankingSummaryState = localStorage.getItem('rankingSummaryState') || 'collapsed';
+            const rankingSummaryState = localStorage.getItem('rankingSummaryState') || 'expanded';
             const rankingSummary = document.getElementById('rankingSummary');
             rankingSummaryState === 'expanded' ? rankingSummary.classList.add('show') : rankingSummary.classList.remove('show');
 
@@ -1089,6 +1100,10 @@
             // Rating List Form Collapse State
             const ratingListCollapsed = document.getElementById('ratingList').classList.contains('show') ? 'expanded' : 'collapsed';
             localStorage.setItem('ratingListState', ratingListCollapsed);
+
+            // Ranking Lists Collapse State
+            const rankingListsCollapsed = document.getElementById('rankingListsSection').classList.contains('show') ? 'expanded' : 'collapsed';
+            localStorage.setItem('rankingListsState', rankingListsCollapsed);
 
             // Ranking List Selection
             const rankingListSelection = document.getElementById('rankingListSelection').value;
