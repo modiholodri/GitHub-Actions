@@ -1316,10 +1316,11 @@
             // Move the selected player to the top of the list and show the real percentage won/lost
             const selectedPlayer = document.getElementById('playerName').value;
             if (players.includes(selectedPlayer)) {
-                players.splice(players.indexOf(selectedPlayer), 1); // Remove the selected player
+                const selectedPlayerIndex = players.indexOf(selectedPlayer);
+                players.splice(selectedPlayerIndex, 1); // Remove the selected player
                 players.unshift(selectedPlayer); // Add the selected player to the top
-                matchesWon.splice(players.indexOf(selectedPlayer), 1);
-                matchesLost.splice(players.indexOf(selectedPlayer), 1);
+                matchesWon.splice(selectedPlayerIndex, 1);
+                matchesLost.splice(selectedPlayerIndex, 1);
                 matchesWon.unshift(matchListSummary[selectedPlayer].matchesWon / matchListSummary[selectedPlayer].matchesPlayed * 100);
                 matchesLost.unshift(matchListSummary[selectedPlayer].matchesLost / matchListSummary[selectedPlayer].matchesPlayed * 100);
             }
