@@ -169,7 +169,7 @@
 
             <!-- Played Time Span -->
             <div class="input-group">
-                <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionChanged()">
+                <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionManuallyChanged()">
                     <option class="centered" value="matchesPlayed">Matches Played</option>
                     <option class="centered" value="percentMatchesWon">% Matches Won</option>
                     <option class="centered" value="rangliste">Rangliste</option>
@@ -464,6 +464,13 @@
             populatePlayerMatchList();
         }
 
+        let manuallyChangedChart = true;
+        function rankingListSelectionManuallyChanged() {
+            manuallyChangedChart = true;
+            destroyChart(rankingChart, "No chart available...");
+            rankingListSelectionChanged();
+        }
+
         function rankingListSelectionChanged() {
             // set the played time span match list again, in case it has been overwritten before
             document.getElementById('matchList').innerHTML = marked.parse(matchList);
@@ -482,23 +489,18 @@
                     createRanglisteRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'playerInfo':
-                    destroyChart(rankingChartCanvas, "No chart available...");
                     playerSelectionChanged();
                     break;
                 case 'currentStreak':
-                    destroyChart(rankingChartCanvas, "No chart available...");
                     createCurrentStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'longestWinningStreak':
-                    destroyChart(rankingChartCanvas, "No chart available...");
                     createLongestWinningStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'longestLosingStreak':
-                    destroyChart(rankingChartCanvas, "No chart available...");
                     createLongestLosingStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'daysInactive':
-                    destroyChart(rankingChartCanvas, "No chart available...");
                     createLastTimeActiveRankingList('rankingSummary', rankingSummary);
                     break;
                 default:
@@ -948,7 +950,7 @@
 
         // Add DOM Content Loaded Event Listener
         document.addEventListener("DOMContentLoaded", () => {
-            destroyChart(rankingChartCanvas, "Not loaded yet...");
+            destroyChart(rankingChart, "Not loaded yet...");
             fetchFrequentPlayers();
             refreshWebPageTitle();
             fetchRatingList();
@@ -1107,7 +1109,14 @@
 
             document.getElementById(chartName).height = calculatedHeight;
         }
-        var rankingChartCanvas;
+
+        var rankingChart;
+        let hiddenStates;
+        let defaultHiddenStates = {
+            'matchesPlayed': [false, false],
+            'percentMatchesWon': [false, false],
+            'rangliste': [false, false, true],
+        };
         
         // Function to create or update the Matches chart
         function updateMatchesPlayedChart(matchListSummary) {
@@ -1121,17 +1130,25 @@
             const matchesWon = players.map(player => matchListSummary[player].matchesWon);
             const matchesLost = players.map(player => matchListSummary[player].matchesLost);
 
-            destroyChart(rankingChartCanvas, '');
+            // Remember the hidden state of the datasets
+            if(manuallyChangedChart) {
+                hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
+                manuallyChangedChart = false;
+            }
+            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false];
+
+            destroyChart(rankingChart, '');
             optimizeChartHeight('rankingChartCanvas', players.length);
 
             // Create the chart if it doesn't exist
-            rankingChartCanvas = new Chart(ctx, {
+            rankingChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: players, // Player names
                     datasets: [
                         {
                             label: 'Won',
+                            hidden: hiddenStates[0],
                             data: matchesWon,
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderColor: 'rgba(75, 192, 192, 1)',
@@ -1139,6 +1156,7 @@
                         },
                         {
                             label: 'Lost',
+                            hidden: hiddenStates[1],
                             data: matchesLost,
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderColor: 'rgba(255, 99, 132, 1)',
@@ -1193,17 +1211,25 @@
             const punkteBonus = players.map(player => matchListSummary[player].punkteBonus);
             const punkteLost = players.map(player => matchListSummary[player].punkteLost);
 
-            destroyChart(rankingChartCanvas, '');
+            // Remember the hidden state of the datasets
+            if(manuallyChangedChart) {
+                hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
+                manuallyChangedChart = false;
+            }
+            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false, true];
+
+            destroyChart(rankingChart, '');
             optimizeChartHeight('rankingChartCanvas', players.length);
 
             // Create the chart
-            rankingChartCanvas = new Chart(ctx, {
+            rankingChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: players, // Player names
                     datasets: [
                         {
                             label: 'Won',
+                            hidden: hiddenStates[0],
                             data: punkteWon,
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderColor: 'rgba(75, 192, 192, 1)',
@@ -1211,6 +1237,7 @@
                         },
                         {
                             label: 'Bonus',
+                            hidden: hiddenStates[1],
                             data: punkteBonus,
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             borderColor: 'rgba(54, 162, 235, 1)',
@@ -1218,7 +1245,7 @@
                         },
                         {
                             label: 'Lost',
-                            hidden: true,
+                            hidden: hiddenStates[2],
                             data: punkteLost,
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderColor: 'rgba(255, 99, 132, 1)',
@@ -1254,7 +1281,7 @@
                             beginAtZero: true,
                             stacked: true,
                             ticks: {
-                                autoSkip:false
+                                autoSkip: false
                             }
                         }
                     }
