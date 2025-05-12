@@ -462,6 +462,7 @@
 
         function playerSelectionChanged() {
             populatePlayerMatchList();
+            updatePlayerInfoChart(playerSummary);
         }
 
         let manuallyChangedChart = true;
@@ -489,6 +490,7 @@
                     createRanglisteRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'playerInfo':
+                    updatePlayerInfoChart(playerSummary);
                     playerSelectionChanged();
                     break;
                 case 'currentStreak':
@@ -599,6 +601,7 @@
 
 
         var rankingSummary = {};
+        var playerSummary = {};
         // Summarize the Match List
         function summarizeMatchList(matchList) {
             const matchListSummary = {};
@@ -857,7 +860,8 @@
             }
 
             if (matchesPlayed > 0 ) {
-                createPlayerInfoList('rankingSummary', summarizeMatchList(playerMatchList), playerName);
+                playerSummary = summarizeMatchList(playerMatchList);
+                createPlayerInfoList('rankingSummary', playerSummary, playerName);
                 document.getElementById('matchList').innerHTML = marked.parse(playerMatchList);
             }
             else {
@@ -979,6 +983,11 @@
                                 break;
                             case 'rangliste':
                                 updateRanglistenChart(rankingSummary);
+                                break;
+                            case 'playerInfo':
+                                updatePlayerInfoChart(playerSummary);
+                                break;
+                            default:
                                 break;
                         }
                     }
@@ -1116,6 +1125,7 @@
             'matchesPlayed': [false, false],
             'percentMatchesWon': [false, false],
             'rangliste': [false, false, true],
+            'playerInfo': [false, false],
         };
         
         // Function to create or update the Matches chart
@@ -1288,6 +1298,100 @@
                             ticks: {
                                 autoSkip: false
                             }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePlayerInfoChart(matchListSummary) {
+            const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+
+            // Extract data for the chart
+            const players = Object.keys(matchListSummary).sort((a, b) => (matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed)-(matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed));
+            if (players.length < 1) return;
+            const matchesWon = players.map(player => 100*matchListSummary[player].matchesLost/matchListSummary[player].matchesPlayed);
+            const matchesLost = players.map(player => 100*matchListSummary[player].matchesWon/matchListSummary[player].matchesPlayed);
+
+            // Move the selected player to the top of the list and show the real percentage won/lost
+            const selectedPlayer = document.getElementById('playerName').value;
+            if (players.includes(selectedPlayer)) {
+                players.splice(players.indexOf(selectedPlayer), 1); // Remove the selected player
+                players.unshift(selectedPlayer); // Add the selected player to the top
+                matchesWon.splice(players.indexOf(selectedPlayer), 1);
+                matchesLost.splice(players.indexOf(selectedPlayer), 1);
+                matchesWon.unshift(matchListSummary[selectedPlayer].matchesWon / matchListSummary[selectedPlayer].matchesPlayed * 100);
+                matchesLost.unshift(matchListSummary[selectedPlayer].matchesLost / matchListSummary[selectedPlayer].matchesPlayed * 100);
+            }
+            else {
+                destroyChart(rankingChart, selectedPlayer + " didn't play...");
+                return;
+            }
+
+            // Remember the hidden state of the datasets
+            if(manuallyChangedChart) {
+                hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
+                manuallyChangedChart = false;
+            }
+            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false];
+
+            destroyChart(rankingChart, '');
+            optimizeChartHeight('rankingChartCanvas', players.length);
+
+            // Create the chart if it doesn't exist
+            rankingChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: players, // Player names
+                    datasets: [
+                        {
+                            label: 'Won',
+                            hidden: hiddenStates[0],
+                            data: matchesWon,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Lost',
+                            hidden: hiddenStates[1],
+                            data: matchesLost,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y', // Set the chart to horizontal
+                    responsive: true,
+                    maintainAspectRatio: false, // Allow the chart to resize freely
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            stacked: true,
+                            position: 'top', // Move the axis label to the top
+                            title: {
+                                display: true,
+                                text: '% Matches Won',
+                            },
+                            ticks: {
+                                callback: function(value) {  // Show only whole numbers
+                                    return Number.isInteger(value) ? value : null;
+                                }
+                            },                            
+                        },
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            ticks: {
+                                autoSkip: false
+                            },
                         }
                     }
                 }
