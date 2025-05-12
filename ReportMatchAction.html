@@ -1123,12 +1123,17 @@
             const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
             // Extract data for the chart
-            const players = document.getElementById('rankingListSelection').value === 'matchesPlayed' ?
+            let matchesPlayedRankingList =  document.getElementById('rankingListSelection').value === 'matchesPlayed';
+            const players = matchesPlayedRankingList ?
                             Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].matchesPlayed - matchListSummary[a].matchesPlayed) :
                             Object.keys(matchListSummary).sort((a, b) => (matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed)-(matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed));
             if (players.length < 1) return;
-            const matchesWon = players.map(player => matchListSummary[player].matchesWon);
-            const matchesLost = players.map(player => matchListSummary[player].matchesLost);
+            const matchesWon = matchesPlayedRankingList ?
+                               players.map(player => matchListSummary[player].matchesWon):
+                               players.map(player => 100*matchListSummary[player].matchesWon/matchListSummary[player].matchesPlayed);
+            const matchesLost = matchesPlayedRankingList ?
+                                players.map(player => matchListSummary[player].matchesLost):
+                                players.map(player => 100*matchListSummary[player].matchesLost/matchListSummary[player].matchesPlayed);
 
             // Remember the hidden state of the datasets
             if(manuallyChangedChart) {
