@@ -474,7 +474,12 @@
 
         function rankingListSelectionChanged() {
             // set the played time span match list again, in case it has been overwritten before
-            document.getElementById('matchList').innerHTML = marked.parse(matchList);
+            if (document.getElementById('rankingListSelection').value !== 'rangliste') {
+                document.getElementById('matchList').innerHTML = marked.parse(matchList);
+            }
+            else {
+                document.getElementById('matchList').innerHTML = marked.parse(ranglistenMatchList);
+            }
 
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'matchesPlayed':
@@ -486,8 +491,14 @@
                     createPercentMatchesWonRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'rangliste':
-                    updateRanglistenChart(rankingSummary);
-                    createRanglisteRankingList('rankingSummary', rankingSummary);
+                    if(Object.keys(ranglistenSummary).length > 0) {
+                        updateRanglistenChart(ranglistenSummary);
+                        createRanglisteRankingList('rankingSummary', ranglistenSummary);
+                    }
+                    else {
+                        destroyChart(rankingChart, "No chart available...");
+                        document.getElementById('rankingSummary').innerHTML = `<div><p class="centered">No Ranglisten matches played...</p></div>`;
+                    }
                     break;
                 case 'playerInfo':
                     updatePlayerInfoChart(playerSummary);
@@ -601,6 +612,7 @@
 
 
         var rankingSummary = {};
+        var ranglistenSummary = {};
         var playerSummary = {};
         // Summarize the Match List
         function summarizeMatchList(matchList) {
@@ -620,6 +632,7 @@
                         matchListSummary[winner] = { lastDateActive: '-',
                                                      matchesPlayed: 0, matchesWon: 0, matchesLost: 0, 
                                                      punkte: 0, punkteWon: 0, punkteLost: 0, punkteBonus: 0,
+                                                     punkteMatchesWon: 0, punkteMatchesLost: 0,
                                                      currentStreak: 0,
                                                      currentWon: 0, longestWon: 0, 
                                                      currentLost: 0, longestLost: 0 };
@@ -628,6 +641,7 @@
                         matchListSummary[loser] = { lastDateActive: '-',
                                                     matchesPlayed: 0, matchesWon: 0, matchesLost: 0, 
                                                     punkte: 0, punkteWon: 0, punkteLost: 0, punkteBonus: 0,
+                                                    punkteMatchesWon: 0, punkteMatchesLost: 0,
                                                     currentStreak: 0,
                                                     currentWon: 0, longestWon: 0, 
                                                     currentLost: 0, longestLost: 0 };
@@ -643,6 +657,7 @@
                     matchListSummary[winner].matchesWon++;
 
                     if (isSaturday) {
+                        matchListSummary[winner].punkteMatchesWon++;
                         matchListSummary[winner].punkte += +matchLength;
                         matchListSummary[winner].punkteWon += +matchLength;
                         if (matchListSummary[winner].lastDateActive !== matchDate) {
@@ -665,6 +680,7 @@
                     matchListSummary[loser].matchesLost++;
 
                     if (isSaturday) {
+                        matchListSummary[loser].punkteMatchesLost++;
                         matchListSummary[loser].punkteLost += +matchLength;
                         if (matchListSummary[loser].lastDateActive !== matchDate) {
                             matchListSummary[loser].punkte += bonusPunkte;
@@ -794,22 +810,24 @@
 
             var rank = 1;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].punkte-a[1].punkte)) {
-                rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
+                rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.punkteMatchesWon} - ${stats.punkteMatchesLost}|\n`;
             }   
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
         var matchList = '';
+        var ranglistenMatchList = '';
 
         // Populate the Played Time Span List
         function populatePlayedTimeSpanMatchList() {
-            if (matchRecords.length === 0) {
-                return;
-            }
+            if (matchRecords.length === 0) return;
 
             var timeSpanSelection = document.getElementById("timeSpanSelection").value;
-            let gotMatches = false
+            let gotMatches = false;
+            let gotRanglistenMatches = false;
+
             matchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
+            ranglistenMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     var matchInfo = matchRecords[i].split('|');
@@ -817,21 +835,31 @@
                     if (matchDate.startsWith(timeSpanSelection)) {
                         matchList += `${matchRecords[i]}\n`;
                         gotMatches = true
+                        const datetime = new Date(matchDate);
+                        const isSaturday = datetime.getDay() == 6;
+                        if (isSaturday) {
+                            ranglistenMatchList += `${matchRecords[i]}\n`;
+                            gotRanglistenMatches = true;
+                        }
                     }
                     else if (gotMatches) break;
                 }
             }
-            document.getElementById('matchList').innerHTML = marked.parse(matchList);
-            rankingSummary = summarizeMatchList(matchList);
 
+            rankingSummary = summarizeMatchList(matchList);
+            if(gotRanglistenMatches) {
+                ranglistenSummary = summarizeMatchList(ranglistenMatchList);
+            }
+            else {
+                ranglistenSummary = {};
+            }
+            
             rankingListSelectionChanged();
         }
 
         // Populate the Player Match List
         function populatePlayerMatchList() {
-            if (matchRecords.length === 0) {
-                return;
-            }
+            if (matchRecords.length === 0) return;
 
             playerName = document.getElementById('playerName').value;
             if (playerName === 'Select or Edit') {
@@ -865,7 +893,7 @@
                 document.getElementById('matchList').innerHTML = marked.parse(playerMatchList);
             }
             else {
-                document.getElementById('rankingSummary').innerHTML = `<div><p class="centered"><br>${playerName} didn't play...</p></div>`;
+                document.getElementById('rankingSummary').innerHTML = `<div><p class="centered">${playerName} didn't play...</p></div>`;
                 document.getElementById('matchList').innerHTML = '';
             }
         }
@@ -982,7 +1010,7 @@
                                 updateMatchesPlayedChart(rankingSummary);
                                 break;
                             case 'rangliste':
-                                updateRanglistenChart(rankingSummary);
+                                updateRanglistenChart(ranglistenSummary);
                                 break;
                             case 'playerInfo':
                                 updatePlayerInfoChart(playerSummary);
