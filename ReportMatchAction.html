@@ -187,9 +187,6 @@
                 </select>
             </div>
             <div class="input-group">
-                <button id="adjustExpectedRatingButton" class="btn btn-primary" type="button" onclick="adjustExpectedRatingList(matchList)">Adjust Expected Rating</button>
-            </div>
-            <div class="input-group">
                 <select id="intervalSelection" title="Interval Selection" class="form-select" style="flex: 0 0 40%;" onchange="intervalSelectionChanged()">
                     <option class="centered" value="Daily">Daily</option>
                     <option class="centered" value="Monthly">Monthly</option>
@@ -199,6 +196,9 @@
                 <select id="timeSpanSelection" title="Played Time Span Selection" class="form-select" style="flex: 0 0 60%;" onchange="playedTimeSpanSelectionChanged()">
                     <option class="centered" value="Fetch Matches">Fetch Matches</option>
                 </select>
+            </div>
+            <div class="input-group" id="adjustExpectedRating">
+                <button id="adjustExpectedRatingButton" class="btn btn-primary" type="button" onclick="adjustExpectedRatingList(matchList)">Adjust Expected Rating</button>
             </div>
 
             <h5 id="rankingChartToggle" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
@@ -504,6 +504,7 @@
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'ratingList':
                     ratingSummary = summarizeRatingList(matchList);
+                    updateRatingListChart(ratingSummary);
                     createRatingListRankingList('rankingSummary', ratingSummary);
                     break;
                 case 'matchesPlayed':
@@ -642,7 +643,6 @@
 
         // Adjust the Expected Rating based on the Match List
         function adjustExpectedRatingList(matchList) {
-            const matchListSummary = {};
             var matchRecords = matchList.split("\n");
 
             for (var i = matchRecords.length-1; i > 1; i--) {
@@ -677,8 +677,7 @@
             }   
 
             createRatingListRankingList('rankingSummary', ratingSummary);
-
-            return matchListSummary;
+            updateRatingListChart(ratingSummary);
         }
 
         // Summarize the Match List
@@ -1187,8 +1186,11 @@
 
         // show/hide the player name input
         document.getElementById("rankingListSelection").addEventListener("change", function () {
-            const element = document.getElementById("playerNameSelection");
-            this.value === "playerInfo" ? element.style.display = "flex" : element.style.display = "none";
+            const playerNameSelection = document.getElementById("playerNameSelection");
+            this.value === "playerInfo" ? playerNameSelection.style.display = "flex" : playerNameSelection.style.display = "none";
+            
+            const adjustExpectedRating = document.getElementById("adjustExpectedRating");
+            this.value === "ratingList" ? adjustExpectedRating.style.display = "flex" : adjustExpectedRating.style.display = "none";
         });
 
         addToggleListener('rankingChart');
@@ -1220,11 +1222,19 @@
             document.getElementById('yourName').value = yourName;
 
             // Expand/Collapse the Player Name Selection depending on the Ranking List Selection
-            const element = document.getElementById("playerNameSelection");
+            const playerNameSelection = document.getElementById("playerNameSelection");
             if (rankingListSelection === "playerInfo") {
-                element.style.display = "flex"; // Show the element
+                playerNameSelection.style.display = "flex"; // Show the element
             } else {
-                element.style.display = "none"; // Hide the element
+                playerNameSelection.style.display = "none"; // Hide the element
+            }
+
+            // Expand/Collapse the Adjust Expected Rating depending on the Ranking List Selection
+            const adjustExpectedRating = document.getElementById("adjustExpectedRating");
+            if (rankingListSelection === "playerInfo") {
+                adjustExpectedRating.style.display = "flex"; // Show the element
+            } else {
+                adjustExpectedRating.style.display = "none"; // Hide the element
             }
 
             // Interval Selection
@@ -1303,6 +1313,7 @@
         var rankingChart;
         let hiddenStates;
         let defaultHiddenStates = {
+            'ratingList': [false, false],
             'matchesPlayed': [false, false],
             'percentMatchesWon': [false, false],
             'rangliste': [false, false, true],
@@ -1574,6 +1585,84 @@
                             ticks: {
                                 autoSkip: false
                             },
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to create or update the Ranglisten chart
+        function updateRatingListChart(matchListSummary) {
+            const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+
+            // Extract data for the chart
+            const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].expectedRating - matchListSummary[a].expectedRating);
+            if (players.length < 1) return;
+            const rating = players.map(player => Math.round(matchListSummary[player].rating));
+            const expectedRating = players.map(player => Math.round(matchListSummary[player].expectedRating));
+
+            // Remember the hidden state of the datasets
+            if(manuallyChangedChart) {
+                hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
+                manuallyChangedChart = false;
+            }
+            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false, true];
+
+            destroyChart(rankingChart, '');
+            optimizeChartHeight('rankingChartCanvas', players.length);
+
+            // Create the chart
+            rankingChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: players, // Player names
+                    datasets: [
+                        {
+                            label: 'Rating',
+                            hidden: hiddenStates[0],
+                            data: rating,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Expected Rating',
+                            hidden: hiddenStates[1],
+                            data: expectedRating,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                    ]
+                },
+                options: {
+                    indexAxis: 'y', // Set the chart to horizontal
+                    responsive: true,
+                    maintainAspectRatio: false, // Allow the chart to resize freely
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: false,
+                            position: 'top',
+                            title: {
+                                display: true,
+                                text: 'ELO Points',
+                            },
+                            ticks: {
+                                callback: function(value) {  // Show only whole numbers
+                                    return Number.isInteger(value) ? value : null;
+                                }
+                            },                            
+                        },
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                autoSkip: false
+                            }
                         }
                     }
                 }
