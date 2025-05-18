@@ -198,7 +198,9 @@
                 </select>
             </div>
             <div class="input-group" id="adjustExpectedRating">
-                <button id="adjustExpectedRatingButton" class="btn btn-primary" type="button" onclick="adjustExpectedRatingList(matchList)">Adjust Expected Rating</button>
+                <div style="width:100%; text-align:center;">
+                    <button id="adjustExpectedRatingButton" class="btn btn-primary" type="button" onclick="adjustExpectedRatingList(matchList)">Adjust Expected Rating</button>
+                </div>
             </div>
 
             <h5 id="rankingChartToggle" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
@@ -1187,10 +1189,10 @@
         // show/hide the player name input
         document.getElementById("rankingListSelection").addEventListener("change", function () {
             const playerNameSelection = document.getElementById("playerNameSelection");
-            this.value === "playerInfo" ? playerNameSelection.style.display = "flex" : playerNameSelection.style.display = "none";
+            playerNameSelection.style.display = this.value === "playerInfo" ? "flex" : "none";
             
             const adjustExpectedRating = document.getElementById("adjustExpectedRating");
-            this.value === "ratingList" ? adjustExpectedRating.style.display = "flex" : adjustExpectedRating.style.display = "none";
+            adjustExpectedRating.style.display = this.value === "ratingList" ? "flex" : "none";
         });
 
         addToggleListener('rankingChart');
@@ -1223,19 +1225,11 @@
 
             // Expand/Collapse the Player Name Selection depending on the Ranking List Selection
             const playerNameSelection = document.getElementById("playerNameSelection");
-            if (rankingListSelection === "playerInfo") {
-                playerNameSelection.style.display = "flex"; // Show the element
-            } else {
-                playerNameSelection.style.display = "none"; // Hide the element
-            }
+            playerNameSelection.style.display = rankingListSelection === "playerInfo" ? "flex" : "none";
 
             // Expand/Collapse the Adjust Expected Rating depending on the Ranking List Selection
             const adjustExpectedRating = document.getElementById("adjustExpectedRating");
-            if (rankingListSelection === "playerInfo") {
-                adjustExpectedRating.style.display = "flex"; // Show the element
-            } else {
-                adjustExpectedRating.style.display = "none"; // Hide the element
-            }
+            adjustExpectedRating.style.display = rankingListSelection === "ratingList" ? "flex" : "none"; // Hide the element
 
             // Interval Selection
             const intervalSelection = localStorage.getItem('intervalSelection') || 'Daily';
