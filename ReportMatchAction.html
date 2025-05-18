@@ -170,6 +170,7 @@
             <!-- Played Time Span -->
             <div class="input-group">
                 <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionManuallyChanged()">
+                    <option class="centered" value="ratingList">Rating List</option>
                     <option class="centered" value="matchesPlayed">Matches Played</option>
                     <option class="centered" value="percentMatchesWon">% Matches Won</option>
                     <option class="centered" value="rangliste">Rangliste</option>
@@ -184,6 +185,9 @@
                 <select id="playerName" title="Player Name" class="form-select" onchange="playerSelectionChanged()">
                     <option value="Select">Select</option>
                 </select>
+            </div>
+            <div class="input-group">
+                <button id="adjustExpectedRatingButton" class="btn btn-primary" type="button" onclick="adjustExpectedRatingList(matchList)">Adjust Expected Rating</button>
             </div>
             <div class="input-group">
                 <select id="intervalSelection" title="Interval Selection" class="form-select" style="flex: 0 0 40%;" onchange="intervalSelectionChanged()">
@@ -498,6 +502,10 @@
             }
 
             switch ( document.getElementById('rankingListSelection').value) {
+                case 'ratingList':
+                    ratingSummary = summarizeRatingList(matchList);
+                    createRatingListRankingList('rankingSummary', ratingSummary);
+                    break;
                 case 'matchesPlayed':
                     updateMatchesPlayedChart(rankingSummary);
                     createMatchesPlayedRankingList('rankingSummary', rankingSummary);
@@ -627,9 +635,99 @@
         }
 
 
+        var ratingSummary = {};
         var rankingSummary = {};
         var ranglistenSummary = {};
         var playerSummary = {};
+
+        // Adjust the Expected Rating based on the Match List
+        function adjustExpectedRatingList(matchList) {
+            const matchListSummary = {};
+            var matchRecords = matchList.split("\n");
+
+            for (var i = matchRecords.length-1; i > 1; i--) {
+                if (matchRecords[i].length > 0) {
+                    const matchInfo = matchRecords[i].split('|');
+                    const winner = matchInfo[2];
+                    const loser = matchInfo[3];
+                    const matchLength = Number(matchInfo[4]);
+
+                    const matchLengthRoot = Math.sqrt(matchLength);
+                    const ratingPointsAtStake = 4 * matchLengthRoot;
+                    const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(ratingSummary[winner].expectedRating - ratingSummary[loser].expectedRating ) * matchLengthRoot / 2000.0));
+
+                    const ratingDifference = (1.0 - winningProbability) * ratingPointsAtStake;
+
+                    // winner
+                    ratingSummary[winner].expectedRating += ratingDifference;
+                    ratingSummary[winner].matchesPlayed++;
+                    ratingSummary[winner].matchesWon++;
+
+                    // loser
+                    ratingSummary[loser].expectedRating -= ratingDifference;
+                    ratingSummary[loser].matchesPlayed++;
+                    ratingSummary[loser].matchesLost++;
+                }
+            }
+
+            const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
+
+            for (const [player, stats] of Object.entries(ratingSummary)) {
+                    ratingSummary[player].expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(ratingSummary[player].expectedRating - 1800) * matchLengthRoot / 2000))));
+            }   
+
+            createRatingListRankingList('rankingSummary', ratingSummary);
+
+            return matchListSummary;
+        }
+
+        // Summarize the Match List
+        function summarizeRatingList(matchList) {
+            const matchListSummary = {};
+            var matchRecords = matchList.split("\n");
+
+            for (var i = matchRecords.length-1; i > 1; i--) {
+                if (matchRecords[i].length > 0) {
+                    const matchInfo = matchRecords[i].split('|');
+                    const matchDate = matchInfo[1];
+                    const winner = matchInfo[2];
+                    const loser = matchInfo[3];
+                    const matchLength = matchInfo[4];
+
+                    // Initialize player matchListSummary if not already present
+                    if (!matchListSummary[winner]) {
+                        matchListSummary[winner] = { matchesPlayed: 0, matchesWon: 0, matchesLost: 0,
+                                                     rating: 0, expectedRating: 0,
+                                                     percentMatchesWon: 0, expectedMatchesWon: 0 };
+                    }
+                    if (!matchListSummary[loser]) {
+                        matchListSummary[loser] = { matchesPlayed: 0, matchesWon: 0, matchesLost: 0,
+                                                     rating: 0, expectedRating: 0,
+                                                     percentMatchesWon: 0, expectedMatchesWon: 0 };
+                    }
+                    
+                    // winner
+                    matchListSummary[winner].matchesPlayed++;
+                    matchListSummary[winner].matchesWon++;
+
+                    // loser
+                    matchListSummary[loser].matchesPlayed++;
+                    matchListSummary[loser].matchesLost++;
+                }
+            }
+
+            const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
+
+            for (const [player, stats] of Object.entries(matchListSummary)) {
+                    stats.percentMatchesWon = Math.round(stats.matchesWon*100/stats.matchesPlayed);
+                    stats.expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(playerRating[player].rating - 1800) * matchLengthRoot / 2000))));
+                    stats.rating = playerRating[player].rating;
+                    stats.expectedRating = stats.rating;
+            }   
+
+            return matchListSummary;
+        }
+
         // Summarize the Match List
         function summarizeMatchList(matchList) {
             const matchListSummary = {};
@@ -713,6 +811,19 @@
                 }
             }
             return matchListSummary;
+        }
+
+        // Create the Rating List list
+        function createRatingListRankingList(summaryElement, rankingSummary) {
+            var ratingListList = '|   |    |% Won|% Exp|Rat|eRat|Matches|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
+            ratingListList += `|--------|--------|--------|------|------|-----|---------|\n`;
+
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].expectedRating - a[1].expectedRating)) {
+                const expectedRating = Math.round(stats.expectedRating);
+                ratingListList += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.rating}|${expectedRating}|${stats.matchesPlayed}|\n`;    
+            }   
+
+            document.getElementById(summaryElement).innerHTML = marked.parse(ratingListList);
         }
 
         // Create the Player Info
