@@ -110,7 +110,7 @@
             <!-- Winner -->
             <div class="input-group">
                 <span id="winnerLabel" class="input-group-text">Winner</span>
-                <select id="winnerName" title="Winner Name" class="form-select">
+                <select id="winnerName" title="Winner Name" class="form-select" style="flex: 0 0 60%;">
                     <option value="Select or edit">Select</option>
                     <option value="Winner">Winner</option>
                 </select>
@@ -119,7 +119,7 @@
             <!-- Loser -->
             <div class="input-group">
                 <span class="input-group-text">Loser</span>
-                <select id="loserName" title="Loser Name" class="form-select">
+                <select id="loserName" title="Loser Name" class="form-select" style="flex: 0 0 64%;">
                     <option value="Select or edit">Select</option>
                     <option value="Loser">Loser</option>
                 </select>
@@ -327,14 +327,7 @@
                 alert('Select or edit the Loser name!');
             }
             else if (!githubToken) {
-                alert(JSON.stringify({ 
-                    event_type: 'match_report', 
-                    client_payload: { 
-                        winner_name: `${winnerName}`,
-                        loser_name:  `${loserName}`, 
-                        match_length: `${matchLength}`
-                    } 
-                }));
+                alert('Add a valid GitHub token!');
             }
             else {
                 await refreshRunsStatus();
@@ -423,9 +416,32 @@
             return `${dateString} ${timeString}`;
         }
 
+        let playerRating = {};
+
+        function populatePlayerRating(ratingList) {
+            const matchListSummary = {};
+            var ratingEntries = ratingList.split("\n");
+
+            for (var i = 0; i < ratingEntries.length; i++) {
+                if (ratingEntries[i].length > 0) {
+                    const ratingEntry = ratingEntries[i].split('|');
+                    const name = ratingEntry[2];
+                    const rating = Number(ratingEntry[3].replace(',', ''));
+                    const experience = Number(ratingEntry[5]);
+
+                    // Create a new playerRating if not already present
+                    if (!playerRating[name]) {
+                        playerRating[name] = { rating: rating, experience: experience };
+                    }
+                }
+            }
+            return playerRating;            
+        }
+
         // Fetch the Rating List
         function fetchRatingList() {
-            fetchMarkDownFromRepo('RatingList', 'ratingList');
+            const ratingList = fetchMarkDownFromRepoSync('RatingList');
+            populatePlayerRating(ratingList);
         }
 
         // Set the last Runs Info
@@ -673,7 +689,6 @@
                     if (matchListSummary[winner].currentWon > matchListSummary[winner].longestWon) {
                         matchListSummary[winner].longestWon = matchListSummary[winner].currentWon;
                     }
-                    if (matchListSummary[winner].lastDateActive !== matchDate) matchListSummary[winner].punkte += bonusPunkte;
 
                     // loser
                     matchListSummary[loser].matchesPlayed++;
@@ -695,8 +710,6 @@
                     if (matchListSummary[loser].currentLost > matchListSummary[loser].longestLost) {
                         matchListSummary[loser].longestLost = matchListSummary[loser].currentLost;
                     }
-                    if (matchListSummary[loser].lastDateActive !== matchDate) matchListSummary[loser].punkte += bonusPunkte;
-                    matchListSummary[loser].lastDateActive = matchDate;
                 }
             }
             return matchListSummary;
@@ -708,24 +721,30 @@
             var vipPlayer = '';
             const opponents = {};
 
+            const vipRating = playerRating[vipPlayerName].rating;
+            const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
+
             for (const [player, stats] of Object.entries(playerSummary).sort()) {
                 if (player === vipPlayerName) {
                     const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
-                    vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${stats.matchesPlayed}|\n`;    
+                    const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - 1800) * matchLengthRoot / 2000))));
+                    vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;    
                 }
                 else {
                     opponents[player] = stats;
                 }
             }   
 
+
             for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].matchesWon/a[1].matchesPlayed)-(b[1].matchesWon/b[1].matchesPlayed))) {
-                const winPercentage = Math.round(stats.matchesLost*100/stats.matchesPlayed);
-                opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${stats.matchesPlayed}|\n`;
+                const winPercentage = Math.round(stats.matchesLost * 100 / stats.matchesPlayed);
+                const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - playerRating[player].rating) * matchLengthRoot / 2000))));
+                opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;
             }
 
-            var playerInfoList = '|   |    |% Won|Matches|\n|:---:|:---:|:---:|:---:|\n';
+            var playerInfoList = '|   |    |% Won|% Exp|Rat|Matches|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
             playerInfoList += vipPlayer;
-            playerInfoList += `|--------|--------|--------|---|---|\n`;
+            playerInfoList += `|--------|--------|--------|------|-----|---------|\n`;
             playerInfoList += opponentsList;
 
             document.getElementById(summaryElement).innerHTML = marked.parse(playerInfoList);
@@ -898,6 +917,26 @@
             }
         }
 
+        // Synchronously fetch the RatingList markdown file and return its content
+        function fetchMarkDownFromRepoSync(fileName) {
+            const repoName = document.getElementById('clubSelection').value;
+            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}.md?timestamp=${Date.now()}`;
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, false); // false for synchronous request
+            xhr.setRequestHeader('Authorization', `token ${githubToken}`);
+            xhr.send(null);
+
+            if (xhr.status === 200) {
+                const data = JSON.parse(xhr.responseText);
+                if (data.content) {
+                    const fileContent = decodeURIComponent(escape(window.atob(data.content)));
+                    document.getElementById('ratingList').innerHTML = marked.parse(fileContent);
+                    return fileContent;
+                }
+            }
+            console.log(`Failed to fetch file ${fileName}.md!`);
+            return '';
+        }
 
         // Fetch a markdown file from the repository
         function fetchMarkDownFromRepo(fileName, divName) {
@@ -916,6 +955,7 @@
                 if (data.content) {
                     const fileContent = decodeURIComponent(escape(window.atob( data.content )));
                     document.getElementById(divName).innerHTML = marked.parse(fileContent);
+                    return fileContent;
                 } else {
                     console.log(`Failed to fetch file ${fileName}.md!`);
                 }
