@@ -34,10 +34,12 @@
             text-align: center;
             background-color: #0d0064;
             color: #61e7ff;
+            white-space: nowrap;
         }
 
         td {
             padding: 3px;
+            white-space: nowrap;
         }
 
         tr:nth-child(odd) {
@@ -62,6 +64,12 @@
         
         .btn-primary {
             background-color: #0004fd;
+            border-color: #1eff29;
+            margin-top: 15px;
+        }
+
+        .btn-secondary {
+            background-color: #0d0064;
             border-color: #1eff29;
             margin-top: 15px;
         }
@@ -197,10 +205,19 @@
                     <option class="centered" value="Fetch Matches">Fetch Matches</option>
                 </select>
             </div>
-            <div class="input-group" id="adjustExpectedRating">
-                <div style="width:100%; text-align:center;">
-                    <button id="adjustExpectedRatingButton" class="btn btn-primary" type="button" onclick="adjustExpectedRatingList(matchList)">Adjust Expected Rating</button>
-                </div>
+            <div id="replaySection" title="Replay Section" class="input-group">
+                <span class="input-group-text">Replay</span>
+                <select id="replayTimes" title="Replay Times" class="form-select">
+                    <option class="centered" value="1">1 x</option>
+                    <option class="centered" value="10">10 x</option>
+                    <option class="centered" value="20">20 x</option>
+                    <option class="centered" value="30">30 x</option>
+                    <option class="centered" value="40">40 x</option>
+                    <option class="centered" value="50">50 x</option>
+                    <option class="centered" value="60" selected>60 x</option>
+                </select>
+                <button id="replayPlayButton" title="Play Replay" class="btn btn-primary" type="button" onclick="adjustExpectedRatingList(matchList)">▶︎</button>
+                <button id="replayResetButton" title="Reset Replay" class="btn btn-secondary" type="button" onclick="rankingListSelectionManuallyChanged()">⏮︎</button>
             </div>
 
             <h5 id="rankingChartToggle" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
@@ -1186,13 +1203,13 @@
         addToggleListener('matchReportForm');
         addToggleListener('ratingList');
 
-        // show/hide the player name input
+        // show/hide the player name input and the replay section
         document.getElementById("rankingListSelection").addEventListener("change", function () {
             const playerNameSelection = document.getElementById("playerNameSelection");
             playerNameSelection.style.display = this.value === "playerInfo" ? "flex" : "none";
             
-            const adjustExpectedRating = document.getElementById("adjustExpectedRating");
-            adjustExpectedRating.style.display = this.value === "ratingList" ? "flex" : "none";
+            const replaySection = document.getElementById("replaySection");
+            replaySection.style.display = this.value === "ratingList" ? "flex" : "none";
         });
 
         addToggleListener('rankingChart');
@@ -1227,9 +1244,9 @@
             const playerNameSelection = document.getElementById("playerNameSelection");
             playerNameSelection.style.display = rankingListSelection === "playerInfo" ? "flex" : "none";
 
-            // Expand/Collapse the Adjust Expected Rating depending on the Ranking List Selection
-            const adjustExpectedRating = document.getElementById("adjustExpectedRating");
-            adjustExpectedRating.style.display = rankingListSelection === "ratingList" ? "flex" : "none"; // Hide the element
+            // Expand/Collapse the Replay section depending on the Ranking List Selection
+            const replaySection = document.getElementById("replaySection");
+            replaySection.style.display = rankingListSelection === "ratingList" ? "flex" : "none"; // Hide the element
 
             // Interval Selection
             const intervalSelection = localStorage.getItem('intervalSelection') || 'Daily';
