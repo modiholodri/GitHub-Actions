@@ -211,13 +211,13 @@
                     <option class="centered" value="1">1 x</option>
                     <option class="centered" value="10">10 x</option>
                     <option class="centered" value="20">20 x</option>
-                    <option class="centered" value="30">30 x</option>
+                    <option class="centered" value="30" selected>30 x</option>
                     <option class="centered" value="40">40 x</option>
                     <option class="centered" value="50">50 x</option>
-                    <option class="centered" value="60" selected>60 x</option>
+                    <option class="centered" value="60">60 x</option>
                 </select>
-                <button id="replayPlayButton" title="Play Replay" class="btn btn-primary" type="button" onclick="adjustExpectedRatingList(matchList)">▶︎</button>
-                <button id="replayResetButton" title="Reset Replay" class="btn btn-secondary" type="button" onclick="rankingListSelectionManuallyChanged()">⏮︎</button>
+                <button id="replayPlayButton" title="Play Replay" class="btn btn-primary" type="button" onclick="startPlayingRatingList()">▶︎</button>
+                <button id="replayResetButton" title="Reset Replay" class="btn btn-secondary" type="button" onclick="resetPlayingRatingList()">⏮︎</button>
             </div>
 
             <h5 id="rankingChartToggle" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
@@ -1600,6 +1600,29 @@
                     }
                 }
             });
+        }
+
+        let ratingListPlayInterval = setInterval(playRatingList, 500);
+
+        let remainingReplayTimes = 0;
+        function startPlayingRatingList() {
+            remainingReplayTimes = document.getElementById('replayTimes').value;
+        }
+
+        function resetPlayingRatingList() {
+            remainingReplayTimes = 0;
+            rankingListSelectionManuallyChanged();
+        }
+
+        function playRatingList() {
+            if (remainingReplayTimes > 0) {
+                adjustExpectedRatingList(matchList);
+                remainingReplayTimes--;
+                document.getElementById('replayPlayButton').innerText = `▶︎ ${remainingReplayTimes}`;
+            }
+            else {
+                document.getElementById('replayPlayButton').innerText = `▶︎`;
+            }
         }
 
         // Function to create or update the Ranglisten chart
