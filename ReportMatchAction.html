@@ -1312,13 +1312,13 @@
         }
 
         // Dynamically adjust canvas height based on the number of players
-        function optimizeChartHeight(chartName, numberOfPlayers) {
+        function optimizeChartCanvasHeight(rankingChartCanvas, numberOfPlayers) {
             const heightPerPlayer = 20; // Height per player in pixels
             const additionalHeight = 100;
             const minHeight = additionalHeight + heightPerPlayer; // Minimum height for the canvas
             const calculatedHeight = Math.max(numberOfPlayers * heightPerPlayer + additionalHeight, minHeight);
 
-            document.getElementById(chartName).height = calculatedHeight;
+            document.getElementById(rankingChartCanvas).height = calculatedHeight;
         }
 
         var rankingChart;
@@ -1356,7 +1356,7 @@
             else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false];
 
             destroyChart(rankingChart, '');
-            optimizeChartHeight('rankingChartCanvas', players.length);
+            optimizeChartCanvasHeight('rankingChartCanvas', players.length);
 
             // Create the chart if it doesn't exist
             rankingChart = new Chart(ctx, {
@@ -1437,7 +1437,7 @@
             else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false, true];
 
             destroyChart(rankingChart, '');
-            optimizeChartHeight('rankingChartCanvas', players.length);
+            optimizeChartCanvasHeight('rankingChartCanvas', players.length);
 
             // Create the chart
             rankingChart = new Chart(ctx, {
@@ -1540,7 +1540,7 @@
             else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false];
 
             destroyChart(rankingChart, '');
-            optimizeChartHeight('rankingChartCanvas', players.length);
+            optimizeChartCanvasHeight('rankingChartCanvas', players.length);
 
             // Create the chart if it doesn't exist
             rankingChart = new Chart(ctx, {
@@ -1612,15 +1612,26 @@
             const rating = players.map(player => Math.round(matchListSummary[player].rating));
             const expectedRating = players.map(player => Math.round(matchListSummary[player].expectedRating));
 
+            // Only destroy and recreate the chart if the number of players changed
+            if (manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
+                destroyChart(rankingChart, '');
+                optimizeChartCanvasHeight('rankingChartCanvas', players.length);
+            }
+            else if (rankingChart) {
+                // Update data and labels if chart exists
+                rankingChart.data.labels = players;
+                rankingChart.data.datasets[0].data = rating;
+                rankingChart.data.datasets[1].data = expectedRating;
+                rankingChart.update();
+                return;
+            }
+
             // Remember the hidden state of the datasets
             if(manuallyChangedChart) {
                 hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
                 manuallyChangedChart = false;
             }
-            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false, true];
-
-            destroyChart(rankingChart, '');
-            optimizeChartHeight('rankingChartCanvas', players.length);
+            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false];
 
             // Create the chart
             rankingChart = new Chart(ctx, {
