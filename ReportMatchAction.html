@@ -1297,7 +1297,7 @@
 
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
     <script>
         Chart.defaults.color = 'white';  // default text color
         Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
@@ -1627,7 +1627,7 @@
             if (players.length < 1) return;
             const rating = players.map(player => Math.round(matchListSummary[player].rating));
             const expectedRating = players.map(player => Math.round(matchListSummary[player].expectedRating));
-
+            
             // Only destroy and recreate the chart if the number of players changed
             if (manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
                 destroyChart(rankingChart, '');
@@ -1679,6 +1679,17 @@
                     maintainAspectRatio: false, // Allow the chart to resize freely
                     plugins: {
                         legend: { position: 'bottom' },
+                        annotation: {
+                            annotations: {
+                                line1: {
+                                    type: 'line',
+                                    xMin: 1800, // Y-axis value where the line starts
+                                    xMax: 1800, // Y-axis value where the line ends
+                                    borderColor: 'rgba(255, 0, 0, 0.7)',
+                                    borderWidth: 2,
+                                }
+                            }
+                        }                    
                     },
                     scales: {
                         x: {
