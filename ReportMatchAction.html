@@ -179,9 +179,9 @@
             <div class="input-group">
                 <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionManuallyChanged()">
                     <option class="centered" value="ratingList">Rating List</option>
+                    <option class="centered" value="rangliste">Rangliste</option>
                     <option class="centered" value="matchesPlayed">Matches Played</option>
                     <option class="centered" value="percentMatchesWon">% Matches Won</option>
-                    <option class="centered" value="rangliste">Rangliste</option>
                     <option class="centered" value="playerInfo">Player Info</option>
                     <option class="centered" value="currentStreak">Current Streak</option>
                     <option class="centered" value="longestWinningStreak">> Winning Streak</option>
@@ -212,10 +212,10 @@
                     <option class="centered" value="1">1 x</option>
                     <option class="centered" value="10">10 x</option>
                     <option class="centered" value="20">20 x</option>
-                    <option class="centered" value="30" selected>30 x</option>
+                    <option class="centered" value="30">30 x</option>
                     <option class="centered" value="40">40 x</option>
                     <option class="centered" value="50">50 x</option>
-                    <option class="centered" value="60">60 x</option>
+                    <option class="centered" value="60" selected>60 x</option>
                 </select>
                 <button id="replayPlayButton" title="Play Replay" class="btn btn-primary" type="button" onclick="startPlayingRatingList()">▶︎</button>
                 <button id="replayResetButton" title="Reset Replay" class="btn btn-secondary" type="button" onclick="resetPlayingRatingList()">⏮︎</button>
@@ -694,17 +694,17 @@
 
                     const matchLengthRoot = Math.sqrt(matchLength);
                     const ratingPointsAtStake = 4 * matchLengthRoot;
-                    const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(ratingSummary[winner].expectedRating - ratingSummary[loser].expectedRating ) * matchLengthRoot / 2000.0));
+                    const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(ratingSummary[winner].futureRating - ratingSummary[loser].futureRating ) * matchLengthRoot / 2000.0));
 
                     const ratingDifference = (1.0 - winningProbability) * ratingPointsAtStake;
 
                     // winner
-                    ratingSummary[winner].expectedRating += ratingDifference;
+                    ratingSummary[winner].futureRating += ratingDifference;
                     ratingSummary[winner].matchesPlayed++;
                     ratingSummary[winner].matchesWon++;
 
                     // loser
-                    ratingSummary[loser].expectedRating -= ratingDifference;
+                    ratingSummary[loser].futureRating -= ratingDifference;
                     ratingSummary[loser].matchesPlayed++;
                     ratingSummary[loser].matchesLost++;
                 }
@@ -713,7 +713,7 @@
             const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
 
             for (const [player, stats] of Object.entries(ratingSummary)) {
-                    ratingSummary[player].expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(ratingSummary[player].expectedRating - 1800) * matchLengthRoot / 2000))));
+                    ratingSummary[player].expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(ratingSummary[player].futureRating - 1800) * matchLengthRoot / 2000))));
             }   
 
             createRatingListRankingList('rankingSummary', ratingSummary);
@@ -736,12 +736,12 @@
                     // Initialize player matchListSummary if not already present
                     if (!matchListSummary[winner]) {
                         matchListSummary[winner] = { matchesPlayed: 0, matchesWon: 0, matchesLost: 0,
-                                                     rating: 0, expectedRating: 0,
+                                                     rating: 0, futureRating: 0,
                                                      percentMatchesWon: 0, expectedMatchesWon: 0 };
                     }
                     if (!matchListSummary[loser]) {
                         matchListSummary[loser] = { matchesPlayed: 0, matchesWon: 0, matchesLost: 0,
-                                                     rating: 0, expectedRating: 0,
+                                                     rating: 0, futureRating: 0,
                                                      percentMatchesWon: 0, expectedMatchesWon: 0 };
                     }
                     
@@ -761,7 +761,7 @@
                     stats.percentMatchesWon = Math.round(stats.matchesWon*100/stats.matchesPlayed);
                     stats.expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(playerRating[player].rating - 1800) * matchLengthRoot / 2000))));
                     stats.rating = playerRating[player].rating;
-                    stats.expectedRating = stats.rating;
+                    stats.futureRating = stats.rating;
             }   
 
             return matchListSummary;
@@ -854,12 +854,12 @@
 
         // Create the Rating List list
         function createRatingListRankingList(summaryElement, rankingSummary) {
-            var ratingListList = '|   |    |% Won|% Exp|Rat|eRat|Matches|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
-            ratingListList += `|--------|--------|--------|------|------|-----|---------|\n`;
+            var ratingListList = '|   |   |% Won|% Fut|Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
 
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].expectedRating - a[1].expectedRating)) {
-                const expectedRating = Math.round(stats.expectedRating);
-                ratingListList += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.rating}|${expectedRating}|${stats.matchesPlayed}|\n`;    
+            var rank = 1;
+            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].futureRating - a[1].futureRating)) {
+                const futureRating = Math.round(stats.futureRating);
+                ratingListList += `|${rank++}|${player}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.rating}|${futureRating}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;    
             }   
 
             document.getElementById(summaryElement).innerHTML = marked.parse(ratingListList);
@@ -1037,7 +1037,7 @@
                 return;
             }
 
-            var timeSpanSelection = document.getElementById("timeSpanSelection").value;
+            var timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
 
             let matchesPlayed = 0;
             var playerMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
@@ -1045,7 +1045,7 @@
                 if (matchRecords[i].length > 0) {
                     const matchInfo = matchRecords[i].split('|');
                     const matchDate = matchInfo[1];
-                    if (matchDate.startsWith(timeSpanSelection)) {
+                    if (timeSpanRegex.test(matchDate)) {
                         const winnerName = matchInfo[2];
                         const loserName = matchInfo[3];
                         if (winnerName === playerName || loserName === playerName) {
@@ -1347,7 +1347,7 @@
         var rankingChart;
         let hiddenStates;
         let defaultHiddenStates = {
-            'ratingList': [false, false],
+            'ratingList': [true, false],
             'matchesPlayed': [false, false],
             'percentMatchesWon': [false, false],
             'rangliste': [false, false, true],
@@ -1644,10 +1644,10 @@
             const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
             // Extract data for the chart
-            const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].expectedRating - matchListSummary[a].expectedRating);
+            const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].futureRating - matchListSummary[a].futureRating);
             if (players.length < 1) return;
             const rating = players.map(player => Math.round(matchListSummary[player].rating));
-            const expectedRating = players.map(player => Math.round(matchListSummary[player].expectedRating));
+            const futureRating = players.map(player => Math.round(matchListSummary[player].futureRating));
             
             // Only destroy and recreate the chart if the number of players changed
             if (manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
@@ -1658,7 +1658,7 @@
                 // Update data and labels if chart exists
                 rankingChart.data.labels = players;
                 rankingChart.data.datasets[0].data = rating;
-                rankingChart.data.datasets[1].data = expectedRating;
+                rankingChart.data.datasets[1].data = futureRating;
                 rankingChart.update();
                 return;
             }
@@ -1677,7 +1677,7 @@
                     labels: players, // Player names
                     datasets: [
                         {
-                            label: 'Rating',
+                            label: 'Current Rating',
                             hidden: hiddenStates[0],
                             data: rating,
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -1685,9 +1685,9 @@
                             borderWidth: 1
                         },
                         {
-                            label: 'Expected Rating',
+                            label: 'Future Rating',
                             hidden: hiddenStates[1],
-                            data: expectedRating,
+                            data: futureRating,
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             borderColor: 'rgba(54, 162, 235, 1)',
                             borderWidth: 1
