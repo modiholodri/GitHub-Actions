@@ -198,6 +198,7 @@
                 <select id="intervalSelection" title="Interval Selection" class="form-select" style="flex: 0 0 40%;" onchange="intervalSelectionChanged()">
                     <option class="centered" value="Daily">Daily</option>
                     <option class="centered" value="Monthly">Monthly</option>
+                    <option class="centered" value="Quarterly">Quarterly</option>
                     <option class="centered" value="Yearly">Yearly</option>
                     <option class="centered" value="ET">ET</option>
                 </select>
@@ -589,15 +590,17 @@
             let interval = document.getElementById("intervalSelection").value;
             const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
             const month = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-            const intervalLengths = {"Daily":10, "Monthly":7, "Yearly":4, "ET":0};
+            const intervalLengths = {"Daily":10, "Monthly":7, "Quarterly":7, "Yearly":4, "ET":0};
             const selectedIntervalLength = intervalLengths[interval];
 
             var matchDays = 0;
             var matchTimeSpanOptions = '';
 
-            var lastMatchDate = '';
-            var lastMatchID = -1;
-            var timeSpanSuffix = '';
+            let lastMatchID = -1;
+            let lastQuarter = -1;
+            let timeSpanSuffix = '';
+            let matchIdRegex = '';
+            let timeSpanPrefix = '';
             for (var i = matchRecords.length-1; i > 1; i--) {
                 if (matchRecords[i].length > 0) {
                     var matchInfo = matchRecords[i].split('|');
@@ -607,13 +610,31 @@
                         matchDays++;
                         const datetime = new Date(matchDate);
 
+                        matchIdRegex = '^' + matchID;
+                        timeSpanPrefix = matchID;
                         if (interval === "Daily") {
                             timeSpanSuffix = `${weekday[datetime.getDay()]}`;
                         }
                         else if (interval === "Monthly") {
+                            timeSpanPrefix = matchID.substring(0,4); // just show the year
                             timeSpanSuffix = `${month[datetime.getMonth()]}`;
                         }
-                        matchTimeSpanOptions += `<option class="centered" value="${matchID}">${matchID} ${timeSpanSuffix}</option>\n`;
+                        else if (interval === "Quarterly") {
+                            let quarter = Math.round(datetime.getMonth() / 4) + 1;
+                            if (quarter === lastQuarter) continue;
+                            lastQuarter = quarter;
+                            timeSpanPrefix = matchID.substring(0,4); // just show the year
+                            timeSpanSuffix = `Q${quarter}`;
+
+                            // Extract year and quarter from the date string (yyyy-mm-dd)
+                            switch (quarter) {
+                                case 1: matchIdRegex = '^' + timeSpanPrefix + '-0[1-3]'; break;
+                                case 2: matchIdRegex = '^' + timeSpanPrefix + '-0[4-6]'; break;
+                                case 3: matchIdRegex = '^' + timeSpanPrefix + '-0[7-9]'; break;
+                                case 4: matchIdRegex = '^' + timeSpanPrefix + '-1[0-2]'; break;
+                            }
+                        }
+                        matchTimeSpanOptions += `<option class="centered" value="${matchIdRegex}">${timeSpanPrefix} ${timeSpanSuffix}</option>\n`;
                     }
                     lastMatchID = matchID;
                 }
@@ -970,7 +991,7 @@
         function populatePlayedTimeSpanMatchList() {
             if (matchRecords.length === 0) return;
 
-            var timeSpanSelection = document.getElementById("timeSpanSelection").value;
+            var timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
             let gotMatches = false;
             let gotRanglistenMatches = false;
 
@@ -980,7 +1001,7 @@
                 if (matchRecords[i].length > 0) {
                     var matchInfo = matchRecords[i].split('|');
                     const matchDate = matchInfo[1];
-                    if (matchDate.startsWith(timeSpanSelection)) {
+                    if (timeSpanRegex.test(matchDate)) {
                         matchList += `${matchRecords[i]}\n`;
                         gotMatches = true
                         const datetime = new Date(matchDate);
