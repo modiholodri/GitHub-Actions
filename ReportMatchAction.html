@@ -527,14 +527,6 @@
                     updateRatingListChart(ratingSummary);
                     createRatingListRankingList('rankingSummary', ratingSummary);
                     break;
-                case 'matchesPlayed':
-                    updateMatchesPlayedChart(rankingSummary);
-                    createMatchesPlayedRankingList('rankingSummary', rankingSummary);
-                    break;
-                case 'percentMatchesWon': 
-                    updateMatchesPlayedChart(rankingSummary);
-                    createPercentMatchesWonRankingList('rankingSummary', rankingSummary);
-                    break;
                 case 'rangliste':
                     if(Object.keys(ranglistenSummary).length > 0) {
                         updateRanglistenChart(ranglistenSummary);
@@ -544,6 +536,14 @@
                         destroyChart(rankingChart, "No chart available...");
                         document.getElementById('rankingSummary').innerHTML = `<div><p class="centered">No Ranglisten matches played...</p></div>`;
                     }
+                    break;
+                case 'matchesPlayed':
+                    updateMatchesPlayedChart(rankingSummary);
+                    createMatchesPlayedRankingList('rankingSummary', rankingSummary);
+                    break;
+                case 'percentMatchesWon': 
+                    updateMatchesPlayedChart(rankingSummary);
+                    createPercentMatchesWonRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'playerInfo':
                     updatePlayerInfoChart(playerSummary);
@@ -854,21 +854,24 @@
 
         // Create the Rating List list
         function createRatingListRankingList(summaryElement, rankingSummary) {
-            var ratingListList = '|   |   |% Won|% Fut|Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
+            let ratingListList = '|   |   |% Won|% Fut|Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
 
-            var rank = 1;
+            let rank = 1;
+            let totalMatchesPlayed = 0;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].futureRating - a[1].futureRating)) {
                 const futureRating = Math.round(stats.futureRating);
+                totalMatchesPlayed += stats.matchesPlayed;
                 ratingListList += `|${rank++}|${player}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.rating}|${futureRating}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;    
             }   
+            ratingListList += `||∑|||||${totalMatchesPlayed/2}||\n`;    
 
             document.getElementById(summaryElement).innerHTML = marked.parse(ratingListList);
         }
 
         // Create the Player Info
         function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
-            var opponentsList = '';
-            var vipPlayer = '';
+            let opponentsList = '';
+            let vipPlayer = '';
             const opponents = {};
 
             const vipRating = playerRating[vipPlayerName].rating;
@@ -885,26 +888,30 @@
                 }
             }   
 
-
+            let opponentsRating = 0;
             for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].matchesWon/a[1].matchesPlayed)-(b[1].matchesWon/b[1].matchesPlayed))) {
                 const winPercentage = Math.round(stats.matchesLost * 100 / stats.matchesPlayed);
                 const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - playerRating[player].rating) * matchLengthRoot / 2000))));
+                opponentsRating += Number(playerRating[player].rating);
                 opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;
             }
 
-            var playerInfoList = '|   |    |% Won|% Exp|Rat|Matches|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
+            let playerInfoList = '|   |    |% Won|% Exp|Rat|Matches|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
             playerInfoList += vipPlayer;
             playerInfoList += `|--------|--------|--------|------|-----|---------|\n`;
             playerInfoList += opponentsList;
+
+            const opponentsMeanRating = Math.round(opponentsRating / Object.keys(opponents).length);
+            playerInfoList += `||x̄|||${opponentsMeanRating}||\n`;
 
             document.getElementById(summaryElement).innerHTML = marked.parse(playerInfoList);
         }
 
         // Percent Matches Played
         function createPercentMatchesWonRankingList(summaryElement, rankingSummary) {
-            var rankingList = '|   |   |% Won|Result|\n|:---:|:---:|:---:|:---:|\n';
+            let rankingList = '|   |   |% Won|Result|\n|:---:|:---:|:---:|:---:|\n';
 
-            var rank = 1;
+            let rank = 1;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => (b[1].matchesWon/b[1].matchesPlayed)-(a[1].matchesWon/a[1].matchesPlayed))) {
                 const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
                 rankingList += `|${rank++}|${player}|${winPercentage}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
@@ -914,9 +921,9 @@
 
         // Current Streak
         function createCurrentStreakRankingList(summaryElement, rankingSummary) {
-            var rankingList = '|   |   |Current Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
+            let rankingList = '|   |   |Current Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
-            var rank = 1;
+            let rank = 1;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak)) {
                 rankingList += `|${rank++}|${player}|${stats.currentStreak}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
@@ -926,9 +933,9 @@
 
         // Longest Winning Streak
         function createLongestWinningStreakRankingList(summaryElement, rankingSummary) {
-            var rankingList = '|   |   |Winning Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
+            let rankingList = '|   |   |Winning Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
-            var rank = 1;
+            let rank = 1;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestWon-a[1].longestWon)) {
                 rankingList += `|${rank++}|${player}|${stats.longestWon}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
@@ -937,9 +944,9 @@
 
         // Longest Losing Streak
         function createLongestLosingStreakRankingList(summaryElement, rankingSummary) {
-            var rankingList = '|   |   |Losing Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
+            let rankingList = '|   |   |Losing Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
-            var rank = 1;
+            let rank = 1;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestLost-a[1].longestLost)) {
                 rankingList += `|${rank++}|${player}|${stats.longestLost}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
@@ -948,24 +955,27 @@
 
         // Matches Played
         function createMatchesPlayedRankingList(summaryElement, rankingSummary) {
-            var rankingList = '|   |   |Matches|Result|\n|:---:|:---:|:---:|:---:|\n';
+            let rankingList = '|   |   |Matches|Result|\n|:---:|:---:|:---:|:---:|\n';
 
-            var rank = 1;
+            let rank = 1;
+            let totalMatchesPlayed = 0;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].matchesPlayed-a[1].matchesPlayed)) {
+                totalMatchesPlayed += stats.matchesPlayed;
                 rankingList += `|${rank++}|${player}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
             }   
+            rankingList += `||∑|${totalMatchesPlayed/2}||\n`;    
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
         // Create Last Time Active Ranking List
         function createLastTimeActiveRankingList(summaryElement, rankingSummary) {
-            var rankingList = '|   |   |Idle Days|Date|\n|:---:|:---:|:---:|:---:|\n';
+            let rankingList = '|   |   |Idle Days|Date|\n|:---:|:---:|:---:|:---:|\n';
 
-            var rank = 1;
+            let rank = 1;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => a[1].lastDateActive>b[1].lastDateActive ? -1 : 1)) {
-                var today = new Date();
-                var lastDateActive = new Date(stats.lastDateActive);
-                var timeInMS = today.getTime() - lastDateActive.getTime();
+                let today = new Date();
+                let lastDateActive = new Date(stats.lastDateActive);
+                let timeInMS = today.getTime() - lastDateActive.getTime();
                 const inactiveDays = Math.ceil(timeInMS / (1000 * 60 * 60 * 24)) - 1;
 
                 rankingList += `|${rank++}|${player}|${inactiveDays}|${stats.lastDateActive}|\n`;
@@ -975,12 +985,15 @@
 
         // Create Rangliste Ranking List
         function createRanglisteRankingList(summaryElement, rankingSummary) {
-            var rankingList = '|   |   |Punkte|Result|\n|:---:|:---:|:---:|:---:|\n';
+            let rankingList = '|   |   |Punkte|Result|\n|:---:|:---:|:---:|:---:|\n';
 
-            var rank = 1;
+            let rank = 1;
+            let totalPunkte = 0;
             for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].punkte-a[1].punkte)) {
+                totalPunkte += stats.punkte;
                 rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.punkteMatchesWon} - ${stats.punkteMatchesLost}|\n`;
             }   
+            rankingList += `||∑|${totalPunkte}||\n`;
             document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
         }
 
