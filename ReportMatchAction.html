@@ -1299,8 +1299,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        Chart.defaults.color = 'white'; // Default text color
-
+        Chart.defaults.color = 'white';  // default text color
+        Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
+        Chart.defaults.plugins.legend.labels.color = '#61e7ff';
+        
         // If the chart already exists, destroy it before creating a new one
         function destroyChart(chart, message) {
             if (chart) {
@@ -1387,9 +1389,7 @@
                     responsive: true,
                     maintainAspectRatio: false, // Allow the chart to resize freely
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
+                        legend: { position: 'bottom' },
                     },
                     scales: {
                         x: {
@@ -1405,13 +1405,12 @@
                                     return Number.isInteger(value) ? value : null;
                                 }
                             },                            
+                            grid: { color: 'rgba(255, 255, 0, 0.3)' },
                         },
                         y: {
                             beginAtZero: true,
                             stacked: true,
-                            ticks: {
-                                autoSkip: false
-                            },
+                            ticks: { autoSkip: false } // show all the names
                         }
                     }
                 }
@@ -1476,9 +1475,7 @@
                     responsive: true,
                     maintainAspectRatio: false, // Allow the chart to resize freely
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
+                        legend: { position: 'bottom' },
                     },
                     scales: {
                         x: {
@@ -1494,13 +1491,12 @@
                                     return Number.isInteger(value) ? value : null;
                                 }
                             },                            
+                            grid: { color: 'rgba(255, 255, 0, 0.3)' },
                         },
                         y: {
                             beginAtZero: true,
                             stacked: true,
-                            ticks: {
-                                autoSkip: false
-                            }
+                            ticks: { autoSkip: false } // show all the names
                         }
                     }
                 }
@@ -1571,9 +1567,7 @@
                     responsive: true,
                     maintainAspectRatio: false, // Allow the chart to resize freely
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
+                        legend: { position: 'bottom' },
                     },
                     scales: {
                         x: {
@@ -1589,13 +1583,12 @@
                                     return Number.isInteger(value) ? value : null;
                                 }
                             },                            
+                            grid: { color: 'rgba(255, 255, 0, 0.3)' },
                         },
                         y: {
                             beginAtZero: true,
                             stacked: true,
-                            ticks: {
-                                autoSkip: false
-                            },
+                            ticks: { autoSkip: false } // show all the names
                         }
                     }
                 }
@@ -1685,9 +1678,7 @@
                     responsive: true,
                     maintainAspectRatio: false, // Allow the chart to resize freely
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                        },
+                        legend: { position: 'bottom' },
                     },
                     scales: {
                         x: {
@@ -1702,12 +1693,11 @@
                                     return Number.isInteger(value) ? value : null;
                                 }
                             },                            
+                            grid: { color: 'rgba(255, 255, 0, 0.3)' },
                         },
                         y: {
                             beginAtZero: false,
-                            ticks: {
-                                autoSkip: false
-                            }
+                            ticks: { autoSkip: false } // show all the names
                         }
                     }
                 }
