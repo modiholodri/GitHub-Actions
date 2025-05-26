@@ -508,7 +508,7 @@
         let manuallyChangedChart = true;
         function rankingListSelectionManuallyChanged() {
             manuallyChangedChart = true;
-            destroyChart(rankingChart, "No chart available...");
+            destroyRankingChart("No chart available...");
             rankingListSelectionChanged();
         }
 
@@ -524,6 +524,8 @@
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'ratingList':
                     ratingSummary = summarizeRatingList(matchList);
+                    // destroyRankingChart('');
+                    // resetPlayingRatingList();
                     updateRatingListChart(ratingSummary);
                     createRatingListRankingList('rankingSummary', ratingSummary);
                     break;
@@ -533,7 +535,7 @@
                         createRanglisteRankingList('rankingSummary', ranglistenSummary);
                     }
                     else {
-                        destroyChart(rankingChart, "No chart available...");
+                        destroyRankingChart("No chart available...");
                         document.getElementById('rankingSummary').innerHTML = `<div><p class="centered">No Ranglisten matches played...</p></div>`;
                     }
                     break;
@@ -1185,7 +1187,7 @@
 
         // Add DOM Content Loaded Event Listener
         document.addEventListener("DOMContentLoaded", () => {
-            destroyChart(rankingChart, "Not loaded yet...");
+            destroyRankingChart("Not loaded yet...");
             fetchFrequentPlayers();
             refreshWebPageTitle();
             fetchRatingList();
@@ -1214,6 +1216,9 @@
                                 break;
                             case 'rangliste':
                                 updateRanglistenChart(ranglistenSummary);
+                                break;
+                            case 'ratingList':
+                                updateRatingListChart(ratingSummary);
                                 break;
                             case 'playerInfo':
                                 updatePlayerInfoChart(playerSummary);
@@ -1337,11 +1342,11 @@
         Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
         Chart.defaults.plugins.legend.labels.color = '#61e7ff';
         
-        // If the chart already exists, destroy it before creating a new one
-        function destroyChart(chart, message) {
-            if (chart) {
-                chart.destroy();
-                chart = null;
+        // If the Ranking chart already exists, destroy it before creating a new one
+        function destroyRankingChart(message) {
+            if (rankingChart) {
+                rankingChart.destroy();
+                rankingChart = null;
             }
             document.getElementById('rankingChartCanvas').height = 0;
             document.getElementById('rankingChartMessage').innerText = message;
@@ -1357,7 +1362,7 @@
             document.getElementById(rankingChartCanvas).height = calculatedHeight;
         }
 
-        var rankingChart;
+        let rankingChart;
         let hiddenStates;
         let defaultHiddenStates = {
             'ratingList': [true, false],
@@ -1366,6 +1371,16 @@
             'rangliste': [false, false, true],
             'playerInfo': [false, false],
         };
+
+        // Remember the hidden state of the datasets and set them again
+        function setRememberedHiddenStates() {
+            const rankingListSelection = document.getElementById('rankingListSelection').value;
+            if(manuallyChangedChart) {
+                hiddenStates = defaultHiddenStates[rankingListSelection];
+                manuallyChangedChart = false;
+            }
+            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || defaultHiddenStates[rankingListSelection];
+        }
         
         // Function to create or update the Matches chart
         function updateMatchesPlayedChart(matchListSummary) {
@@ -1384,14 +1399,8 @@
                                 players.map(player => matchListSummary[player].matchesLost):
                                 players.map(player => 100*matchListSummary[player].matchesLost/matchListSummary[player].matchesPlayed);
 
-            // Remember the hidden state of the datasets
-            if(manuallyChangedChart) {
-                hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
-                manuallyChangedChart = false;
-            }
-            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false];
-
-            destroyChart(rankingChart, '');
+            setRememberedHiddenStates();
+            destroyRankingChart('');
             optimizeChartCanvasHeight('rankingChartCanvas', players.length);
 
             // Create the chart if it doesn't exist
@@ -1462,14 +1471,8 @@
             const punkteBonus = players.map(player => matchListSummary[player].punkteBonus);
             const punkteLost = players.map(player => matchListSummary[player].punkteLost);
 
-            // Remember the hidden state of the datasets
-            if(manuallyChangedChart) {
-                hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
-                manuallyChangedChart = false;
-            }
-            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false, true];
-
-            destroyChart(rankingChart, '');
+            setRememberedHiddenStates();
+            destroyRankingChart('');
             optimizeChartCanvasHeight('rankingChartCanvas', players.length);
 
             // Create the chart
@@ -1558,18 +1561,12 @@
                 matchesLost.unshift(matchListSummary[selectedPlayer].matchesLost / matchListSummary[selectedPlayer].matchesPlayed * 100);
             }
             else {
-                destroyChart(rankingChart, selectedPlayer + " didn't play...");
+                destroyRankingChart(selectedPlayer + " didn't play...");
                 return;
             }
 
-            // Remember the hidden state of the datasets
-            if(manuallyChangedChart) {
-                hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
-                manuallyChangedChart = false;
-            }
-            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false];
-
-            destroyChart(rankingChart, '');
+            setRememberedHiddenStates();
+            destroyRankingChart('');
             optimizeChartCanvasHeight('rankingChartCanvas', players.length);
 
             // Create the chart if it doesn't exist
@@ -1664,7 +1661,7 @@
             
             // Only destroy and recreate the chart if the number of players changed
             if (manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
-                destroyChart(rankingChart, '');
+                destroyRankingChart('');
                 optimizeChartCanvasHeight('rankingChartCanvas', players.length);
             }
             else if (rankingChart) {
@@ -1676,12 +1673,7 @@
                 return;
             }
 
-            // Remember the hidden state of the datasets
-            if(manuallyChangedChart) {
-                hiddenStates = defaultHiddenStates[document.getElementById('rankingListSelection').value];
-                manuallyChangedChart = false;
-            }
-            else hiddenStates = rankingChart?.data?.datasets.map((_, index) => !rankingChart.isDatasetVisible(index)) || [false, false];
+            setRememberedHiddenStates();
 
             // Create the chart
             rankingChart = new Chart(ctx, {
