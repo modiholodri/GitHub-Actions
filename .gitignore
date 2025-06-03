@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Added by Modi
+ReportMatchAction.html
+bkkbg/ClubRepo.js

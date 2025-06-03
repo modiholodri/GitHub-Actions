@@ -524,8 +524,6 @@
             switch ( document.getElementById('rankingListSelection').value) {
                 case 'ratingList':
                     ratingSummary = summarizeRatingList(matchList);
-                    // destroyRankingChart('');
-                    // resetPlayingRatingList();
                     updateRatingListChart(ratingSummary);
                     createRatingListRankingList('rankingSummary', ratingSummary);
                     break;
