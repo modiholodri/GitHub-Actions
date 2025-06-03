@@ -322,7 +322,8 @@ function updateRatingListChart(matchListSummary) {
     const futureRating = players.map(player => Math.round(matchListSummary[player].futureRating));
     
     // Only destroy and recreate the chart if the number of players changed
-    if (manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
+    if (remainingReplayTimes < 1 || manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
+        setRememberedHiddenStates();
         destroyRankingChart('');
         optimizeChartCanvasHeight('rankingChartCanvas', players.length);
     }
@@ -335,7 +336,6 @@ function updateRatingListChart(matchListSummary) {
         return;
     }
 
-    setRememberedHiddenStates();
 
     // Create the chart
     rankingChart = new Chart(ctx, {
