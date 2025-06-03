@@ -586,150 +586,7 @@
             return matchListSummary;
         }
 
-        // Create the Rating List list
-        function createRatingListRankingList(summaryElement, rankingSummary) {
-            let ratingListList = '|   |   |% Won|% Fut|Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
 
-            let rank = 1;
-            let totalMatchesPlayed = 0;
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].futureRating - a[1].futureRating)) {
-                const futureRating = Math.round(stats.futureRating);
-                totalMatchesPlayed += stats.matchesPlayed;
-                ratingListList += `|${rank++}|${player}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.rating}|${futureRating}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;    
-            }   
-            ratingListList += `||∑|||||${totalMatchesPlayed/2}||\n`;    
-
-            document.getElementById(summaryElement).innerHTML = marked.parse(ratingListList);
-        }
-
-        // Create the Player Info
-        function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
-            let opponentsList = '';
-            let vipPlayer = '';
-            const opponents = {};
-
-            const vipRating = playerRating[vipPlayerName].rating;
-            const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
-
-            for (const [player, stats] of Object.entries(playerSummary).sort()) {
-                if (player === vipPlayerName) {
-                    const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
-                    const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - 1800) * matchLengthRoot / 2000))));
-                    vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;    
-                }
-                else {
-                    opponents[player] = stats;
-                }
-            }   
-
-            let opponentsRating = 0;
-            for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].matchesWon/a[1].matchesPlayed)-(b[1].matchesWon/b[1].matchesPlayed))) {
-                const winPercentage = Math.round(stats.matchesLost * 100 / stats.matchesPlayed);
-                const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - playerRating[player].rating) * matchLengthRoot / 2000))));
-                opponentsRating += Number(playerRating[player].rating);
-                opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;
-            }
-
-            let playerInfoList = '|   |    |% Won|% Exp|Rat|Matches|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
-            playerInfoList += vipPlayer;
-            playerInfoList += `|--------|--------|--------|------|-----|---------|\n`;
-            playerInfoList += opponentsList;
-
-            const opponentsMeanRating = Math.round(opponentsRating / Object.keys(opponents).length);
-            playerInfoList += `||x̄|||${opponentsMeanRating}||\n`;
-
-            document.getElementById(summaryElement).innerHTML = marked.parse(playerInfoList);
-        }
-
-        // Percent Matches Played
-        function createPercentMatchesWonRankingList(summaryElement, rankingSummary) {
-            let rankingList = '|   |   |% Won|Result|\n|:---:|:---:|:---:|:---:|\n';
-
-            let rank = 1;
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => (b[1].matchesWon/b[1].matchesPlayed)-(a[1].matchesWon/a[1].matchesPlayed))) {
-                const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
-                rankingList += `|${rank++}|${player}|${winPercentage}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
-            }   
-            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
-        }
-
-        // Current Streak
-        function createCurrentStreakRankingList(summaryElement, rankingSummary) {
-            let rankingList = '|   |   |Current Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
-
-            let rank = 1;
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak)) {
-                rankingList += `|${rank++}|${player}|${stats.currentStreak}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
-            }   
-            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
-        }
-
-
-        // Longest Winning Streak
-        function createLongestWinningStreakRankingList(summaryElement, rankingSummary) {
-            let rankingList = '|   |   |Winning Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
-
-            let rank = 1;
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestWon-a[1].longestWon)) {
-                rankingList += `|${rank++}|${player}|${stats.longestWon}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
-            }   
-            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
-        }
-
-        // Longest Losing Streak
-        function createLongestLosingStreakRankingList(summaryElement, rankingSummary) {
-            let rankingList = '|   |   |Losing Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
-
-            let rank = 1;
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestLost-a[1].longestLost)) {
-                rankingList += `|${rank++}|${player}|${stats.longestLost}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
-            }   
-            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
-        }
-
-        // Matches Played
-        function createMatchesPlayedRankingList(summaryElement, rankingSummary) {
-            let rankingList = '|   |   |Matches|Result|\n|:---:|:---:|:---:|:---:|\n';
-
-            let rank = 1;
-            let totalMatchesPlayed = 0;
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].matchesPlayed-a[1].matchesPlayed)) {
-                totalMatchesPlayed += stats.matchesPlayed;
-                rankingList += `|${rank++}|${player}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
-            }   
-            rankingList += `||∑|${totalMatchesPlayed/2}||\n`;    
-            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
-        }
-
-        // Create Last Time Active Ranking List
-        function createLastTimeActiveRankingList(summaryElement, rankingSummary) {
-            let rankingList = '|   |   |Idle Days|Date|\n|:---:|:---:|:---:|:---:|\n';
-
-            let rank = 1;
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => a[1].lastDateActive>b[1].lastDateActive ? -1 : 1)) {
-                let today = new Date();
-                let lastDateActive = new Date(stats.lastDateActive);
-                let timeInMS = today.getTime() - lastDateActive.getTime();
-                const inactiveDays = Math.ceil(timeInMS / (1000 * 60 * 60 * 24)) - 1;
-
-                rankingList += `|${rank++}|${player}|${inactiveDays}|${stats.lastDateActive}|\n`;
-            }   
-            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
-        }
-
-        // Create Rangliste Ranking List
-        function createRanglisteRankingList(summaryElement, rankingSummary) {
-            let rankingList = '|   |   |Punkte|Result|\n|:---:|:---:|:---:|:---:|\n';
-
-            let rank = 1;
-            let totalPunkte = 0;
-            for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].punkte-a[1].punkte)) {
-                totalPunkte += stats.punkte;
-                rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.punkteMatchesWon} - ${stats.punkteMatchesLost}|\n`;
-            }   
-            rankingList += `||∑|${totalPunkte}||\n`;
-            document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
-        }
 
         var matchList = '';
         var ranglistenMatchList = '';
@@ -982,7 +839,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
 
-    <script src="Rankingcharts.js"></script>
+    <script src="RankingCharts.js"></script>
+    <script src="RankingSummaries.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 </body>
