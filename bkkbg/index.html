@@ -172,10 +172,10 @@
         <hr class="rounded">
         <h3>Club Selection</h3>
         <p>To test/exercise match report submissions you can change to a Fake Backgammon club below.
-           It should work the same as the Bangkok Backgammon club, but matches will be cleared from time to time.
+           It should work the same as the default Backgammon club, but matches will be cleared from time to time.
            To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
         </p>
-        <p>Warning: After this page is refreshed the selection will change back to the actual Bangkok Backgammon club.</p>
+        <p>Warning: After this page is refreshed the selection will change back to the default Backgammon club.</p>
         <div class="input-group">
             <span class="input-group-text">Club</span>
             <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
@@ -203,18 +203,18 @@
     </script>
     
     <script>
-        var playerRating = {};
+        var playerRating = {};  // the player ratings from the rating list on GitHub
 
-        var matchRecords = '';
-        var totalMatchList = '';
+        var matchRecords = '';  // all the matches ever played split in single lines, still in markdown format
+        var totalMatchList = '';  // all the matches ever played in markdown format
 
-        var ratingSummary = {};
-        var rankingSummary = {};
-        var ranglistenSummary = {};
-        var playerSummary = {};
+        var matchList = '';  // only the applicable matches
+        var ranglistenMatchList = '';  // only the matches applicable for the Rangliste
 
-        var matchList = '';
-        var ranglistenMatchList = '';
+        var ratingSummary = {};  // summary for the Rating list
+        var rankingSummary = {};  // summary for ranking lists
+        var ranglistenSummary = {};  // summary for the Rangliste
+        var playerSummary = {};  // summary for a player
 
         // Fetch the Rating List
         function fetchRatingList() {
@@ -223,7 +223,9 @@
         }
 
         function playedTimeSpanSelectionChanged() {
-            populatePlayedTimeSpanMatchList();
+            if (populatePlayedTimeSpanMatchList()) {
+                rankingListSelectionChanged();
+            }
         }
 
         function intervalSelectionChanged() {

@@ -301,6 +301,8 @@ function resetPlayingRatingList() {
 function playRatingList() {
     if (remainingReplayTimes > 0) {
         adjustExpectedRatingList(matchList);
+        createRatingListRankingList('rankingSummary', ratingSummary);
+        updateRatingListChart(ratingSummary);
         remainingReplayTimes--;
         document.getElementById('replayPlayButton').innerText = `▶︎ ${remainingReplayTimes}`;
     }

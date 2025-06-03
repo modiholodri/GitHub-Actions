@@ -181,7 +181,9 @@ function fetchMatchList() {
             matchRecords = totalMatchList.split("\n");
             
             if (populateTimeSpanSelectionList(matchRecords) > 0) {
-                populatePlayedTimeSpanMatchList();
+                if(populatePlayedTimeSpanMatchList()) {
+                    rankingListSelectionChanged();
+                }
             }
         } else {
             console.log('Failed to fetch Match List!');

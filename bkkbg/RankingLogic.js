@@ -1,6 +1,6 @@
 // Populate the Played Time Span List
 function populatePlayedTimeSpanMatchList() {
-    if (matchRecords.length === 0) return;
+    if (matchRecords.length === 0) return false;
 
     var timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
     let gotMatches = false;
@@ -34,7 +34,7 @@ function populatePlayedTimeSpanMatchList() {
         ranglistenSummary = {};
     }
     
-    rankingListSelectionChanged();
+    return true;
 }
 
 // Populate the Player Match List
@@ -244,9 +244,6 @@ function adjustExpectedRatingList(matchList) {
     for (const [player, stats] of Object.entries(ratingSummary)) {
             ratingSummary[player].expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(ratingSummary[player].futureRating - 1800) * matchLengthRoot / 2000))));
     }   
-
-    createRatingListRankingList('rankingSummary', ratingSummary);
-    updateRatingListChart(ratingSummary);
 }
 
 

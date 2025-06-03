@@ -1,3 +1,15 @@
+// load the settings once the DOM is ready
+document.addEventListener('DOMContentLoaded', loadSettings);
+
+// Save the settings when the button is clicked
+document.getElementById('saveSettingsButton').addEventListener('click', () => {
+    saveSettings();
+});
+
+// Save settings to localStorage before the page is unloaded
+window.addEventListener('beforeunload', saveSettings);
+
+// load the toggle settings of a specific toggle element
 function loadToggleSetting(elementName) {
     const toggleState = localStorage.getItem(elementName + 'State') || 'expanded';
     const element = document.getElementById(elementName);
@@ -35,15 +47,13 @@ function loadSettings() {
     loadToggleSetting('matchList');
 }
 
-// load the settings once the DOM is ready
-document.addEventListener('DOMContentLoaded', loadSettings);
-
-
+// save the settings of a toggle element to localStorage
 function saveToggleSetting(elementName) {
     const matchReportFormCollapsed = document.getElementById(elementName).classList.contains('show') ? 'expanded' : 'collapsed';
     localStorage.setItem(elementName + 'State', matchReportFormCollapsed);
 }
 
+// save the value of a specific element to localStorage
 function saveValueSetting(elementName) {
     const rankingListSelection = document.getElementById(elementName).value;
     localStorage.setItem(elementName, rankingListSelection);
@@ -63,11 +73,3 @@ function saveSettings() {
     saveToggleSetting('rankingSummary');
     saveToggleSetting('matchList');
 }
-
-// Save the settings when the button is clicked
-document.getElementById('saveSettingsButton').addEventListener('click', () => {
-    saveSettings();
-});
-
-// Save settings to localStorage before the page is unloaded
-window.addEventListener('beforeunload', saveSettings);
