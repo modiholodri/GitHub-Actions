@@ -286,7 +286,7 @@ function updatePlayerInfoChart(matchListSummary) {
     });
 }
 
-let ratingListPlayInterval = setInterval(playRatingList, 500);
+let ratingListPlayInterval = setInterval(playRatingList, 200);
 
 let remainingReplayTimes = 0;
 function startPlayingRatingList() {
