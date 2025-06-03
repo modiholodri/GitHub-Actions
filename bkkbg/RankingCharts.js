@@ -2,6 +2,16 @@ Chart.defaults.color = 'white';  // default text color
 Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
 Chart.defaults.plugins.legend.labels.color = '#61e7ff';
 
+let rankingChart;
+let hiddenStates;
+let defaultHiddenStates = {
+    'ratingList': [true, false],
+    'matchesPlayed': [false, false],
+    'percentMatchesWon': [false, false],
+    'rangliste': [false, false, true],
+    'playerInfo': [false, false],
+};
+
 // If the Ranking chart already exists, destroy it before creating a new one
 function destroyRankingChart(message) {
     if (rankingChart) {
@@ -21,16 +31,6 @@ function optimizeChartCanvasHeight(rankingChartCanvas, numberOfPlayers) {
 
     document.getElementById(rankingChartCanvas).height = calculatedHeight;
 }
-
-let rankingChart;
-let hiddenStates;
-let defaultHiddenStates = {
-    'ratingList': [true, false],
-    'matchesPlayed': [false, false],
-    'percentMatchesWon': [false, false],
-    'rangliste': [false, false, true],
-    'playerInfo': [false, false],
-};
 
 // Remember the hidden state of the datasets and set them again
 function setRememberedHiddenStates() {
