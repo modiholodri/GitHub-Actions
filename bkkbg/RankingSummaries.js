@@ -19,14 +19,17 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
     let opponentsList = '';
     let vipPlayer = '';
     const opponents = {};
+    let vipPlayerMatchesPlayed = 0;
 
     const vipRating = playerRating[vipPlayerName].rating;
     const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
+
 
     for (const [player, stats] of Object.entries(playerSummary).sort()) {
         if (player === vipPlayerName) {
             const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
             const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - 1800) * matchLengthRoot / 2000))));
+            vipPlayerMatchesPlayed = stats.matchesPlayed;
             vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;    
         }
         else {
@@ -38,7 +41,7 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
     for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].matchesWon/a[1].matchesPlayed)-(b[1].matchesWon/b[1].matchesPlayed))) {
         const winPercentage = Math.round(stats.matchesLost * 100 / stats.matchesPlayed);
         const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - playerRating[player].rating) * matchLengthRoot / 2000))));
-        opponentsRating += Number(playerRating[player].rating);
+        opponentsRating += Number(playerRating[player].rating) * stats.matchesPlayed;
         opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;
     }
 
@@ -47,7 +50,7 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
     playerInfoList += `|--------|--------|--------|------|-----|---------|\n`;
     playerInfoList += opponentsList;
 
-    const opponentsMeanRating = Math.round(opponentsRating / Object.keys(opponents).length);
+    const opponentsMeanRating = Math.round(opponentsRating / vipPlayerMatchesPlayed);
     playerInfoList += `||x̄|||${opponentsMeanRating}||\n`;
 
     document.getElementById(summaryElement).innerHTML = marked.parse(playerInfoList);
