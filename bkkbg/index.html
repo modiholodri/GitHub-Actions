@@ -6,104 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="expires" max-age="86400">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background-color: #0d0064;
-            color: #ffffff;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            color:#61e7ff;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        table {
-            margin: auto; 
-            width: fit-content;
-            margin-top: 15px;
-        }
-
-        th {
-            padding: 3px;
-            text-align: center;
-            background-color: #0d0064;
-            color: #61e7ff;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 3px;
-            white-space: nowrap;
-        }
-
-        tr:nth-child(odd) {
-            background-color: #1600a8;
-        }
-
-        canvas {
-            display: block; /* Prevent inline-block spacing issues */
-            padding: 0;
-            height: auto; /* Adjust height automatically based on content */
-        }
-        .container-fluid {
-            position: relative; 
-            width: 100%; 
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            margin-top: 15px;
-        }
-        
-        .btn-primary {
-            background-color: #0004fd;
-            border-color: #1eff29;
-            margin-top: 15px;
-        }
-
-        .btn-secondary {
-            background-color: #0d0064;
-            border-color: #1eff29;
-            margin-top: 15px;
-        }
-
-        .input-group-text, .form-select, .form-control {
-            margin-top: 15px;
-        }
-
-        .input-group {
-            display: flex;
-            align-items: center;
-        }
-        .input-group-text {
-            flex: 0 0 auto;
-        }
-        .form-control {
-            flex: 1 1 auto;
-            flex-shrink: 1; /* Allow the input to shrink */
-            min-width: 0; /* Ensure it can shrink to 0 */
-        }
-        .form-select {
-            flex: 0 0 auto;
-            white-space: nowrap; /* Prevent the select from shrinking */
-        }
-
-        hr.rounded {
-            border-top: 8px solid #000;
-            border-radius: 5px;
-        }
-
-        .centered {
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="club.css">
 </head>
 <body>
     <div class="container">
@@ -284,10 +187,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>
+    <script>  // GitHub Information -->
         const repoOwner = 'modiholodri';
         const githubToken = '';  // Fill in the token before distributing the file to others
-
+    </script>
+    
+    <script> // Match Report Handling
         let oneSecondInterval = setInterval(showSubmissionStatus, 1000);
 
         let newSubmission = false;
@@ -439,6 +344,11 @@
             const timeString = datetime.toTimeString().split(' ')[0];
             return `${dateString} ${timeString}`;
         }
+
+        </script>
+        
+        
+        <script>
 
         let playerRating = {};
 

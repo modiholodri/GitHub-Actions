@@ -1,0 +1,96 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #0d0064;
+    color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color:#61e7ff;
+    text-align: center;
+    margin-top: 15px;
+}
+
+table {
+    margin: auto; 
+    width: fit-content;
+    margin-top: 15px;
+}
+
+th {
+    padding: 3px;
+    text-align: center;
+    background-color: #0d0064;
+    color: #61e7ff;
+    white-space: nowrap;
+}
+
+td {
+    padding: 3px;
+    white-space: nowrap;
+}
+
+tr:nth-child(odd) {
+    background-color: #1600a8;
+}
+
+canvas {
+    display: block; /* Prevent inline-block spacing issues */
+    padding: 0;
+    height: auto; /* Adjust height automatically based on content */
+}
+.container-fluid {
+    position: relative; 
+    width: 100%; 
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin-top: 15px;
+}
+
+.btn-primary {
+    background-color: #0004fd;
+    border-color: #1eff29;
+    margin-top: 15px;
+}
+
+.btn-secondary {
+    background-color: #0d0064;
+    border-color: #1eff29;
+    margin-top: 15px;
+}
+
+.input-group-text, .form-select, .form-control {
+    margin-top: 15px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+.input-group-text {
+    flex: 0 0 auto;
+}
+.form-control {
+    flex: 1 1 auto;
+    flex-shrink: 1; /* Allow the input to shrink */
+    min-width: 0; /* Ensure it can shrink to 0 */
+}
+.form-select {
+    flex: 0 0 auto;
+    white-space: nowrap; /* Prevent the select from shrinking */
+}
+
+hr.rounded {
+    border-top: 8px solid #000;
+    border-radius: 5px;
+}
+
+.centered {
+    text-align: center;
+}
