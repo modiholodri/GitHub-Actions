@@ -130,6 +130,10 @@ function summarizeMatchList(matchList) {
     const matchListSummary = {};
     var matchRecords = matchList.split("\n");
 
+    const rankingListSelection = document.getElementById('rankingListSelection').value;
+    const isStreakSelected = rankingListSelection.includes('Streak');
+    const isRanglisteSelected = /rangliste|daysInactive/.test(rankingListSelection);
+
     for (var i = matchRecords.length-1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
             const matchInfo = matchRecords[i].split('|');
@@ -141,12 +145,13 @@ function summarizeMatchList(matchList) {
             // Initialize player matchListSummary if not already present
             if (!matchListSummary[winner]) {
                 matchListSummary[winner] = { lastDateActive: '-',
-                                                matchesPlayed: 0, matchesWon: 0, matchesLost: 0, 
-                                                punkte: 0, punkteWon: 0, punkteLost: 0, punkteBonus: 0,
-                                                punkteMatchesWon: 0, punkteMatchesLost: 0,
-                                                currentStreak: 0,
-                                                currentWon: 0, longestWon: 0, 
-                                                currentLost: 0, longestLost: 0 };
+                                             matchesPlayed: 0, matchesWon: 0, matchesLost: 0, 
+                                             punkte: 0, punkteWon: 0, punkteLost: 0, punkteBonus: 0,
+                                             punkteMatchesWon: 0, punkteMatchesLost: 0,
+                                             currentStreak: 0,
+                                             currentWon: 0, longestWon: 0, 
+                                             currentLost: 0, longestLost: 0 
+                };
             }
             if (!matchListSummary[loser]) {
                 matchListSummary[loser] = { lastDateActive: '-',
@@ -167,43 +172,51 @@ function summarizeMatchList(matchList) {
             matchListSummary[winner].matchesPlayed++;
             matchListSummary[winner].matchesWon++;
 
-            if (isSaturday) {
-                matchListSummary[winner].punkteMatchesWon++;
-                matchListSummary[winner].punkte += +matchLength;
-                matchListSummary[winner].punkteWon += +matchLength;
-                if (matchListSummary[winner].lastDateActive !== matchDate) {
-                    matchListSummary[winner].punkte += bonusPunkte;
-                    matchListSummary[winner].punkteBonus += bonusPunkte;
+            if (isRanglisteSelected) {  // only if Rangliste or Days Inactive is selected
+                if (isSaturday) {
+                    matchListSummary[winner].punkteMatchesWon++;
+                    matchListSummary[winner].punkte += +matchLength;
+                    matchListSummary[winner].punkteWon += +matchLength;
+                    if (matchListSummary[winner].lastDateActive !== matchDate) {
+                        matchListSummary[winner].punkte += bonusPunkte;
+                        matchListSummary[winner].punkteBonus += bonusPunkte;
+                    }
                 }
+                matchListSummary[winner].lastDateActive = matchDate;
             }
-            matchListSummary[winner].lastDateActive = matchDate;
 
-            matchListSummary[winner].currentLost = 0;
-            matchListSummary[winner].currentWon++;
-            matchListSummary[winner].currentStreak = matchListSummary[winner].currentWon;
-            if (matchListSummary[winner].currentWon > matchListSummary[winner].longestWon) {
-                matchListSummary[winner].longestWon = matchListSummary[winner].currentWon;
+            if (isStreakSelected) {  // calculate only if any of the streaks is selected
+                matchListSummary[winner].currentLost = 0;
+                matchListSummary[winner].currentWon++;
+                matchListSummary[winner].currentStreak = matchListSummary[winner].currentWon;
+                if (matchListSummary[winner].currentWon > matchListSummary[winner].longestWon) {
+                    matchListSummary[winner].longestWon = matchListSummary[winner].currentWon;
+                }
             }
 
             // loser
             matchListSummary[loser].matchesPlayed++;
             matchListSummary[loser].matchesLost++;
 
-            if (isSaturday) {
-                matchListSummary[loser].punkteMatchesLost++;
-                matchListSummary[loser].punkteLost += +matchLength;
-                if (matchListSummary[loser].lastDateActive !== matchDate) {
-                    matchListSummary[loser].punkte += bonusPunkte;
-                    matchListSummary[loser].punkteBonus += bonusPunkte;
+            if (isRanglisteSelected) {  // only if Rangliste or Days Inactive is selected
+                if (isSaturday) {
+                    matchListSummary[loser].punkteMatchesLost++;
+                    matchListSummary[loser].punkteLost += +matchLength;
+                    if (matchListSummary[loser].lastDateActive !== matchDate) {
+                        matchListSummary[loser].punkte += bonusPunkte;
+                        matchListSummary[loser].punkteBonus += bonusPunkte;
+                    }
                 }
+                matchListSummary[loser].lastDateActive = matchDate;
             }
-            matchListSummary[loser].lastDateActive = matchDate;
 
-            matchListSummary[loser].currentWon = 0;
-            matchListSummary[loser].currentLost++;
-            matchListSummary[loser].currentStreak = -matchListSummary[loser].currentLost;
-            if (matchListSummary[loser].currentLost > matchListSummary[loser].longestLost) {
-                matchListSummary[loser].longestLost = matchListSummary[loser].currentLost;
+            if (isStreakSelected) {  //calculate only if any of the streaks is selected
+                matchListSummary[loser].currentWon = 0;
+                matchListSummary[loser].currentLost++;
+                matchListSummary[loser].currentStreak = -matchListSummary[loser].currentLost;
+                if (matchListSummary[loser].currentLost > matchListSummary[loser].longestLost) {
+                    matchListSummary[loser].longestLost = matchListSummary[loser].currentLost;
+                }
             }
         }
     }

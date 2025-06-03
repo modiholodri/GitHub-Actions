@@ -239,6 +239,7 @@
         function rankingListSelectionManuallyChanged() {
             manuallyChangedChart = true;
             destroyRankingChart("No chart available...");
+            rankingSummary = summarizeMatchList(matchList);
             rankingListSelectionChanged();
         }
 
@@ -259,6 +260,7 @@
                     break;
                 case 'rangliste':
                     if(Object.keys(ranglistenSummary).length > 0) {
+                        ranglistenSummary = summarizeMatchList(ranglistenMatchList);
                         updateRanglistenChart(ranglistenSummary);
                         createRanglisteRankingList('rankingSummary', ranglistenSummary);
                     }
