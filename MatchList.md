@@ -74,3 +74,4 @@
 |2025-04-27|Loser|Awful|17|
 |2025-05-11|Awful|Loser|17|
 |2025-06-03|Select|Select|5|
+|2025-06-03|Awful|Loser|5|
