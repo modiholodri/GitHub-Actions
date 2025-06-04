@@ -145,3 +145,16 @@ function createRanglisteRankingList(summaryElement, rankingSummary) {
     rankingList += `||∑|${totalPunkte}||\n`;
     document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
 }
+
+// Rangliste Ranking List
+function createPlayerProgressList(summaryElement, playerProgressList) {
+    let progressList = '|#|Date|Player|Rating|\n|:---:|:---:|:---:|:---:|\n';
+    let counter = 2;
+
+    for (const entry of playerProgressList) {
+        // Assuming entry has properties: date, player, rating
+        progressList += `|${Math.floor(counter/2)}-${counter%2+1}|${entry.date}|${entry.player}|${Math.round(entry.rating)}|\n`;
+        counter++;
+    }
+    document.getElementById(summaryElement).innerHTML = marked.parse(progressList);
+}

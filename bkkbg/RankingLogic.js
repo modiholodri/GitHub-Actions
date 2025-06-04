@@ -279,3 +279,50 @@ function populatePlayerRating(ratingList) {
     }
     return playerRating;            
 }
+
+// Summarize the Player Progress
+// This function calculates the rating changes for each player based on match results
+function summarizePlayerProgress(matchList) {
+    // Returns an array of objects: { player, date, rating }
+    const playerRatings = {};
+    const progressList = [];
+    const matchRecords = matchList.split("\n");
+
+    // Start from the third line (skip headers), process in chronological order
+    for (let i = 2; i < matchRecords.length; i++) {
+        if (matchRecords[i].length > 0) {
+            const matchInfo = matchRecords[i].split('|');
+            const matchDateStr = matchInfo[1];
+            const winner = matchInfo[2];
+            const loser = matchInfo[3];
+            const matchLength = Number(matchInfo[4]);
+
+            // Initialize ratings if not present
+            if (!(winner in playerRatings)) playerRatings[winner] = 1800;
+            if (!(loser in playerRatings)) playerRatings[loser] = 1800;
+
+            const matchLengthRoot = Math.sqrt(matchLength);
+            const ratingPointsAtStake = 4 * matchLengthRoot;
+            const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(playerRatings[winner] - playerRatings[loser]) * matchLengthRoot / 2000.0));
+            const ratingDifference = (1.0 - winningProbability) * ratingPointsAtStake;
+
+            // Update ratings
+            playerRatings[winner] += ratingDifference;
+            playerRatings[loser] -= ratingDifference;
+
+            // Record progress for both players after this match
+            progressList.push({
+                player: winner,
+                date: matchDateStr,
+                rating: playerRatings[winner]
+            });
+            progressList.push({
+                player: loser,
+                date: matchDateStr,
+                rating: playerRatings[loser]
+            });
+        }
+    }
+
+    return progressList;
+}

@@ -83,6 +83,7 @@
                 <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionManuallyChanged()">
                     <option class="centered" value="ratingList">Rating List</option>
                     <option class="centered" value="rangliste">Rangliste</option>
+                    <option class="centered" value="playerProgress">Player Progress</option>
                     <option class="centered" value="matchesPlayed">Matches Played</option>
                     <option class="centered" value="percentMatchesWon">% Matches Won</option>
                     <option class="centered" value="playerInfo">Player Info</option>
@@ -210,6 +211,7 @@
         var rankingSummary = {};  // summary for ranking lists
         var ranglistenSummary = {};  // summary for the Rangliste
         var playerSummary = {};  // summary for a player
+        var playerProgressList = {};  // summary for the progression over time
 
         // Fetch the Rating List
         function fetchRatingList() {
@@ -268,6 +270,11 @@
                         destroyRankingChart("No chart available...");
                         document.getElementById('rankingSummary').innerHTML = `<div><p class="centered">No Ranglisten matches played...</p></div>`;
                     }
+                    break;
+                case 'playerProgress':
+                    playerProgressList = summarizePlayerProgress(totalMatchList);
+                    // updateRatingListChart(ratingSummary);  Modi has to be implemented next
+                    createPlayerProgressList('rankingSummary', playerProgressList);
                     break;
                 case 'matchesPlayed':
                     updateMatchesPlayedChart(rankingSummary);
