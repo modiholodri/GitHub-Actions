@@ -152,8 +152,7 @@ function createPlayerProgressList(summaryElement, playerProgressList) {
     let counter = 2;
 
     for (const entry of playerProgressList) {
-        // Assuming entry has properties: date, player, rating
-        progressList += `|${Math.floor(counter/2)}-${counter%2+1}|${entry.date}|${entry.player}|${Math.round(entry.rating)}|\n`;
+        progressList += `|${Math.floor(counter/2)} ${counter%2?'L':'w'}|${entry.date}|${entry.player}|${Math.round(entry.rating)}|\n`;
         counter++;
     }
     document.getElementById(summaryElement).innerHTML = marked.parse(progressList);

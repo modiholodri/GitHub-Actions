@@ -312,11 +312,13 @@ function summarizePlayerProgress(matchList) {
 
             // Record progress for both players after this match
             progressList.push({
+                match: i-2,
                 player: winner,
                 date: matchDateStr,
                 rating: playerRatings[winner]
             });
             progressList.push({
+                match: i-2,
                 player: loser,
                 date: matchDateStr,
                 rating: playerRatings[loser]
