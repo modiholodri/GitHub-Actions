@@ -406,6 +406,27 @@ function updateRatingListChart(matchListSummary) {
 function updatePlayerProgressChart(progressList) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
+    // figure out the time span to display and the active players in that time span
+    // the time span is defined by the selected option in the time span selection dropdown
+    let timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
+    let foundTimeSpan = false;
+    let lastMatchInTimeSpan = 1000;
+    let firstMatchInTimeSpan = 0;
+    let activePlayers = new Set(); 
+    for (var i = progressList.length-1; i > 1; i--) {
+        if (timeSpanRegex.test(progressList[i].date)) {
+            if (!foundTimeSpan) {
+                lastMatchInTimeSpan = progressList[i].match;
+                foundTimeSpan = true;
+            }
+            activePlayers.add(progressList[i].player); 
+        }
+        else if (foundTimeSpan) {
+            firstMatchInTimeSpan = progressList[i].match;
+            break;
+        }
+    }
+
     // Group progress by player
     const playerProgress = {};
     progressList.forEach(entry => {
@@ -428,15 +449,33 @@ function updatePlayerProgressChart(progressList) {
         });
 
         // Assign a color (simple palette)
+        // Expanded and more distinct color palette
         const colors = [
-            'rgba(75,192,192,1)', 'rgba(255,99,132,1)', 'rgba(54,162,235,1)',
-            'rgba(255,206,86,1)', 'rgba(153,102,255,1)', 'rgba(255,159,64,1)'
+            'rgba(255,0,0,1)',      // bright red
+            'rgba(0,0,255,1)',      // bright blue
+            'rgba(255,215,0,1)',    // gold
+            'rgba(128,0,255,1)',    // vivid purple
+            'rgba(255,140,0,1)',    // deep orange
+            'rgba(0,255,0,1)',      // bright green
+            'rgba(255,20,147,1)',   // deep pink
+            'rgba(75,0,130,1)',     // indigo
+            'rgba(0,0,139,1)',      // dark blue
+            'rgba(255,69,0,1)',     // red-orange
+            'rgba(139,0,0,1)',      // dark red
+            'rgba(0,206,209,1)',    // dark turquoise
+            'rgba(128,128,0,1)',    // olive
+            'rgba(220,20,60,1)',    // crimson
+            'rgba(0,128,0,1)',      // dark green
+            'rgba(0,255,255,1)',    // cyan
+            'rgba(255,255,0,1)'     // yellow
         ];
         const color = colors[idx % colors.length];
 
-        const rank = idx + 1; // Rank starts at 1
+        // Rank starts at 1
+        const rank = idx + 1;
         return {
             label: rank + " " + player,
+            hidden: !activePlayers.has(player),
             data: data,
             borderColor: color,
             backgroundColor: color.replace('1)', '0.2)'),
@@ -444,13 +483,12 @@ function updatePlayerProgressChart(progressList) {
             spanGaps: true,
             tension: 0.2,
             pointRadius: 0,
-            pointHoverRadius: 0,
             pointBorderWidth: 0,
         };
     });
 
     destroyRankingChart('');
-    document.getElementById('rankingChartCanvas').height = 400 + 20 * Object.keys(playerProgress).length;
+    document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.8;
 
     rankingChart = new Chart(ctx, {
         type: 'line',
@@ -466,18 +504,21 @@ function updatePlayerProgressChart(progressList) {
             scales: {
                 x: {
                     type: 'linear',
+                    min: firstMatchInTimeSpan,
+                    max: lastMatchInTimeSpan,
                     title: {
                         display: true,
                         text: 'Match Number'
                     },
+                    ticks: {
+                        callback: function(value) {  // Show only whole numbers
+                            return Number.isInteger(value) ? value : null;
+                        }
+                    },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
                 },
                 y: {
                     beginAtZero: false,
-                    title: {
-                        display: true,
-                        text: 'Rating'
-                    },
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
                 }
             }
