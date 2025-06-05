@@ -488,7 +488,7 @@ function updatePlayerProgressChart(progressList) {
     });
 
     destroyRankingChart('');
-    document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.8;
+    document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.6 + sortedPlayers.length * 10; // Adjust height based on number of players
 
     rankingChart = new Chart(ctx, {
         type: 'line',
