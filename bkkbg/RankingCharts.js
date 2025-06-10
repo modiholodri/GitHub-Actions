@@ -484,6 +484,8 @@ function updatePlayerProgressChart(progressList) {
             tension: 0.2,
             pointRadius: 0,
             pointBorderWidth: 0,
+            pointHoverRadius: 18, // Larger hover radius for mobile usability
+            pointHitRadius: 24    // Larger hit radius for easier touch
         };
     });
 
