@@ -180,7 +180,6 @@
         <div class="input-group">
             <span class="input-group-text">Club</span>
             <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
-                <option class="centered" value="bkk-bg-rating-list">Bangkok Backgammon</option>
                 <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
             </select>
         </div>
@@ -320,6 +319,7 @@
     <script>
         // Add DOM Content Loaded Event Listener
         document.addEventListener("DOMContentLoaded", () => {
+            populateClubSelection();
             destroyRankingChart("Not loaded yet...");
             fetchFrequentPlayers();
             refreshWebPageTitle();

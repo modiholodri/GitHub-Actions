@@ -57,6 +57,14 @@ function populateTimeSpanSelectionList(matchRecords) {
     return matchDays;
 }
 
+function populateClubSelection() {
+    let clubRepoOptions = '';
+    clubRepos.forEach(club => {
+        clubRepoOptions += `<option class="centered" value="${club.repo}">${club.name}</option>\n`;
+    });
+    document.getElementById('clubSelection').innerHTML = clubRepoOptions;
+}
+
 function selectDefaultPlayer() {
     const yourName = document.getElementById('yourName').value;
     if (yourName) {
