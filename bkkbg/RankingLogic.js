@@ -16,8 +16,8 @@ function populatePlayedTimeSpanMatchList() {
                 matchList += `${matchRecords[i]}\n`;
                 gotMatches = true
                 const datetime = new Date(matchDate);
-                const isSaturday = datetime.getDay() == 6;
-                if (isSaturday) {
+                const isTournamentDay = datetime.getDay() == tournamentDay;
+                if (isTournamentDay) {
                     ranglistenMatchList += `${matchRecords[i]}\n`;
                     gotRanglistenMatches = true;
                 }
@@ -165,15 +165,15 @@ function summarizeMatchList(matchList) {
             
             // Increment played/won/lost counts
             const datetime = new Date(matchDate);
-            const isSaturday = datetime.getDay() == 6;
-            let bonusPunkte = isSaturday ? 5 : 0;  // for playing on Saturday
+            const isTournamentDay = datetime.getDay() == tournamentDay;
+            let bonusPunkte = isTournamentDay ? 5 : 0;  // for playing on Saturday
 
             // winner
             matchListSummary[winner].matchesPlayed++;
             matchListSummary[winner].matchesWon++;
 
             if (isRanglisteSelected) {  // only if Rangliste or Days Inactive is selected
-                if (isSaturday) {
+                if (isTournamentDay) {
                     matchListSummary[winner].punkteMatchesWon++;
                     matchListSummary[winner].punkte += +matchLength;
                     matchListSummary[winner].punkteWon += +matchLength;
@@ -199,7 +199,7 @@ function summarizeMatchList(matchList) {
             matchListSummary[loser].matchesLost++;
 
             if (isRanglisteSelected) {  // only if Rangliste or Days Inactive is selected
-                if (isSaturday) {
+                if (isTournamentDay) {
                     matchListSummary[loser].punkteMatchesLost++;
                     matchListSummary[loser].punkteLost += +matchLength;
                     if (matchListSummary[loser].lastDateActive !== matchDate) {
