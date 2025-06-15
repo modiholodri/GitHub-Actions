@@ -28,7 +28,7 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
     for (const [player, stats] of Object.entries(playerSummary).sort()) {
         if (player === vipPlayerName) {
             const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
-            const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - 1800) * matchLengthRoot / 2000))));
+            const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - initialRating) * matchLengthRoot / 2000))));
             vipPlayerMatchesPlayed = stats.matchesPlayed;
             vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;    
         }

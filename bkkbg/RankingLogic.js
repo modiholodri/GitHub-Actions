@@ -117,7 +117,7 @@ function summarizeRatingList(matchList) {
 
     for (const [player, stats] of Object.entries(ratingListSummary)) {
             stats.percentMatchesWon = Math.round(stats.matchesWon*100/stats.matchesPlayed);
-            stats.expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(playerRating[player].rating - 1800) * matchLengthRoot / 2000))));
+            stats.expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(playerRating[player].rating - initialRating) * matchLengthRoot / 2000))));
             stats.rating = playerRating[player].rating;
             stats.futureRating = stats.rating;
     }   
@@ -255,7 +255,7 @@ function adjustExpectedRatingList(matchList) {
     const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
 
     for (const [player, stats] of Object.entries(ratingSummary)) {
-            ratingSummary[player].expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(ratingSummary[player].futureRating - 1800) * matchLengthRoot / 2000))));
+            ratingSummary[player].expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(ratingSummary[player].futureRating - initialRating) * matchLengthRoot / 2000))));
     }   
 }
 
@@ -298,8 +298,8 @@ function summarizePlayerProgress(matchList) {
             const matchLength = Number(matchInfo[4]);
 
             // Initialize ratings if not present
-            if (!(winner in playerRatings)) playerRatings[winner] = 1800;
-            if (!(loser in playerRatings)) playerRatings[loser] = 1800;
+            if (!(winner in playerRatings)) playerRatings[winner] = initialRating;
+            if (!(loser in playerRatings)) playerRatings[loser] = initialRating;
 
             const matchLengthRoot = Math.sqrt(matchLength);
             const ratingPointsAtStake = 4 * matchLengthRoot;
