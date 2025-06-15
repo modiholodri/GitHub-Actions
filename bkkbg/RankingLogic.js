@@ -80,7 +80,7 @@ function populatePlayerMatchList() {
 
 // Summarize the Match List
 function summarizeRatingList(matchList) {
-    const matchListSummary = {};
+    const ratingListSummary = {};
     var matchRecords = matchList.split("\n");
 
     for (var i = matchRecords.length-1; i > 1; i--) {
@@ -91,38 +91,38 @@ function summarizeRatingList(matchList) {
             const loser = matchInfo[3];
             const matchLength = matchInfo[4];
 
-            // Initialize player matchListSummary if not already present
-            if (!matchListSummary[winner]) {
-                matchListSummary[winner] = { matchesPlayed: 0, matchesWon: 0, matchesLost: 0,
+            // Initialize player ratingListSummary if not already present
+            if (!ratingListSummary[winner]) {
+                ratingListSummary[winner] = { matchesPlayed: 0, matchesWon: 0, matchesLost: 0,
                                                 rating: 0, futureRating: 0,
                                                 percentMatchesWon: 0, expectedMatchesWon: 0 };
             }
-            if (!matchListSummary[loser]) {
-                matchListSummary[loser] = { matchesPlayed: 0, matchesWon: 0, matchesLost: 0,
+            if (!ratingListSummary[loser]) {
+                ratingListSummary[loser] = { matchesPlayed: 0, matchesWon: 0, matchesLost: 0,
                                                 rating: 0, futureRating: 0,
                                                 percentMatchesWon: 0, expectedMatchesWon: 0 };
             }
             
             // winner
-            matchListSummary[winner].matchesPlayed++;
-            matchListSummary[winner].matchesWon++;
+            ratingListSummary[winner].matchesPlayed++;
+            ratingListSummary[winner].matchesWon++;
 
             // loser
-            matchListSummary[loser].matchesPlayed++;
-            matchListSummary[loser].matchesLost++;
+            ratingListSummary[loser].matchesPlayed++;
+            ratingListSummary[loser].matchesLost++;
         }
     }
 
     const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
 
-    for (const [player, stats] of Object.entries(matchListSummary)) {
+    for (const [player, stats] of Object.entries(ratingListSummary)) {
             stats.percentMatchesWon = Math.round(stats.matchesWon*100/stats.matchesPlayed);
             stats.expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(playerRating[player].rating - 1800) * matchLengthRoot / 2000))));
             stats.rating = playerRating[player].rating;
             stats.futureRating = stats.rating;
     }   
 
-    return matchListSummary;
+    return ratingListSummary;
 }
 
 // Summarize the Match List

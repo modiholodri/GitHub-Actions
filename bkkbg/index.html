@@ -253,6 +253,7 @@
             rankingListSelectionChanged();
         }
 
+        let playerProgressCalculated = false;
         function rankingListSelectionChanged() {
             // set the played time span match list again, in case it has been overwritten before
             if (document.getElementById('rankingListSelection').value !== 'rangliste') {
@@ -280,7 +281,10 @@
                     }
                     break;
                 case 'playerProgress':
-                    playerProgressList = summarizePlayerProgress(totalMatchList);
+                    if (!playerProgressCalculated) {
+                        playerProgressList = summarizePlayerProgress(totalMatchList);
+                        playerProgressCalculated = true;
+                    }
                     updatePlayerProgressChart(playerProgressList);
                     createPlayerProgressList('rankingSummary', playerProgressList);
                     break;
