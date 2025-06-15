@@ -45,6 +45,8 @@ function loadSettings() {
     loadToggleSetting('rankingChart');
     loadToggleSetting('rankingSummary');
     loadToggleSetting('matchList');
+    loadToggleSetting('additionalInfo');
+    loadToggleSetting('clubSelectionSection');
 }
 
 // save the settings of a toggle element to localStorage
@@ -72,4 +74,6 @@ function saveSettings() {
     saveToggleSetting('rankingChart');
     saveToggleSetting('rankingSummary');
     saveToggleSetting('matchList');
+    saveToggleSetting('additionalInfo');
+    saveToggleSetting('clubSelectionSection');
 }

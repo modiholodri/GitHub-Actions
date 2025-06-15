@@ -163,25 +163,34 @@
 
         <!-- Additional Stuff / Rating Formula  / Reporting Guidelines-->
         <hr class="rounded">
-        <div id="reportingGuidelines">
-            <h3>Connection Issue</h3>
-            <p>If you can see this you might have internet connection issues or your access token might be expired.</p>
+        <h3 id="additionalInfoToggle" type="button" data-toggle="collapse" data-target="#additionalInfo" aria-expanded="false" aria-controls="additionalInfo">
+            Additional Info ⇅
+        </h3>
+        <div id="additionalInfo" class="collapse">
+            <div id="reportingGuidelines">
+                <h3>Connection Issue</h3>
+                <p>If you can see this you might have internet connection issues or your access token might be expired.</p>
+            </div>
+            <div id="reportMatchOnTheWeb"></div>
         </div>
-        <div id="reportMatchOnTheWeb"></div>
 
         <!-- Submission Test -->
         <hr class="rounded">
-        <h3>Club Selection</h3>
-        <p>To test/exercise match report submissions you can change to a Fake Backgammon club below.
-           It should work the same as the default Backgammon club, but matches will be cleared from time to time.
-           To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
-        </p>
-        <p>Warning: After this page is refreshed the selection will change back to the default Backgammon club.</p>
-        <div class="input-group">
-            <span class="input-group-text">Club</span>
-            <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
-                <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
-            </select>
+        <h3 id="clubSelectionSectionToggle" type="button" data-toggle="collapse" data-target="#clubSelectionSection" aria-expanded="false" aria-controls="clubSelectionSection">
+            Club Selection ⇅
+        </h3>
+        <div id="clubSelectionSection" class="collapse">
+            <p>To test/exercise match report submissions you can change to a Fake Backgammon club below.
+            It should work the same as the default Backgammon club, but matches will be cleared from time to time.
+            To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
+            </p>
+            <p>Warning: After this page is refreshed the selection will change back to the default Backgammon club.</p>
+            <div class="input-group">
+                <span class="input-group-text">Club</span>
+                <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
+                    <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
+                </select>
+            </div>
         </div>
         <p><br></p>
     </div>
@@ -376,7 +385,9 @@
         addToggleListener('rankingChart');
         addToggleListener('rankingSummary');
         addToggleListener('matchList');
-        addToggleListener('settings');
+        addToggleListener('settings'); 
+        addToggleListener('additionalInfo'); 
+        addToggleListener('clubSelectionSection'); 
     </script>
         
     <script src="ClubRepo.js"></script>
