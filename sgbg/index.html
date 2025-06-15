@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bangkok Backgammon</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="expires" max-age="86400">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="club.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="webPageTitle">Bangkok Backgammon</h1>
+
+        <!-- Match Report -->
+        <h3 id="matchReportFormToggle" type="button" data-toggle="collapse" data-target="#matchReportForm" aria-expanded="true" aria-controls="matchReportForm">
+            Match Report ⇅
+        </h3>
+
+        <form id="matchReportForm" class="collapse">
+            <!-- Winner -->
+            <div class="input-group">
+                <span id="winnerLabel" class="input-group-text">Winner</span>
+                <select id="winnerName" title="Winner Name" class="form-select" style="flex: 0 0 60%;">
+                    <option value="Select or edit">Select</option>
+                    <option value="Winner">Winner</option>
+                </select>
+                <input id="winnerNameTyped" title="Winner Name" type="text" class="form-control">
+            </div>
+            <!-- Loser -->
+            <div class="input-group">
+                <span class="input-group-text">Loser</span>
+                <select id="loserName" title="Loser Name" class="form-select" style="flex: 0 0 64%;">
+                    <option value="Select or edit">Select</option>
+                    <option value="Loser">Loser</option>
+                </select>
+                <input id="loserNameTyped" title="Loser Name" type="text" class="form-control">
+            </div>
+            <!-- Match Length -->
+            <div class="input-group">
+                <span class="input-group-text">Match Length</span>
+                <select id="matchLength" title="Match Length" class="form-select">
+                    <option class="centered" value="1">1</option>
+                    <option class="centered" value="3">3</option>
+                    <option class="centered" value="5" selected>5</option>
+                    <option class="centered" value="7">7</option>
+                    <option class="centered" value="9">9</option>
+                    <option class="centered" value="11">11</option>
+                    <option class="centered" value="13">13</option>
+                    <option class="centered" value="15">15</option>
+                    <option class="centered" value="17">17</option>
+                </select>
+                <input id="matchLengthTyped" title="Match Length" type="text" class="form-control" value="">
+                <button id="submit" type="submit" class="btn btn-primary float-right">Submit</button>
+            </div>
+            <!-- Submission Status -->
+            <h5 id="updateSubmissionStatus" type="button">Submission Status ⟳</h5>
+            <div id="statuses">
+                <p id="submissionStatus" style="text-align: center"></p>
+                <h5 id="runsInfo"></h5>
+            </div>
+        </form>
+
+
+        <!-- Rating List -->
+        <hr class="rounded">
+        <h3 id="ratingListToggle" type="button" data-toggle="collapse" data-target="#ratingList" aria-expanded="true" aria-controls="ratingList">
+            Rating List ⇅
+        </h3>
+        <div id="ratingList" class="collapse"></div>
+
+
+        <!-- Ranking Lists -->
+        <hr class="rounded">
+        <h3 id="rankingListsToggle" type="button" data-toggle="collapse" data-target="#rankingLists" aria-expanded="false" aria-controls="rankingLists">
+            Ranking Lists ⇅
+        </h3>
+
+        <div id="rankingLists" class="collapse">
+
+            <!-- Played Time Span -->
+            <div class="input-group">
+                <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionManuallyChanged()">
+                    <option class="centered" value="ratingList">Rating List</option>
+                    <option class="centered" value="rangliste">Rangliste</option>
+                    <option class="centered" value="playerProgress">Player Progress</option>
+                    <option class="centered" value="matchesPlayed">Matches Played</option>
+                    <option class="centered" value="percentMatchesWon">% Matches Won</option>
+                    <option class="centered" value="playerInfo">Player Info</option>
+                    <option class="centered" value="currentStreak">Current Streak</option>
+                    <option class="centered" value="longestWinningStreak">> Winning Streak</option>
+                    <option class="centered" value="longestLosingStreak">> Losing Streak</option>
+                    <option class="centered" value="daysInactive">Days Inactive</option>
+                </select>
+            </div>
+            <div id="playerNameSelection" class="input-group" style="display:none">
+                <select id="playerName" title="Player Name" class="form-select" onchange="playerSelectionChanged()">
+                    <option value="Select">Select</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <select id="intervalSelection" title="Interval Selection" class="form-select" style="flex: 0 0 40%;" onchange="intervalSelectionChanged()">
+                    <option class="centered" value="Daily">Daily</option>
+                    <option class="centered" value="Monthly">Monthly</option>
+                    <option class="centered" value="Quarterly">Quarterly</option>
+                    <option class="centered" value="Yearly">Yearly</option>
+                    <option class="centered" value="ET">ET</option>
+                </select>
+                <select id="timeSpanSelection" title="Played Time Span Selection" class="form-select" style="flex: 0 0 60%;" onchange="playedTimeSpanSelectionChanged()">
+                    <option class="centered" value="Fetch Matches">Fetch Matches</option>
+                </select>
+            </div>
+            <div id="replaySection" title="Replay Section" class="input-group">
+                <span class="input-group-text">Replay</span>
+                <select id="replayTimes" title="Replay Times" class="form-select">
+                    <option class="centered" value="1">1 x</option>
+                    <option class="centered" value="10">10 x</option>
+                    <option class="centered" value="20">20 x</option>
+                    <option class="centered" value="30">30 x</option>
+                    <option class="centered" value="40">40 x</option>
+                    <option class="centered" value="50">50 x</option>
+                    <option class="centered" value="60" selected>60 x</option>
+                </select>
+                <button id="replayPlayButton" title="Play Replay" class="btn btn-primary" type="button" onclick="startPlayingRatingList()">▶︎</button>
+                <button id="replayResetButton" title="Reset Replay" class="btn btn-secondary" type="button" onclick="resetPlayingRatingList()">⏮︎</button>
+            </div>
+
+            <h5 id="rankingChartToggle" type="button" data-toggle="collapse" data-target="#rankingChart" aria-expanded="false" aria-controls="rankingChart">
+                Ranking Chart ⇅
+            </h5>
+            <div id="rankingChart" class="collapse container-fluid">
+                <canvas id="rankingChartCanvas"></canvas>
+                <p id="rankingChartMessage" class="centered">Not loaded yet...</p>
+            </div>
+
+            <h5 id="rankingSummaryToggle" type="button" data-toggle="collapse" data-target="#rankingSummary" aria-expanded="false" aria-controls="rankingSummary">
+                Ranking Summary ⇅
+            </h5>
+            <div id="rankingSummary" class="collapse"></div>
+
+            <h5 id="matchListToggle" type="button" data-toggle="collapse" data-target="#matchList" aria-expanded="false" aria-controls="matchList">
+                Match List ⇅
+            </h5>
+            <div id="matchList" class="collapse"></div>
+        
+        </div>
+
+        <!-- Settings -->
+        <hr class="rounded">
+        <div class="container">
+            <h3 id="settingsToggle" type="button" data-toggle="collapse" data-target="#settings" aria-expanded="false" aria-controls="settings">
+                ⚙ Settings ⇅
+            </button></h3>
+            <div id="settings" class="collapse">
+                <div class="input-group">
+                    <span class="input-group-text">Your Name</span>
+                    <input id="yourName" type="text" class="form-control centered" placeholder="Enter your name">
+                </div>
+                <button id="saveSettingsButton" class="btn btn-primary mt-3">Save Settings</button>
+            </div>
+        </div>
+
+
+        <!-- Additional Stuff / Rating Formula  / Reporting Guidelines-->
+        <hr class="rounded">
+        <h3 id="additionalInfoToggle" type="button" data-toggle="collapse" data-target="#additionalInfo" aria-expanded="false" aria-controls="additionalInfo">
+            Additional Info ⇅
+        </h3>
+        <div id="additionalInfo" class="collapse">
+            <div id="reportingGuidelines">
+                <h3>Connection Issue</h3>
+                <p>If you can see this you might have internet connection issues or your access token might be expired.</p>
+            </div>
+            <div id="reportMatchOnTheWeb"></div>
+        </div>
+
+        <!-- Submission Test -->
+        <hr class="rounded">
+        <h3 id="clubSelectionSectionToggle" type="button" data-toggle="collapse" data-target="#clubSelectionSection" aria-expanded="false" aria-controls="clubSelectionSection">
+            Club Selection ⇅
+        </h3>
+        <div id="clubSelectionSection" class="collapse">
+            <p>To test/exercise match report submissions you can change to a Fake Backgammon club below.
+            It should work the same as the default Backgammon club, but matches will be cleared from time to time.
+            To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
+            </p>
+            <p>Warning: After this page is refreshed the selection will change back to the default Backgammon club.</p>
+            <div class="input-group">
+                <span class="input-group-text">Club</span>
+                <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
+                    <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
+                </select>
+            </div>
+        </div>
+        <footer class="text-center mt-4 mb-2">
+            <small>&copy; 2025 Reinhold Lauer. All rights reserved.</small>
+        </footer>
+    </div>
+
+    <!-- Include Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+
+    <!-- Include Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+
+    
+    <script>
+        var playerRating = {};  // the player ratings from the rating list on GitHub
+
+        var matchRecords = '';  // all the matches ever played split in single lines, still in markdown format
+        var totalMatchList = '';  // all the matches ever played in markdown format
+
+        var matchList = '';  // only the applicable matches
+        var ranglistenMatchList = '';  // only the matches applicable for the Rangliste
+
+        var ratingSummary = {};  // summary for the Rating list
+        var rankingSummary = {};  // summary for ranking lists
+        var ranglistenSummary = {};  // summary for the Rangliste
+        var playerSummary = {};  // summary for a player
+        var playerProgressList = {};  // summary for the progression over time
+
+        // Fetch the Rating List
+        function fetchRatingList() {
+            const ratingList = fetchMarkDownFromRepoSync('RatingList', 'ratingList');  
+            populatePlayerRating(ratingList);
+        }
+
+        function playedTimeSpanSelectionChanged() {
+            if (populatePlayedTimeSpanMatchList()) {
+                rankingListSelectionChanged();
+            }
+            manuallyChangedChart = true;
+        }
+
+        function intervalSelectionChanged() {
+            populateTimeSpanSelectionList(matchRecords);
+            populatePlayedTimeSpanMatchList();
+            rankingListSelectionChanged();
+        }
+
+        function playerSelectionChanged() {
+            populatePlayerMatchList();
+            updatePlayerInfoChart(playerSummary);
+        }
+
+        let manuallyChangedChart = true;
+        function rankingListSelectionManuallyChanged() {
+            manuallyChangedChart = true;
+            destroyRankingChart("No chart available...");
+            rankingSummary = summarizeMatchList(matchList);
+            rankingListSelectionChanged();
+        }
+
+        let playerProgressCalculated = false;
+        function rankingListSelectionChanged() {
+            // set the played time span match list again, in case it has been overwritten before
+            if (document.getElementById('rankingListSelection').value !== 'rangliste') {
+                document.getElementById('matchList').innerHTML = marked.parse(matchList);
+            }
+            else {
+                document.getElementById('matchList').innerHTML = marked.parse(ranglistenMatchList);
+            }
+
+            switch ( document.getElementById('rankingListSelection').value) {
+                case 'ratingList':
+                    ratingSummary = summarizeRatingList(matchList);
+                    updateRatingListChart(ratingSummary);
+                    createRatingListRankingList('rankingSummary', ratingSummary);
+                    break;
+                case 'rangliste':
+                    if(Object.keys(ranglistenSummary).length > 0) {
+                        ranglistenSummary = summarizeMatchList(ranglistenMatchList);
+                        updateRanglistenChart(ranglistenSummary);
+                        createRanglisteRankingList('rankingSummary', ranglistenSummary);
+                    }
+                    else {
+                        destroyRankingChart("No chart available...");
+                        document.getElementById('rankingSummary').innerHTML = `<div><p class="centered">No Ranglisten matches played...</p></div>`;
+                    }
+                    break;
+                case 'playerProgress':
+                    if (!playerProgressCalculated) {
+                        playerProgressList = summarizePlayerProgress(totalMatchList);
+                        playerProgressCalculated = true;
+                    }
+                    updatePlayerProgressChart(playerProgressList);
+                    createPlayerProgressList('rankingSummary', playerProgressList);
+                    break;
+                case 'matchesPlayed':
+                    updateMatchesPlayedChart(rankingSummary);
+                    createMatchesPlayedRankingList('rankingSummary', rankingSummary);
+                    break;
+                case 'percentMatchesWon': 
+                    updateMatchesPlayedChart(rankingSummary);
+                    createPercentMatchesWonRankingList('rankingSummary', rankingSummary);
+                    break;
+                case 'playerInfo':
+                    updatePlayerInfoChart(playerSummary);
+                    playerSelectionChanged();
+                    break;
+                case 'currentStreak':
+                    createCurrentStreakRankingList('rankingSummary', rankingSummary);
+                    break;
+                case 'longestWinningStreak':
+                    createLongestWinningStreakRankingList('rankingSummary', rankingSummary);
+                    break;
+                case 'longestLosingStreak':
+                    createLongestLosingStreakRankingList('rankingSummary', rankingSummary);
+                    break;
+                case 'daysInactive':
+                    createLastTimeActiveRankingList('rankingSummary', rankingSummary);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Backgammon Club Selection Changed
+        function clubSelectionChanged() {
+            refreshWebPageTitle();
+            fetchRatingList();
+            fetchMatchList();
+            clearSubmissionStatus();
+            fetchFrequentPlayers();
+        }
+
+    </script>
+    
+    <!-- Events -->
+    <script>
+        // Add DOM Content Loaded Event Listener
+        document.addEventListener("DOMContentLoaded", () => {
+            populateClubSelection();
+            destroyRankingChart("Not loaded yet...");
+            fetchFrequentPlayers();
+            refreshWebPageTitle();
+            fetchRatingList();
+            fetchMatchList();
+
+            fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
+            fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+        });
+
+        function addToggleListener(elementName) {
+            document.getElementById(elementName + 'Toggle').addEventListener('click', function() {
+                const collapseElement = document.getElementById(elementName);
+                collapseElement.classList.toggle('show');
+                
+                if (elementName === 'rankingChart') {  // refresh the ranking chart if it is made visible
+                    const rankingCharJustShown = document.getElementById(elementName).classList.contains('show');
+                    if (rankingCharJustShown) {
+                        switch ( document.getElementById('rankingListSelection').value) {
+                            case 'matchesPlayed':
+                            case 'percentMatchesWon': 
+                                updateMatchesPlayedChart(rankingSummary);
+                                break;
+                            case 'rangliste':
+                                updateRanglistenChart(ranglistenSummary);
+                                break;
+                            case 'ratingList':
+                                updateRatingListChart(ratingSummary);
+                                break;
+                            case 'playerInfo':
+                                updatePlayerInfoChart(playerSummary);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            });
+        }
+
+        addToggleListener('rankingLists');
+        addToggleListener('matchReportForm');
+        addToggleListener('ratingList');
+
+        // show/hide the player name input and the replay section
+        document.getElementById("rankingListSelection").addEventListener("change", function () {
+            const playerNameSelection = document.getElementById("playerNameSelection");
+            playerNameSelection.style.display = this.value === "playerInfo" ? "flex" : "none";
+            
+            const replaySection = document.getElementById("replaySection");
+            replaySection.style.display = this.value === "ratingList" ? "flex" : "none";
+        });
+
+        addToggleListener('rankingChart');
+        addToggleListener('rankingSummary');
+        addToggleListener('matchList');
+        addToggleListener('settings'); 
+        addToggleListener('additionalInfo'); 
+        addToggleListener('clubSelectionSection'); 
+    </script>
+        
+    <script src="ClubRepo.js"></script>
+    <script src="MatchReport.js"></script>
+
+    <script src="RankingLogic.js"></script>
+    <script src="RankingCharts.js"></script>
+    <script src="RankingSummaries.js"></script>
+
+    <script src="Settings.js"></script>
+    <script src="SupportingFunctions.js"></script>
+</body>
+</html>
