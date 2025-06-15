@@ -442,52 +442,54 @@ function updatePlayerProgressChart(progressList) {
         return bLast - aLast;
     });
 
-    const datasets = sortedPlayers.map((player, idx) => {
-        let data = [];
-        playerProgress[player].forEach(entry => {
-            data.push({x: Number(entry.matchNumber), y: entry.rating});
+    // Only include datasets for players active in the selected time span
+    const datasets = sortedPlayers
+        .filter(player => activePlayers.has(player))
+        .map((player, idx) => {
+            let data = [];
+            playerProgress[player].forEach(entry => {
+                data.push({x: Number(entry.matchNumber), y: entry.rating});
+            });
+
+            // Assign a color (simple palette)
+            const colors = [
+                'rgba(255,0,0,1)',      // bright red
+                'rgba(0,0,255,1)',      // bright blue
+                'rgba(255,215,0,1)',    // gold
+                'rgba(128,0,255,1)',    // vivid purple
+                'rgba(255,140,0,1)',    // deep orange
+                'rgba(0,255,0,1)',      // bright green
+                'rgba(255,20,147,1)',   // deep pink
+                'rgba(75,0,130,1)',     // indigo
+                'rgba(0,0,139,1)',      // dark blue
+                'rgba(255,69,0,1)',     // red-orange
+                'rgba(139,0,0,1)',      // dark red
+                'rgba(0,206,209,1)',    // dark turquoise
+                'rgba(128,128,0,1)',    // olive
+                'rgba(220,20,60,1)',    // crimson
+                'rgba(0,128,0,1)',      // dark green
+                'rgba(0,255,255,1)',    // cyan
+                'rgba(255,255,0,1)'     // yellow
+            ];
+            const color = colors[idx % colors.length];
+
+            // Rank starts at 1
+            const rank = idx + 1;
+            return {
+                label: rank + " " + player,
+                hidden: false,
+                data: data,
+                borderColor: color,
+                backgroundColor: color.replace('1)', '0.2)'),
+                fill: false,
+                spanGaps: true,
+                tension: 0.2,
+                pointRadius: 0,
+                pointBorderWidth: 0,
+                pointHoverRadius: 18,
+                pointHitRadius: 24
+            };
         });
-
-        // Assign a color (simple palette)
-        // Expanded and more distinct color palette
-        const colors = [
-            'rgba(255,0,0,1)',      // bright red
-            'rgba(0,0,255,1)',      // bright blue
-            'rgba(255,215,0,1)',    // gold
-            'rgba(128,0,255,1)',    // vivid purple
-            'rgba(255,140,0,1)',    // deep orange
-            'rgba(0,255,0,1)',      // bright green
-            'rgba(255,20,147,1)',   // deep pink
-            'rgba(75,0,130,1)',     // indigo
-            'rgba(0,0,139,1)',      // dark blue
-            'rgba(255,69,0,1)',     // red-orange
-            'rgba(139,0,0,1)',      // dark red
-            'rgba(0,206,209,1)',    // dark turquoise
-            'rgba(128,128,0,1)',    // olive
-            'rgba(220,20,60,1)',    // crimson
-            'rgba(0,128,0,1)',      // dark green
-            'rgba(0,255,255,1)',    // cyan
-            'rgba(255,255,0,1)'     // yellow
-        ];
-        const color = colors[idx % colors.length];
-
-        // Rank starts at 1
-        const rank = idx + 1;
-        return {
-            label: rank + " " + player,
-            hidden: !activePlayers.has(player),
-            data: data,
-            borderColor: color,
-            backgroundColor: color.replace('1)', '0.2)'),
-            fill: false,
-            spanGaps: true,
-            tension: 0.2,
-            pointRadius: 0,
-            pointBorderWidth: 0,
-            pointHoverRadius: 18, // Larger hover radius for mobile usability
-            pointHitRadius: 24    // Larger hit radius for easier touch
-        };
-    });
 
     destroyRankingChart('');
     document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.6 + sortedPlayers.length * 10; // Adjust height based on number of players
