@@ -76,3 +76,6 @@
 |2025-06-03|Select|Select|5|
 |2025-06-03|Awful|Loser|5|
 |2025-06-11|Jemina|Nutcase|5|
+|2025-06-16|Awful|Expert|5|
+|2025-06-16|Expert|Loser|5|
+|2025-06-16|Expert|Master|5|
