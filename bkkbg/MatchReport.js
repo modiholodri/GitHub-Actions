@@ -68,7 +68,7 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
         setSubmissionStatus(`Submitting match...\n ${winnerName} > ${loserName} -> ${matchLength}`);
         setRunsInfo('Hold on a sec...');
         previousRunID = latestRunID;
-        if ( latestRunStatus !== 'Completed') {
+        if ( latestRunStatus === 'Submitting' || latestRunStatus === 'Queued' || latestRunStatus === 'In Progress') {
             setSubmissionStatus('Another submission in progress.\nTry again in a few seconds...');
             anotherSubmissionActive = true;
             document.getElementById("submit").disabled = true;
