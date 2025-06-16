@@ -167,6 +167,7 @@ function fetchMarkDownFromRepo(fileName, elementName) {
 function refreshWebPageTitle () {
     var sel = document.getElementById('clubSelection');
     document.getElementById('webPageTitle').innerText = sel.options[sel.selectedIndex].text;
+    document.title = sel.options[sel.selectedIndex].text;
 }
 
 // Fetch the Match List

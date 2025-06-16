@@ -68,7 +68,7 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
         setSubmissionStatus(`Submitting match...\n ${winnerName} > ${loserName} -> ${matchLength}`);
         setRunsInfo('Hold on a sec...');
         previousRunID = latestRunID;
-        if ( latestRunStatus !== 'Completed') {
+        if ( latestRunStatus === 'Submitting' || latestRunStatus === 'Queued' || latestRunStatus === 'In Progress') {
             setSubmissionStatus('Another submission in progress.\nTry again in a few seconds...');
             anotherSubmissionActive = true;
             document.getElementById("submit").disabled = true;
@@ -129,12 +129,17 @@ async function  refreshRunsStatus() {
         const workflowRuns = data.workflow_runs;
 
         // ${run.id} ${run.name} ${run.status} ${run.conclusion} ${run.created_at} ${run.updated_at} ${run.jobs_url}`
-
+        if (!workflowRuns || workflowRuns.length === 0) {
+            latestRunID = 'xxx';
+            latestRunStatus = 'No Runs';
+            latestRunConclusion = 'N/A';
+            latestRunUpdatedAt = formatTimestamp(new Date());
+            return;
+        }
+        
         latestRunID = workflowRuns[0].id;
         latestRunStatus = toTitleCase(workflowRuns[0].status.replaceAll('_', ' '));
-        
         latestRunUpdatedAt = formatTimestamp(workflowRuns[0].updated_at);
-        
         latestRunConclusion = workflowRuns[0].conclusion ? toTitleCase(workflowRuns[0].conclusion.toUpperCase()) : 'Wait...';;
     } 
     catch (error) { 
