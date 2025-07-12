@@ -48,16 +48,22 @@ function updateMatchesPlayedChart(matchListSummary) {
 
     // Extract data for the chart
     let matchesPlayedRankingList =  document.getElementById('rankingListSelection').value === 'matchesPlayed';
+    
     const players = matchesPlayedRankingList ?
                     Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].matchesPlayed - matchListSummary[a].matchesPlayed) :
                     Object.keys(matchListSummary).sort((a, b) => (matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed)-(matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed));
+    
     if (players.length < 1) return;
+    
     const matchesWon = matchesPlayedRankingList ?
                         players.map(player => matchListSummary[player].matchesWon):
                         players.map(player => 100*matchListSummary[player].matchesWon/matchListSummary[player].matchesPlayed);
+    
     const matchesLost = matchesPlayedRankingList ?
                         players.map(player => matchListSummary[player].matchesLost):
                         players.map(player => 100*matchListSummary[player].matchesLost/matchListSummary[player].matchesPlayed);
+
+    const chartTitle = matchesPlayedRankingList ? 'Matches Played' : '% Matches Won';
 
     setRememberedHiddenStates();
     destroyRankingChart('');
@@ -101,7 +107,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                     position: 'top', // Move the axis label to the top
                     title: {
                         display: true,
-                        text: 'Matches',
+                        text: chartTitle,
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers
