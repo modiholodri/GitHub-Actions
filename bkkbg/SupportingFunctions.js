@@ -75,7 +75,8 @@ function selectDefaultPlayer() {
                 break;
             }
         }
-        if ( document.getElementById('rankingListSelection').value === 'playerInfo') {
+        const rankingListSelection = document.getElementById('rankingListSelection').value;
+        if ( rankingListSelection === 'playerInfoPercent' || rankingListSelection === 'playerInfoMatches') {
             playerSelectionChanged();
         }
     }

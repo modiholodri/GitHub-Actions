@@ -9,7 +9,8 @@ let defaultHiddenStates = {
     'matchesPlayed': [false, false],
     'percentMatchesWon': [false, false],
     'rangliste': [false, false, true],
-    'playerInfo': [false, false],
+    'playerInfoPercent': [false, false],
+    'playerInfoMatches': [false, false],
 };
 
 // If the Ranking chart already exists, destroy it before creating a new one
@@ -206,7 +207,7 @@ function updateRanglistenChart(matchListSummary) {
     });
 }
 
-function updatePlayerInfoChart(matchListSummary) {
+function updatePlayerInfoPercentChart(matchListSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
     // Extract data for the chart
@@ -273,7 +274,93 @@ function updatePlayerInfoChart(matchListSummary) {
                     position: 'top', // Move the axis label to the top
                     title: {
                         display: true,
-                        text: '% Matches Won',
+                        text: selectedPlayer + "'s % Matches",
+                    },
+                    ticks: {
+                        callback: function(value) {  // Show only whole numbers
+                            return Number.isInteger(value) ? value : null;
+                        }
+                    },                            
+                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                },
+                y: {
+                    beginAtZero: true,
+                    stacked: true,
+                    ticks: { autoSkip: false } // show all the names
+                }
+            }
+        }
+    });
+}
+
+// update the Player Info chart based on the Matches
+function updatePlayerInfoMatchesChart(matchListSummary) {
+    const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+
+    // Extract data for the chart
+    const players = Object.keys(matchListSummary).sort((a, b) => (matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed)-(matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed));
+    if (players.length < 1) return;
+
+    // Calculate the percentage of matches won/lost for each player, note that it is seem from the opponents perspective
+    const matchesWon = players.map(player => matchListSummary[player].matchesLost);
+    const matchesLost = players.map(player => matchListSummary[player].matchesWon);
+
+    // Move the selected player to the top of the list and show the real percentage won/lost
+    const selectedPlayer = document.getElementById('playerName').value;
+    if (players.includes(selectedPlayer)) {
+        const selectedPlayerIndex = players.indexOf(selectedPlayer);
+        players.splice(selectedPlayerIndex, 1); // Remove the selected player
+        matchesWon.splice(selectedPlayerIndex, 1);
+        matchesLost.splice(selectedPlayerIndex, 1);
+    }
+    else {
+        destroyRankingChart(selectedPlayer + " didn't play...");
+        return;
+    }
+
+    setRememberedHiddenStates();
+    destroyRankingChart('');
+    optimizeChartCanvasHeight('rankingChartCanvas', players.length);
+
+    // Create the chart if it doesn't exist
+    rankingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: players, // Player names
+            datasets: [
+                {
+                    label: 'Won',
+                    hidden: hiddenStates[0],
+                    data: matchesWon,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Lost',
+                    hidden: hiddenStates[1],
+                    data: matchesLost,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y', // Set the chart to horizontal
+            responsive: true,
+            maintainAspectRatio: false, // Allow the chart to resize freely
+            plugins: {
+                legend: { position: 'bottom' },
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    stacked: true,
+                    position: 'top', // Move the axis label to the top
+                    title: {
+                        display: true,
+                        text: selectedPlayer + "'s Matches",
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers

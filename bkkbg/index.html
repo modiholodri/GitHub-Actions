@@ -86,7 +86,8 @@
                     <option class="centered" value="playerProgress">Player Progress</option>
                     <option class="centered" value="matchesPlayed">Matches Played</option>
                     <option class="centered" value="percentMatchesWon">% Matches Won</option>
-                    <option class="centered" value="playerInfo">Player Info</option>
+                    <option class="centered" value="playerInfoPercent">Player Info %</option>
+                    <option class="centered" value="playerInfoMatches">Player Info</option>
                     <option class="centered" value="currentStreak">Current Streak</option>
                     <option class="centered" value="longestWinningStreak">> Winning Streak</option>
                     <option class="centered" value="longestLosingStreak">> Losing Streak</option>
@@ -244,7 +245,11 @@
 
         function playerSelectionChanged() {
             populatePlayerMatchList();
-            updatePlayerInfoChart(playerSummary);
+            if (document.getElementById('rankingListSelection').value === 'playerInfoPercent') {
+                updatePlayerInfoPercentChart(playerSummary);
+            } else if (document.getElementById('rankingListSelection').value === 'playerInfoMatches') {
+                updatePlayerInfoMatchesChart(playerSummary);
+            }
         }
 
         let manuallyChangedChart = true;
@@ -298,8 +303,12 @@
                     updateMatchesPlayedChart(rankingSummary);
                     createPercentMatchesWonRankingList('rankingSummary', rankingSummary);
                     break;
-                case 'playerInfo':
-                    updatePlayerInfoChart(playerSummary);
+                case 'playerInfoPercent':
+                    updatePlayerInfoPercentChart(playerSummary);
+                    playerSelectionChanged();
+                    break;
+                case 'playerInfoMatches':
+                    updatePlayerInfoMatchesChart(playerSummary);
                     playerSelectionChanged();
                     break;
                 case 'currentStreak':
@@ -364,8 +373,11 @@
                             case 'ratingList':
                                 updateRatingListChart(ratingSummary);
                                 break;
-                            case 'playerInfo':
-                                updatePlayerInfoChart(playerSummary);
+                            case 'playerInfoPercent':
+                                updatePlayerInfoPercentChart(playerSummary);
+                                break;
+                            case 'playerInfoMatches':
+                                updatePlayerInfoMatchesChart(playerSummary);
                                 break;
                             default:
                                 break;
@@ -382,7 +394,7 @@
         // show/hide the player name input and the replay section
         document.getElementById("rankingListSelection").addEventListener("change", function () {
             const playerNameSelection = document.getElementById("playerNameSelection");
-            playerNameSelection.style.display = this.value === "playerInfo" ? "flex" : "none";
+            playerNameSelection.style.display = this.value === "playerInfoPercent" || this.value === "playerInfoMatches" ? "flex" : "none";
             
             const replaySection = document.getElementById("replaySection");
             replaySection.style.display = this.value === "ratingList" ? "flex" : "none";

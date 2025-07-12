@@ -32,7 +32,7 @@ function loadSettings() {
 
     // Expand/Collapse the Player Name Selection depending on the Ranking List Selection
     const playerNameSelection = document.getElementById("playerNameSelection");
-    playerNameSelection.style.display = rankingListSelection === "playerInfo" ? "flex" : "none";
+    playerNameSelection.style.display = rankingListSelection === "playerInfoPercent" || rankingListSelection === "playerInfoMatches" ? "flex" : "none";
 
     // Expand/Collapse the Replay section depending on the Ranking List Selection
     const replaySection = document.getElementById("replaySection");
