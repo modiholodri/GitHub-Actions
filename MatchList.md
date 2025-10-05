@@ -87,3 +87,4 @@
 |2025-10-05|Loser|Expert|5|
 |2025-10-05|Expert|Winner|5|
 |2025-10-05|Expert|Awful|5|
+|2025-10-05|Awful|Expert|5|
