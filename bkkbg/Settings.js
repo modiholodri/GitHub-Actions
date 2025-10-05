@@ -19,6 +19,7 @@ function loadToggleSetting(elementName) {
 // Load settings from localStorage
 function loadSettings() {
     loadToggleSetting('matchReportForm');
+    loadToggleSetting('tournamentManagement');
     loadToggleSetting('ratingList');
     loadToggleSetting('rankingLists');
 
@@ -64,6 +65,7 @@ function saveValueSetting(elementName) {
 // Save settings to localStorage
 function saveSettings() {
     saveToggleSetting('matchReportForm');
+    saveToggleSetting('tournamentManagement');
     saveToggleSetting('ratingList');
     saveToggleSetting('rankingLists');
 
