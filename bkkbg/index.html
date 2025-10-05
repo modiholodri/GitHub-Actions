@@ -70,11 +70,12 @@
         <div id="tournamentManagement" class="collapse">
             <!-- Players List -->
             <div class="input-group">
+                <button id="generateTournamentButton" class="btn btn-success" type="button">Generate</button>
                 <select id="playersList" title="Players List" class="multiple_select" multiple>
                     <option value="Winner">Winner</option>
                     <option value="Loser">Loser</option>
                 </select>
-            </div>
+            <div id="tournament"></div>
         </div>
 
 
@@ -91,7 +92,6 @@
         <h3 id="rankingListsToggle" type="button" data-toggle="collapse" data-target="#rankingLists" aria-expanded="false" aria-controls="rankingLists">
             Ranking Lists ⇅
         </h3>
-
         <div id="rankingLists" class="collapse">
 
             <!-- Ranking List Selection -->
@@ -110,12 +110,14 @@
                     <option class="centered" value="daysInactive">Days Inactive</option>
                 </select>
             </div>
+
             <!-- Player Name -->
             <div id="playerNameSelection" class="input-group" style="display:none">
                 <select id="playerName" title="Player Name" class="form-select" onchange="playerSelectionChanged()">
                     <option value="Select">Select</option>
                 </select>
             </div>
+
             <!-- Played Time Span -->
             <div class="input-group">
                 <select id="intervalSelection" title="Interval Selection" class="form-select" style="flex: 0 0 40%;" onchange="intervalSelectionChanged()">
@@ -129,6 +131,7 @@
                     <option class="centered" value="Fetch Matches">Fetch Matches</option>
                 </select>
             </div>
+
             <!-- Replay Section -->
             <div id="replaySection" title="Replay Section" class="input-group">
                 <span class="input-group-text">Replay</span>
@@ -247,6 +250,17 @@
         var ranglistenSummary = {};  // summary for the Rangliste
         var playerSummary = {};  // summary for a player
         var playerProgressList = {};  // summary for the progression over time
+
+        document.getElementById('generateTournamentButton').addEventListener('click', function() {
+            const playersList = document.getElementById('playersList');
+            const selectedPlayers = Array.from(playersList.selectedOptions).map(opt => opt.value);
+            if (selectedPlayers.length < 4) {
+                alert('Please select at least four players to generate a tournament.');
+                document.getElementById('tournament').innerText = 'Not enough players.';
+                return;
+            }
+            generateRoundRobinTournament(selectedPlayers);
+        });
 
         // Fetch the Rating List
         function fetchRatingList() {
@@ -481,6 +495,7 @@
         
     <script src="ClubRepo.js"></script>
     <script src="MatchReport.js"></script>
+    <script src="Tournament.js"></script>
 
     <script src="RankingLogic.js"></script>
     <script src="RankingCharts.js"></script>

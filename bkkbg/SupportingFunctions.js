@@ -100,17 +100,19 @@ function fetchFrequentPlayers() {
             const fileContent = decodeURIComponent(escape(window.atob( data.content )));
 
             var frequentPlayers = fileContent.split("\n");
-            var playerOptions = '<option class="centered" value="Select">Select</option>\n';
+            var playersList = '';
 
             for (var i = 0; i < frequentPlayers.length; i++) {
                 if (frequentPlayers[i].length > 0) {
-                    playerOptions += `<option class="centered" value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
+                    playersList += `<option class="centered" value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
                 }
             }
+            var playerOptions = '<option class="centered" value="Select">Select</option>\n' + playersList;
+
             document.getElementById("winnerName").innerHTML = playerOptions;
             document.getElementById("loserName").innerHTML = playerOptions;
             document.getElementById("playerName").innerHTML = playerOptions;
-            document.getElementById("playersList").innerHTML = playerOptions;
+            document.getElementById("playersList").innerHTML = playersList;
             selectDefaultPlayer();
         } else {
             console.log('Failed to fetch Frequent Players!');
