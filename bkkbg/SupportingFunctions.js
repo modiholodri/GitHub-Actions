@@ -193,6 +193,7 @@ function fetchMatchList() {
 
             matchRecords = totalMatchList.split("\n");
             
+            fetchLastTournament();
             if (populateTimeSpanSelectionList(matchRecords) > 0) {
                 if(populatePlayedTimeSpanMatchList()) {
                     rankingListSelectionChanged();

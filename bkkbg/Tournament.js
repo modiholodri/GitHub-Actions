@@ -81,7 +81,6 @@ document.getElementById('tournamentManagement').addEventListener('submit', async
 
         newSubmission = true;
         // document.getElementById("submit").disabled = true;
-        highlightYourNameInTournament();
     } 
     catch (error) { 
         // Error triggering GitHub Action: Failed to execute 'json' on 'Response': Unexpected end of JSON input
@@ -106,6 +105,8 @@ function fetchLastTournament() {
         if (data.content) {
             const fileContent = decodeURIComponent(window.atob( data.content ));
             document.getElementById('tournament').innerHTML = fileContent.replace(/\\n/g, '\n');
+            getTodaysMatches(matchRecords);
+            highlightTodaysMatches();
             highlightYourNameInTournament();
         } else {
             console.log('Failed to fetch Last Tournament!');
@@ -126,7 +127,52 @@ function highlightYourNameInTournament() {
     const regex = new RegExp(`\\b(${yourName})\\b`, 'gi');
     tournamentDiv.innerHTML = tournamentDiv.innerHTML.replace(
         regex,
-        `<span style="background-color: yellow;">$1</span>`
+        `<span style="background-color: blue;">${yourName}</span>`
     );
     tournamentGenerated = false;
+}
+
+var todaysMatches = [];
+// Get todays matches
+function highlightTodaysMatches() {
+    const tournamentDiv = document.getElementById('tournament');
+    const tournamentLines = tournamentDiv.innerHTML.split('\n');
+    for (var i = 0; i < todaysMatches.length; i++) {
+        if (todaysMatches[i].length > 0) {
+            const matchInfo = todaysMatches[i].split('|');
+            const winner = matchInfo[2];
+            const loser = matchInfo[3];
+            const matchLength = matchInfo[4];
+            const matchRegex = new RegExp(`\\b(${winner}|${loser}).+vs.+(${winner}|${loser})\\b`, 'i');
+            for (var j = 0; j < tournamentLines.length; j++) {
+                if (tournamentLines[j].match(matchRegex)) {
+                    tournamentLines[j] = tournamentLines[j].replace(
+                        matchRegex,
+                        `<span style="color: green;">${winner}</span> -> <span style="color: red;">${loser}</span> (${matchLength})`
+                    );
+                    break; // Exit the inner loop once a match is found and replaced
+                }
+            }
+        }
+    }
+    html = tournamentLines.join('\n');
+    tournamentDiv.innerHTML = html;
+}
+
+// Get todays matches
+function getTodaysMatches(matchRecords) {
+    const today = new Date().toISOString().slice(0, 10);
+    todaysMatches = [];
+    for (var i = matchRecords.length-1; i > 1; i--) {
+        if (matchRecords[i].length > 0) {
+            const matchInfo = matchRecords[i].split('|');
+            const matchDate = matchInfo[1];
+            if (matchDate === today) {
+                todaysMatches.push(matchRecords[i]);
+            }
+            else {
+                break; // since the list is in reverse chronological order, we can stop once we reach a different date
+            }
+        }
+    }
 }
