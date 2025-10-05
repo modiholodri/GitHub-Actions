@@ -67,16 +67,19 @@
         <h3 id="tournamentManagementToggle" type="button" data-toggle="collapse" data-target="#tournamentManagement" aria-expanded="true" aria-controls="tournamentManagement">
             Tournament Management ⇅
         </h3>
-        <div id="tournamentManagement" class="collapse">
+        <form id="tournamentManagement" class="collapse">
             <!-- Players List -->
             <div class="input-group">
-                <button id="generateTournamentButton" class="btn btn-success" type="button">Generate</button>
+                <button id="generateTournamentButton" class="btn btn-primary" type="button">Generate</button>
+                <input id="minimumTournamentPlayers" title="Minimum Tournament Players" type="text" class="form-control">
+                <button id="start_tournament" type="submit" class="btn btn-primary float-right">Start</button>
                 <select id="playersList" title="Players List" class="multiple_select" multiple>
                     <option value="Winner">Winner</option>
                     <option value="Loser">Loser</option>
                 </select>
+            </div>
             <div id="tournament"></div>
-        </div>
+        </form>
 
 
         <!-- Rating List -->
@@ -416,9 +419,9 @@
                 var selected = Array.from(playersList.selectedOptions).map(opt => opt.value).join(', ');
                 var document_style = document.documentElement.style;
                 if (selected !== "")
-                    document_style.setProperty('--text', "'Players: " + selected + "'");
+                    document_style.setProperty('--text', "'" + selected + "'");
                 else
-                    document_style.setProperty('--text', "'Select Tournament Players'");
+                    document_style.setProperty('--text', "'Select Players...'");
             });
         }
     </script>

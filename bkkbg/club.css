@@ -98,13 +98,12 @@ hr.rounded {
 
 :root
 {
-	--text: "Select Tournament Players";
+	--text: "Select Players...";
 }
 .multiple_select
 {	height: 30px;
-	width: 90%;
+	width: 100%;
 	overflow: hidden;
-	/* -webkit-appearance: menulist; */
 	position: relative;
 }
 .multiple_select::before
