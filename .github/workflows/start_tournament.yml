@@ -1,0 +1,36 @@
+name: Start Tournament
+
+on: 
+  repository_dispatch: 
+    types: [start_tournament]    
+
+jobs:
+  process_action_match:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v4
+
+      - name: Get Tournament Info
+        id: get_tournament
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tournament = `${{ github.event.client_payload.tournament_html }}`;
+            console.log(`____________________________`);
+            console.log(`${ tournament }`);
+            return `${ tournament }`;
+          
+      - name: Update the Tournament
+        run: |
+          echo "${{ steps.get_tournament.outputs.result }}" > "Tournament.html"
+        
+      - name: Commit Changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add 'Tournament.html'
+          git commit -m 'Starting a new tournament'
+          git push
