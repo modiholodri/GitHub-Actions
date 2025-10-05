@@ -1,3 +1,5 @@
+let tournamentGenerated = false;
+
 function generateRoundRobinTournament(selectedPlayers) {
     const rounds = [];
     const players = [...selectedPlayers].sort(() => Math.random() - 0.5);
@@ -33,12 +35,18 @@ function generateRoundRobinTournament(selectedPlayers) {
     });
 
     document.getElementById('tournament').innerHTML = html;
+    tournamentGenerated = true;
 }
 
-// Start a new tournament
+// Start a new tournament after Start Tournament button is clicked
 document.getElementById('tournamentManagement').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    if (!tournamentGenerated) {
+        alert('Generate the tournament first!\nWarning: Do that only if you are sure you want to overwrite the existing tournament!!!');
+        return;
+    }
+
     // Tournament HTML
     let tournamentHTML = document.getElementById('tournament').innerHTML;
 
@@ -73,9 +81,52 @@ document.getElementById('tournamentManagement').addEventListener('submit', async
 
         newSubmission = true;
         // document.getElementById("submit").disabled = true;
+        highlightYourNameInTournament();
     } 
     catch (error) { 
         // Error triggering GitHub Action: Failed to execute 'json' on 'Response': Unexpected end of JSON input
         alert('Error triggering GitHub Action: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
     }
 });
+
+// Fetch the last tournament
+function fetchLastTournament() {
+    const repoName = document.getElementById('clubSelection').value;
+    const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/Tournament.html?timestamp=${Date.now()}`;
+
+    const options = {
+        headers: {
+            'Authorization': `token ${githubToken}`
+        }
+    };
+
+    fetch(url, options)
+    .then(response => response.json())
+    .then(data => {
+        if (data.content) {
+            const fileContent = decodeURIComponent(window.atob( data.content ));
+            document.getElementById('tournament').innerHTML = fileContent.replace(/\\n/g, '\n');
+            highlightYourNameInTournament();
+        } else {
+            console.log('Failed to fetch Last Tournament!');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function highlightYourNameInTournament() {
+    const yourName = document.getElementById('yourName').value.trim();
+    const tournamentDiv = document.getElementById('tournament');
+    if (!tournamentDiv || !yourName) {
+        tournamentGenerated = false;
+        return;
+    }
+
+    // Use regex to match yourName as a whole word, case-insensitive
+    const regex = new RegExp(`\\b(${yourName})\\b`, 'gi');
+    tournamentDiv.innerHTML = tournamentDiv.innerHTML.replace(
+        regex,
+        `<span style="background-color: yellow;">$1</span>`
+    );
+    tournamentGenerated = false;
+}
