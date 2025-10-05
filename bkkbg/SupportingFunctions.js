@@ -110,6 +110,7 @@ function fetchFrequentPlayers() {
             document.getElementById("winnerName").innerHTML = playerOptions;
             document.getElementById("loserName").innerHTML = playerOptions;
             document.getElementById("playerName").innerHTML = playerOptions;
+            document.getElementById("playersList").innerHTML = playerOptions;
             selectDefaultPlayer();
         } else {
             console.log('Failed to fetch Frequent Players!');

@@ -68,12 +68,11 @@
             Tournament Management ⇅
         </h3>
         <div id="tournamentManagement" class="collapse">
-            <!-- Winner -->
+            <!-- Players List -->
             <div class="input-group">
-                <span id="playersLabel" class="input-group-text">Players</span>
-                <select id="playersList" title="Players List" class="form-select" style="flex: 0 0 60%;">
-                    <option value="Select">Select</option>
-                    <option value="Players">Player</option>
+                <select id="playersList" title="Players List" class="multiple_select" multiple>
+                    <option value="Winner">Winner</option>
+                    <option value="Loser">Loser</option>
                 </select>
             </div>
         </div>
@@ -362,6 +361,52 @@
             fetchFrequentPlayers();
         }
 
+    </script>
+
+    <!-- Multiple Select-->
+    <script>
+        // Handle mousedown on .multiple_select
+        document.querySelectorAll('.multiple_select').forEach(function(select) {
+            select.addEventListener('mousedown', function(e) {
+                if (e.target.tagName === "OPTION") {
+                    return; // don't close dropdown if selecting option
+                }
+                this.classList.toggle('multiple_select_active');
+            });
+        });
+
+        // Handle blur event to remove active class
+        document.querySelectorAll('.multiple_select').forEach(function(select) {
+            select.addEventListener('blur', function(e) {
+                this.classList.remove('multiple_select_active');
+            });
+        });
+
+        // Handle option selection without ctrl
+        document.querySelectorAll('.multiple_select').forEach(function(select) {
+            Array.from(select.options).forEach(function(option) {
+                option.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    this.selected = !this.selected;
+                    // Trigger change event manually
+                    var event = new Event('change', { bubbles: true });
+                    select.dispatchEvent(event);
+                });
+            });
+        });
+
+        // Handle #playersList change
+        var playersList = document.getElementById("playersList");
+        if (playersList) {
+            playersList.addEventListener('change', function() {
+                var selected = Array.from(playersList.selectedOptions).map(opt => opt.value).join(', ');
+                var document_style = document.documentElement.style;
+                if (selected !== "")
+                    document_style.setProperty('--text', "'Players: " + selected + "'");
+                else
+                    document_style.setProperty('--text', "'Select Tournament Players'");
+            });
+        }
     </script>
     
     <!-- Events -->

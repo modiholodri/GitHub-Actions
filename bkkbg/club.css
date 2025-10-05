@@ -94,3 +94,44 @@ hr.rounded {
 .centered {
     text-align: center;
 }
+
+
+:root
+{
+	--text: "Select Tournament Players";
+}
+.multiple_select
+{	height: 30px;
+	width: 90%;
+	overflow: hidden;
+	/* -webkit-appearance: menulist; */
+	position: relative;
+}
+.multiple_select::before
+{
+	content: var(--text);
+	display: block;
+    margin-left: 5px;
+    margin-bottom: 2px;
+}
+.multiple_select_active
+{
+	overflow: visible !important;
+}
+.multiple_select option
+{
+	display: none;
+    height: 30px;
+	background-color: black; /
+}
+.multiple_select_active option
+{
+	display: block;
+}
+
+.multiple_select option::before {
+  content: "\2610";
+}
+.multiple_select option:checked::before {
+  content: "\2611";
+}
