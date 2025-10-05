@@ -21,13 +21,15 @@ function generateRoundRobinTournament(selectedPlayers) {
         players.splice(1, 0, players.pop());
     }
 
-    let html = '';
+    // generate the HTML for the tournament
+    const today = new Date().toISOString().slice(0, 10);
+    let html = `<h5>Tournament ${today}</h5>\n`;
     rounds.forEach((matches, i) => {
-        html += `<h5>Round ${i + 1}</h5><ul>`;
+        html += `<p>\n`;
         matches.forEach(match => {
-            html += `<li>${match}</li>`;
+            html += `R${i + 1}: ${match}<br>\n`;
         });
-        html += '</ul>';
+        html += `</p>\n`;
     });
 
     document.getElementById('tournament').innerHTML = html;
