@@ -5,7 +5,7 @@ on:
     types: [start_tournament]    
 
 jobs:
-  process_action_match:
+  start_tournament:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repo
@@ -23,7 +23,7 @@ jobs:
           
       - name: Update the Tournament
         run: |
-          echo "${{ steps.get_tournament.outputs.result }}" > "Tournament.html"
+          echo ${{ steps.get_tournament.outputs.result }} > "Tournament.html"
         
       - name: Commit Changes
         env:
