@@ -38,12 +38,21 @@ function generateRoundRobinTournament(selectedPlayers) {
     tournamentGenerated = true;
 }
 
-// Start a new tournament after Start Tournament button is clicked
+// Start a new tournament after the Start button is clicked
 document.getElementById('tournamentManagement').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     if (!tournamentGenerated) {
         alert('Generate the tournament first!\nWarning: Do that only if you are sure you want to overwrite the existing tournament!!!');
+        return;
+    }
+    uploadTournament();
+});
+
+// Finish the tournament after Finish button is clicked
+document.getElementById('finishTournamentButton').addEventListener('click', function () {
+    if (tournamentGenerated) {
+        alert('Cannot finish a generated tournament!');
         return;
     }
     uploadTournament();
@@ -93,15 +102,22 @@ function generateRankingTable() {
 }
 
 async function uploadTournament() {
-    // Tournament HTML
-    let tournamentHTML = document.getElementById('tournament').innerHTML;
+    // Remove blue background spans before uploading
+    let tournamentDiv = document.createElement('div');
+    tournamentDiv.innerHTML = document.getElementById('tournament').innerHTML;
+    // Remove all <span style="background-color: blue;">...</span>
+    tournamentDiv.querySelectorAll('span[style="background-color: blue;"]').forEach(span => {
+        span.replaceWith(document.createTextNode(span.textContent));
+    });
 
-    alert('Starting a new tournament!\n' + tournamentHTML);
+    let tournamentHTML = tournamentDiv.innerHTML;
+
+    // alert('Starting a new tournament!\n' + tournamentHTML);
     
     const repoName = document.getElementById('clubSelection').value;
 
     await refreshRunsStatus();
-    setSubmissionStatus(`Starting tournament...`);
+    setSubmissionStatus(`Uploading tournament...`);
     setRunsInfo('Hold on a sec...');
     previousRunID = latestRunID;
     if ( latestRunStatus === 'Submitting' || latestRunStatus === 'Queued' || latestRunStatus === 'In Progress') {
@@ -130,7 +146,7 @@ async function uploadTournament() {
     } 
     catch (error) { 
         // Error triggering GitHub Action: Failed to execute 'json' on 'Response': Unexpected end of JSON input
-        alert('Error triggering GitHub Action: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
+        alert('Error uploading the tournament: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
     }
 }
 
