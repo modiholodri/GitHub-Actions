@@ -93,3 +93,4 @@
 |2025-10-05|Winner|Loser|5|
 |2025-10-07|Awful|Winner|5|
 |2025-10-07|Beginner|Loser|5|
+|2025-10-07|Expert|Loser|5|
