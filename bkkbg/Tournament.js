@@ -15,7 +15,7 @@ function generateRoundRobinTournament(selectedPlayers) {
             const home = players[i];
             const away = players[players.length - 1 - i];
             if (home !== 'Bye' && away !== 'Bye') {
-                matches.push(`${home} vs ${away}`);
+                matches.push(`${home} <-> ${away}`);
             }
         }
         rounds.push(matches);
@@ -29,7 +29,7 @@ function generateRoundRobinTournament(selectedPlayers) {
     rounds.forEach((matches, i) => {
         html += `<p>\n`;
         matches.forEach(match => {
-            html += `R${i + 1}: ${match}<br>\n`;
+            html += `${match}<br>\n`;
         });
         html += `</p>\n`;
     });
@@ -67,7 +67,7 @@ function generateRankingTable() {
     const winCounts = {};
 
     lines.forEach(line => {
-        const match = line.match(/R\d+:\s*(.+?)\s*->\s*(.+?)\s*\(\d+\)/);
+        const match = line.match(/\s*(.+?)\s*<\d+>\s*(.+?)\s*/);
         if (match) {
             const winner = match[1].trim();
             winCounts[winner] = (winCounts[winner] || 0) + 1;
@@ -206,12 +206,12 @@ function highlightTodaysMatches() {
             const winner = matchInfo[2];
             const loser = matchInfo[3];
             const matchLength = matchInfo[4];
-            const matchRegex = new RegExp(`\\b(${winner}|${loser}).+vs.+(${winner}|${loser})\\b`, 'i');
+            const matchRegex = new RegExp(`\\b(${winner}|${loser})\\s&lt;-&gt;\\s(${winner}|${loser})\\b`, 'i');
             for (var j = 0; j < tournamentLines.length; j++) {
                 if (tournamentLines[j].match(matchRegex)) {
                     tournamentLines[j] = tournamentLines[j].replace(
                         matchRegex,
-                        `<span style="color: green;">${winner}</span> -> <span style="color: red;">${loser}</span> (${matchLength})`
+                        `<span style="color: green;">${winner}</span> <${matchLength}> <span style="color: red;">${loser}</span>`
                     );
                     break; // Exit the inner loop once a match is found and replaced
                 }
