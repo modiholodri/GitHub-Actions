@@ -46,7 +46,53 @@ document.getElementById('tournamentManagement').addEventListener('submit', async
         alert('Generate the tournament first!\nWarning: Do that only if you are sure you want to overwrite the existing tournament!!!');
         return;
     }
+    uploadTournament();
+});
 
+function generateRankingTable() {
+    const tournamentDiv = document.getElementById('tournament');
+    const summaryDiv = document.getElementById('tournamentSummary');
+    if (!tournamentDiv || !summaryDiv) return;
+
+    const lines = tournamentDiv.innerText.split('\n');
+    const winCounts = {};
+
+    lines.forEach(line => {
+        const match = line.match(/R\d+:\s*(.+?)\s*->\s*(.+?)\s*\(\d+\)/);
+        if (match) {
+            const winner = match[1].trim();
+            winCounts[winner] = (winCounts[winner] || 0) + 1;
+            // Loser is match[2], but not needed for win count
+        }
+    });
+
+    // Convert to array and sort by wins descending
+    const sorted = Object.entries(winCounts)
+        .sort((a, b) => b[1] - a[1]);
+
+    let ranking = [];
+    let currentRank = 1;
+    for (let i = 0; i < sorted.length; i++) {
+        const [name, wins] = sorted[i];
+        // If not the first, and previous wins are same, keep the same rank
+        if (i > 0 && sorted[i][1] === sorted[i - 1][1]) {
+            ranking.push({ rank: currentRank, name, wins });
+        } else {
+            currentRank = i + 1;
+            ranking.push({ rank: currentRank, name, wins });
+        }
+    }
+
+    // Build the ranking table
+    let rankingTable = '|Rank|   |Wins|\n|:---:|:---:|:---:|\n';
+    ranking.forEach(row => {
+        rankingTable += `|${row.rank}|${row.name}|${row.wins}|\n`;
+    });
+
+    summaryDiv.innerHTML = marked.parse(rankingTable);;
+}
+
+async function uploadTournament() {
     // Tournament HTML
     let tournamentHTML = document.getElementById('tournament').innerHTML;
 
@@ -86,7 +132,7 @@ document.getElementById('tournamentManagement').addEventListener('submit', async
         // Error triggering GitHub Action: Failed to execute 'json' on 'Response': Unexpected end of JSON input
         alert('Error triggering GitHub Action: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
     }
-});
+}
 
 // Fetch the last tournament
 function fetchLastTournament() {
@@ -108,6 +154,7 @@ function fetchLastTournament() {
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
             highlightYourNameInTournament();
+            generateRankingTable();
         } else {
             console.log('Failed to fetch Last Tournament!');
         }
