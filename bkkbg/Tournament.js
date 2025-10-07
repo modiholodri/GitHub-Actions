@@ -2,7 +2,7 @@ let tournamentGenerated = false;
 
 function generateRoundRobinTournament(selectedPlayers) {
     const rounds = [];
-    const players = [...selectedPlayers].sort(() => Math.random() - 0.5);
+    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
     if (players.length % 2 !== 0) {
         players.push('Bye');
     }
@@ -176,3 +176,54 @@ function getTodaysMatches(matchRecords) {
         }
     }
 }
+
+// Linear Congruential Generator (LCG) for pseudo-random number generation
+class LCG {
+    constructor(seed) {
+        this.seed = seed;
+        // Optimal parameters for a 32-bit LCG (from Numerical Recipes)
+        this.m = Math.pow(2, 31); // Modulus
+        this.a = 1103515245;      // Multiplier
+        this.c = 12345;           // Increment
+    }
+
+    // Generates the next pseudo-random integer
+    next() {
+        this.seed = (this.a * this.seed + this.c) % this.m;
+        return this.seed;
+    }
+
+    // Generates a pseudo-random float between 0 (inclusive) and 1 (exclusive)
+    random() {
+        return this.next() / this.m;
+    }
+
+    // Generates a pseudo-random integer within a specified range [min, max]
+    randomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(this.random() * (max - min + 1)) + min;
+    }
+}
+
+// Example usage:
+const generator = new LCG(Date.now()); // Initialize with current time as seed
+
+// console.log("Next pseudo-random integer:", generator.next());
+// console.log("Pseudo-random float (0-1):", generator.random());
+// console.log("Pseudo-random integer (1-10):", generator.randomInt(1, 10));
+
+// Fisher-Yates Shuffle using the LCG
+function fisherYatesShuffle(arr) {
+    let n = arr.length;
+    for (let i = n - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1)); // Random index from 0 to i
+        [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
+    }
+    return arr;
+}
+
+// Example usage
+// let array = [1, 2, 3, 4, 5];
+// let shuffledArray = fisherYatesShuffle(array);
+// console.log(shuffledArray);
