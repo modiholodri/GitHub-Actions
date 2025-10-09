@@ -4,3 +4,16 @@ Loser
 Master
 Beginner
 Winner
+Sucker
+Comet
+Star
+Moon
+Sun
+Black
+Turnip
+Moron
+Bastard
+Hell
+Happy
+Lucky
+Unlucky
