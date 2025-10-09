@@ -1,6 +1,42 @@
 let tournamentGenerated = false;
 
-function generateRoundRobinTournament(selectedPlayers) {
+function generateTournament(selectedPlayers) {
+    let maximumPlayers = document.getElementById('maximumTournamentPlayers').value;
+    if (isNaN(maximumPlayers) || maximumPlayers < 3) {
+        alert('Invalid maximum players per group!\nNot a number or less than 3.');
+        return;
+    }
+    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+    const today = new Date().toISOString().slice(0, 10);
+    let html = `<p id="today" style="text-align: center">${today}</p>\n`;
+    
+    let tournamentPlayer = players.length;
+
+    let groups = Math.floor(tournamentPlayer / maximumPlayers);
+    if (groups * maximumPlayers < tournamentPlayer) groups += 1;
+
+    let groupPlayers = Math.ceil(tournamentPlayer / groups);
+
+    let start = 0;
+    let remainingPlayers = tournamentPlayer;
+    let remainingGroups = groups;
+    for (let group = 1; group < groups + 1; group++) {
+        let end = start + groupPlayers;
+        if (group === groups) end = tournamentPlayer + 1; 
+        html += generateRoundRobinTournament(group, players.slice(start, end));
+
+        start += groupPlayers;
+
+        remainingPlayers -= groupPlayers;
+        remainingGroups -= 1;
+        groupPlayers = Math.ceil(remainingPlayers / remainingGroups);
+    }
+
+    document.getElementById('tournament').innerHTML = html;
+    tournamentGenerated = true;
+}
+
+function generateRoundRobinTournament(groupName, selectedPlayers) {
     const rounds = [];
     const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
     if (players.length % 2 !== 0) {
@@ -24,8 +60,7 @@ function generateRoundRobinTournament(selectedPlayers) {
     }
 
     // generate the HTML for the tournament
-    const today = new Date().toISOString().slice(0, 10);
-    let html = `<h5>Tournament ${today}</h5>\n`;
+    let html = `<h5>Round Robin ${groupName}</h5>\n`;
     rounds.forEach((matches, i) => {
         html += `<p>\n`;
         matches.forEach(match => {
@@ -34,8 +69,7 @@ function generateRoundRobinTournament(selectedPlayers) {
         html += `</p>\n`;
     });
 
-    document.getElementById('tournament').innerHTML = html;
-    tournamentGenerated = true;
+    return html;
 }
 
 // Start a new tournament after the Start button is clicked
@@ -58,24 +92,7 @@ document.getElementById('finishTournamentButton').addEventListener('click', func
     uploadTournament();
 });
 
-function generateRoundRobinSummary() {
-    const tournamentDiv = document.getElementById('tournament');
-    const summaryDiv = document.getElementById('tournamentSummary');
-    if (!tournamentDiv || !summaryDiv) return;
-
-    const lines = tournamentDiv.innerText.split('\n');
-    const winCounts = {};
-
-    lines.forEach(line => {
-        const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
-        if (match) {
-            const winner = match[1].trim();
-            const loser = match[3].trim();
-            winCounts[winner] = (winCounts[winner] || 0) + 1;
-            winCounts[loser] = winCounts[loser] || 0;
-        }
-    });
-
+function generateRankingTable(winCounts) {
     // Convert to array and sort by wins descending
     const sorted = Object.entries(winCounts)
         .sort((a, b) => b[1] - a[1]);
@@ -99,7 +116,42 @@ function generateRoundRobinSummary() {
         rankingTable += `|${row.rank}|${row.name}|${row.wins}|\n`;
     });
 
-    summaryDiv.innerHTML = marked.parse(rankingTable);;
+    return rankingTable;
+}
+
+function generateRoundRobinSummary() {
+    const tournamentDiv = document.getElementById('tournament');
+    const summaryDiv = document.getElementById('tournamentSummary');
+    if (!tournamentDiv || !summaryDiv) return;
+
+    const lines = tournamentDiv.innerText.split('\n');
+    let winCounts = {};
+
+    let roundRobinSummary = '### Tournament Summary\n\n';
+    let roundRobin = 0;
+    lines.forEach(line => {
+        if(line.match(/Round Robin/)) {
+            if (Object.keys(winCounts).length > 0) {
+                roundRobinSummary += `\n##### Round Robin ${roundRobin}\n\n`;
+                roundRobinSummary += generateRankingTable(winCounts);
+                winCounts = {};
+            }
+            roundRobin++;
+        }
+        const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
+        if (match) {
+            const winner = match[1].trim();
+            const loser = match[3].trim();
+            winCounts[winner] = (winCounts[winner] || 0) + 1;
+            winCounts[loser] = winCounts[loser] || 0;
+        }
+    });
+    if (Object.keys(winCounts).length > 0) {
+        roundRobinSummary += `\n##### Round Robin ${roundRobin++}\n\n`;
+        roundRobinSummary += generateRankingTable(winCounts);
+    }
+
+    summaryDiv.innerHTML = marked.parse(roundRobinSummary);
 }
 
 async function uploadTournament() {
@@ -110,6 +162,10 @@ async function uploadTournament() {
     tournamentDiv.querySelectorAll('span[style="background-color: blue;"]').forEach(span => {
         span.replaceWith(document.createTextNode(span.textContent));
     });
+    // Remove all tables
+    // tournamentDiv.querySelectorAll('table').forEach(table => {
+    //     table.remove();
+    // });
 
     let tournamentHTML = tournamentDiv.innerHTML;
 

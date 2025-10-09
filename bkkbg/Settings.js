@@ -19,7 +19,13 @@ function loadToggleSetting(elementName) {
 // Load settings from localStorage
 function loadSettings() {
     loadToggleSetting('matchReportForm');
+
     loadToggleSetting('tournamentManagement');
+
+    // Maximum Tournament Players
+    const maximumTournamentPlayers = localStorage.getItem('maximumTournamentPlayers') || '2';
+    document.getElementById('maximumTournamentPlayers').value = maximumTournamentPlayers;
+
     loadToggleSetting('ratingList');
     loadToggleSetting('rankingLists');
 
@@ -75,7 +81,9 @@ function saveValueSetting(elementName) {
 // Save settings to localStorage
 function saveSettings() {
     saveToggleSetting('matchReportForm');
+
     saveToggleSetting('tournamentManagement');
+    saveValueSetting('maximumTournamentPlayers')
     saveToggleSetting('ratingList');
     saveToggleSetting('rankingLists');
 
