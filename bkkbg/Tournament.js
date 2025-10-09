@@ -8,7 +8,8 @@ function generateTournament(selectedPlayers) {
     }
     const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
     const today = new Date().toISOString().slice(0, 10);
-    let html = `<p id="today" style="text-align: center">${today}</p>\n`;
+    const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
+    let html = `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
     
     let tournamentPlayer = players.length;
 
@@ -33,6 +34,7 @@ function generateTournament(selectedPlayers) {
     }
 
     document.getElementById('tournament').innerHTML = html;
+    document.getElementById('tournamentSummary').innerHTML = '';
     tournamentGenerated = true;
 }
 
