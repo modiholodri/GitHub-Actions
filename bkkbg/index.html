@@ -430,15 +430,11 @@
     <script>
         // Add DOM Content Loaded Event Listener
         document.addEventListener("DOMContentLoaded", () => {
-            populateClubSelection();
+            populateClubSelection(); // has to be done first so that the settings can be loaded correctly
             // wait for settings to load, then continue initialization
             (async function() {
                 try {
-                    if (typeof loadSettings === 'function') {
-                        await loadSettings();
-                    } else {
-                        console.warn('loadSettings() is not defined.');
-                    }
+                    await loadSettings();
                 } catch (err) {
                     console.error('Failed to load settings:', err);
                 }

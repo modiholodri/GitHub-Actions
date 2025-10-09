@@ -230,8 +230,9 @@ function getTodaysMatches(matchRecords) {
         if (matchRecords[i].length > 0) {
             const matchInfo = matchRecords[i].split('|');
             const matchDate = matchInfo[1];
+            const matchLength = matchInfo[4];
             if (matchDate === today) {
-                todaysMatches.push(matchRecords[i]);
+                if (matchLength > 4) todaysMatches.push(matchRecords[i]); // try to get rid of short matches played before the tournament
             }
             else {
                 break; // since the list is in reverse chronological order, we can stop once we reach a different date
