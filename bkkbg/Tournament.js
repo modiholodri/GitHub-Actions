@@ -58,7 +58,7 @@ document.getElementById('finishTournamentButton').addEventListener('click', func
     uploadTournament();
 });
 
-function generateRankingTable() {
+function generateRoundRobinSummary() {
     const tournamentDiv = document.getElementById('tournament');
     const summaryDiv = document.getElementById('tournamentSummary');
     if (!tournamentDiv || !summaryDiv) return;
@@ -171,7 +171,7 @@ function fetchLastTournament() {
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
             highlightYourNameInTournament();
-            generateRankingTable();
+            generateRoundRobinSummary();
         } else {
             console.log('Failed to fetch Last Tournament!');
         }
