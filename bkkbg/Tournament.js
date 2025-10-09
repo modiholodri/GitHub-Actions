@@ -67,11 +67,12 @@ function generateRankingTable() {
     const winCounts = {};
 
     lines.forEach(line => {
-        const match = line.match(/\s*(.+?) < \d+ > (.+?)\s*/);
+        const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
         if (match) {
             const winner = match[1].trim();
+            const loser = match[3].trim();
             winCounts[winner] = (winCounts[winner] || 0) + 1;
-            // Loser is match[2], but not needed for win count
+            winCounts[loser] = winCounts[loser] || 0;
         }
     });
 
