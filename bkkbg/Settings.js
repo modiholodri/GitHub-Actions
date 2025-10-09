@@ -48,6 +48,16 @@ function loadSettings() {
     loadToggleSetting('matchList');
     loadToggleSetting('additionalInfo');
     loadToggleSetting('clubSelectionSection');
+
+    // Club Selection
+    const clubSelectionElement = document.getElementById('clubSelection');
+    let clubSelection = localStorage.getItem('clubSelection');
+    if (clubSelection === null) {
+        clubSelection = (clubSelectionElement && clubSelectionElement.options && clubSelectionElement.options.length > 0)
+            ? clubSelectionElement.options[0].value
+            : '';
+    }
+    document.getElementById('clubSelection').value = clubSelection;
 }
 
 // save the settings of a toggle element to localStorage
@@ -78,4 +88,6 @@ function saveSettings() {
     saveToggleSetting('matchList');
     saveToggleSetting('additionalInfo');
     saveToggleSetting('clubSelectionSection');
+
+    saveValueSetting('clubSelection');
 }
