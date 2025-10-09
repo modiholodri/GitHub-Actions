@@ -67,7 +67,7 @@ function generateRankingTable() {
     const winCounts = {};
 
     lines.forEach(line => {
-        const match = line.match(/\s*(.+?)\s*<\d+>\s*(.+?)\s*/);
+        const match = line.match(/\s*(.+?) < \d+ > (.+?)\s*/);
         if (match) {
             const winner = match[1].trim();
             winCounts[winner] = (winCounts[winner] || 0) + 1;
@@ -206,12 +206,12 @@ function highlightTodaysMatches() {
             const winner = matchInfo[2];
             const loser = matchInfo[3];
             const matchLength = matchInfo[4];
-            const matchRegex = new RegExp(`\\b(${winner}|${loser})\\s&lt;-&gt;\\s(${winner}|${loser})\\b`, 'i');
+            const matchRegex = new RegExp(`\\b(${winner}|${loser}) &lt;-&gt; (${winner}|${loser})\\b`, 'i');
             for (var j = 0; j < tournamentLines.length; j++) {
                 if (tournamentLines[j].match(matchRegex)) {
                     tournamentLines[j] = tournamentLines[j].replace(
                         matchRegex,
-                        `<span style="color: green;">${winner}</span> <${matchLength}> <span style="color: red;">${loser}</span>`
+                        `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
                     );
                     break; // Exit the inner loop once a match is found and replaced
                 }

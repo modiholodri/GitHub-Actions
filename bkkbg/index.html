@@ -10,7 +10,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="webPageTitle">Bangkok Backgammon</h1>
+        <h1 id="webPageTitle">Backgammon</h1>
 
         <!-- Match Report -->
         <h3 id="matchReportFormToggle" type="button" data-toggle="collapse" data-target="#matchReportForm" aria-expanded="true" aria-controls="matchReportForm">
@@ -431,14 +431,28 @@
         // Add DOM Content Loaded Event Listener
         document.addEventListener("DOMContentLoaded", () => {
             populateClubSelection();
-            destroyRankingChart("Not loaded yet...");
-            fetchFrequentPlayers();
-            refreshWebPageTitle();
-            fetchRatingList();
-            fetchMatchList();
+            // wait for settings to load, then continue initialization
+            (async function() {
+                try {
+                    if (typeof loadSettings === 'function') {
+                        await loadSettings();
+                    } else {
+                        console.warn('loadSettings() is not defined.');
+                    }
+                } catch (err) {
+                    console.error('Failed to load settings:', err);
+                }
 
-            fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
-            fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+                // proceed with the rest of the startup once settings are loaded
+                destroyRankingChart("Not loaded yet...");
+                fetchRatingList();
+                fetchMatchList();
+                fetchFrequentPlayers();
+                refreshWebPageTitle();
+
+                fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
+                fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+            })();
         });
 
         function addToggleListener(elementName) {
