@@ -124,3 +124,4 @@
 |2025-10-09|Winner|Loser|3|
 |2025-10-09|Winner|Loser|5|
 |2025-10-09|Sucker|Beginner|5|
+|2025-10-09|Sun|Beginner|5|
