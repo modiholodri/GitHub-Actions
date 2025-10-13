@@ -18,13 +18,22 @@ function generateTournament(selectedPlayers) {
 
     let groupPlayers = Math.ceil(tournamentPlayer / groups);
 
+    // read matchLengths input and create array of lengths (one per group)
+    const matchLengthsInput = document.getElementById('matchLengths').value.trim();
+    const matchLengths = matchLengthsInput ? matchLengthsInput.split(/\s+/).map(s => {
+        const n = parseInt(s, 10);
+        return Number.isFinite(n) ? n : s;
+    }) : [];
+
     let start = 0;
     let remainingPlayers = tournamentPlayer;
     let remainingGroups = groups;
     for (let group = 1; group < groups + 1; group++) {
         let end = start + groupPlayers;
         if (group === groups) end = tournamentPlayer + 1; 
-        html += generateRoundRobinTournament(group, players.slice(start, end));
+        const idx = group - 1;
+        const length = matchLengths[idx] !== undefined ? matchLengths[idx] : '';
+        html += generateRoundRobinTournament(group, players.slice(start, end), length);
 
         start += groupPlayers;
 
@@ -38,7 +47,7 @@ function generateTournament(selectedPlayers) {
     tournamentGenerated = true;
 }
 
-function generateRoundRobinTournament(groupName, selectedPlayers) {
+function generateRoundRobinTournament(groupName, selectedPlayers, length) {
     const rounds = [];
     const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
     if (players.length % 2 !== 0) {
@@ -62,7 +71,7 @@ function generateRoundRobinTournament(groupName, selectedPlayers) {
     }
 
     // generate the HTML for the tournament
-    let html = `<h5>Round Robin ${groupName}</h5>\n`;
+    let html = `<h5>Round Robin ${groupName} - ${length} points</h5>\n`;
     rounds.forEach((matches, i) => {
         html += `<p>\n`;
         matches.forEach(match => {

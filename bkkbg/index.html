@@ -76,13 +76,15 @@
             <div id="tournamentDirector" class="collapse">
                 <div class="input-group">
                     <button id="generateTournamentButton" type="button" title="Generate Tournament" class="btn btn-primary">Generate</button>
-                    <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control">
+                    <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered">
                     <button id="start_tournament" type="submit" title="Start Tournament" class="btn btn-primary float-right">Start</button>
                     <button id="finishTournamentButton" type="button" title = "Finish Tournament" class="btn btn-primary float-right">Finish</button>
                     <select id="playersList" title="Players List" class="multiple_select" multiple>
                         <option value="Winner">Winner</option>
                         <option value="Loser">Loser</option>
                     </select>
+                    <span class="input-group-text">Match Lengths</span>
+                    <input id="matchLengths" type="text" class="form-control centered" value="5 5 5 5 5">
                 </div>
             </div>
         </form>

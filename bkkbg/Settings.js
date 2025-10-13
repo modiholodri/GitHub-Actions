@@ -23,8 +23,10 @@ function loadSettings() {
     loadToggleSetting('tournamentManagement');
 
     // Maximum Tournament Players
-    const maximumTournamentPlayers = localStorage.getItem('maximumTournamentPlayers') || '2';
+    const maximumTournamentPlayers = localStorage.getItem('maximumTournamentPlayers') || '7';
     document.getElementById('maximumTournamentPlayers').value = maximumTournamentPlayers;
+    const matchLengths = localStorage.getItem('matchLengths') || '5 5 5 5 5';
+    document.getElementById('matchLengths').value = matchLengths;
 
     loadToggleSetting('ratingList');
     loadToggleSetting('rankingLists');
@@ -84,6 +86,8 @@ function saveSettings() {
 
     saveToggleSetting('tournamentManagement');
     saveValueSetting('maximumTournamentPlayers')
+    saveValueSetting('matchLengths');
+    
     saveToggleSetting('ratingList');
     saveToggleSetting('rankingLists');
 
