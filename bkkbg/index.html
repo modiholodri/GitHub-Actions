@@ -272,6 +272,11 @@
             generateTournament(selectedPlayers);
         });
 
+        // Set playersList inactive when collapsed
+        document.getElementById('playersList').addEventListener('collapse', function() {
+            this.active = false;
+        });
+
         // Fetch the Rating List
         function fetchRatingList() {
             const ratingList = fetchMarkDownFromRepoSync('RatingList', 'ratingList');  
