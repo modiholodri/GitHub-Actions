@@ -33,7 +33,7 @@ function populateTimeSpanSelectionList(matchRecords) {
                     timeSpanSuffix = `${month[datetime.getMonth()]}`;
                 }
                 else if (interval === "Quarterly") {
-                    let quarter = Math.round(datetime.getMonth() / 4) + 1;
+                    let quarter = Math.floor(datetime.getMonth() / 3) + 1;
                     if (quarter === lastQuarter) continue;
                     lastQuarter = quarter;
                     timeSpanPrefix = matchID.substring(0,4); // just show the year
