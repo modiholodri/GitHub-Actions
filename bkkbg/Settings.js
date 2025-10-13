@@ -22,11 +22,12 @@ function loadSettings() {
 
     loadToggleSetting('tournamentManagement');
 
-    // Maximum Tournament Players
+    // Tournament Management
     const maximumTournamentPlayers = localStorage.getItem('maximumTournamentPlayers') || '7';
     document.getElementById('maximumTournamentPlayers').value = maximumTournamentPlayers;
     const matchLengths = localStorage.getItem('matchLengths') || '5 5 5 5 5';
     document.getElementById('matchLengths').value = matchLengths;
+
 
     loadToggleSetting('ratingList');
     loadToggleSetting('rankingLists');
@@ -38,6 +39,8 @@ function loadSettings() {
     // Player Name Selection
     const yourName = localStorage.getItem('yourName') || '';
     document.getElementById('yourName').value = yourName;
+    // Players List Selection (multi-select)
+    // loaded after the Frequent Players have been fetched
 
     // Expand/Collapse the Player Name Selection depending on the Ranking List Selection
     const playerNameSelection = document.getElementById("playerNameSelection");
@@ -87,7 +90,13 @@ function saveSettings() {
     saveToggleSetting('tournamentManagement');
     saveValueSetting('maximumTournamentPlayers')
     saveValueSetting('matchLengths');
-    
+    // Save selected players from multi-select with id 'playersList'
+    const playersListEl = document.getElementById('playersList');
+    if (playersListEl) {
+        const selectedValues = Array.from(playersListEl.selectedOptions).map(opt => opt.value);
+        localStorage.setItem('playersListSelection', JSON.stringify(selectedValues));
+    }
+
     saveToggleSetting('ratingList');
     saveToggleSetting('rankingLists');
 

@@ -111,9 +111,19 @@ function fetchFrequentPlayers() {
 
             document.getElementById("winnerName").innerHTML = playerOptions;
             document.getElementById("loserName").innerHTML = playerOptions;
+
             document.getElementById("playerName").innerHTML = playerOptions;
-            document.getElementById("playersList").innerHTML = playersList;
             selectDefaultPlayer();
+
+            document.getElementById("playersList").innerHTML = playersList;
+            const playersListEl = document.getElementById('playersList');   
+            if (playersListEl) {
+                const playersListSelection = JSON.parse(localStorage.getItem('playersListSelection') || '[]');
+                for (let option of playersListEl.options) {
+                    option.selected = playersListSelection.includes(option.value);
+                }
+            }
+
         } else {
             console.log('Failed to fetch Frequent Players!');
         }
