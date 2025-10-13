@@ -100,16 +100,20 @@ hr.rounded {
 {
 	--text: "Select Players...";
 }
-.multiple_select
-{	height: 30px;
-	width: 100%;
-	overflow: hidden;
-	position: relative;
+.multiple_select {
+    height: 32px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 12px; /* Add space before the control */
+    position: relative;
+    border: none; /* Remove the border */
+    z-index: 10; /* Ensure it is on top of other elements */
 }
 .multiple_select::before
 {
 	content: var(--text);
 	display: block;
+    margin-top: 5px;
     margin-left: 5px;
     margin-bottom: 2px;
 }
@@ -120,8 +124,8 @@ hr.rounded {
 .multiple_select option
 {
 	display: none;
-    height: 30px;
-	background-color: black; /
+    height: 32px;
+	background-color: black;
 }
 .multiple_select_active option
 {
