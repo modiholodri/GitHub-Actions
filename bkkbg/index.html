@@ -336,12 +336,14 @@
                     }
                     break;
                 case 'playerProgress':
-                    if (!playerProgressCalculated) {
-                        playerProgressList = summarizePlayerProgress(totalMatchList);
-                        playerProgressCalculated = true;
+                    if (totalMatchList != '') {
+                        if (!playerProgressCalculated) {
+                            playerProgressList = summarizePlayerProgress(totalMatchList);
+                            playerProgressCalculated = true;
+                        }
+                        updatePlayerProgressChart(playerProgressList);
+                        createPlayerProgressList('rankingSummary', playerProgressList);
                     }
-                    updatePlayerProgressChart(playerProgressList);
-                    createPlayerProgressList('rankingSummary', playerProgressList);
                     break;
                 case 'matchesPlayed':
                     updateMatchesPlayedChart(rankingSummary);
