@@ -191,7 +191,9 @@ async function uploadTournament() {
     if ( latestRunStatus === 'Submitting' || latestRunStatus === 'Queued' || latestRunStatus === 'In Progress') {
         setSubmissionStatus('Another submission in progress.\nTry again in a few seconds...');
         anotherSubmissionActive = true;
-        // document.getElementById("start_tournament").disabled = true;
+        document.getElementById("submit").disabled = true;
+        document.getElementById("startTournamentButton").disabled = true;
+        document.getElementById("finishTournamentButton").disabled = true;
     }
     else try {
         const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
@@ -210,7 +212,9 @@ async function uploadTournament() {
         });
 
         newSubmission = true;
-        // document.getElementById("submit").disabled = true;
+        document.getElementById("submit").disabled = true;
+        document.getElementById("startTournamentButton").disabled = true;
+        document.getElementById("finishTournamentButton").disabled = true;
     } 
     catch (error) { 
         // Error triggering GitHub Action: Failed to execute 'json' on 'Response': Unexpected end of JSON input
