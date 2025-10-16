@@ -1,6 +1,91 @@
 let tournamentGenerated = false;
 
+function generateDoubleElimination(selectedPlayers) {
+    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+    const today = new Date().toISOString().slice(0, 10);
+    const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
+    
+    let html = `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
+    html += '<h5>Double Elimination<br>Progressive Consultation</h5>\n';
+    
+    html += '<h5>Winners Bracket - Round 1</h5>\n';
+    html += `<p>\n`;
+    html += `Player 1 <1#> Player 8<br>\n`;
+    html += `Player 4 <2#> Player 5<br>\n`;
+    html += `Player 3 <3#> Player 6<br>\n`;
+    html += `Player 2 <4#> Player 7<br>\n`;
+    html += `</p>\n`;
+
+    html += '<h5>Losers Bracket - Round 1</h5>\n';
+    html += `<p>\n`;
+    html += `Loser 1# <5#> Loser 2#<br>\n`;
+    html += `Loser 3# <6#> Loser 4#<br>\n`;
+    html += `</p>\n`;
+
+    html += '<h5>Winners Bracket - Round 2</h5>\n';
+    html += `<p>\n`;
+    html += `Winner 1# <7#> Winner 2#<br>\n`;
+    html += `Winner 3# <8#> Winner 4#<br>\n`;
+    html += `</p>\n`;
+
+    html += '<h5>Losers Bracket - Round 2</h5>\n';
+    html += `<p>\n`;
+    html += `Loser 8# <9#> Winner 5#<br>\n`;
+    html += `Loser 7# <10#> Winner 6#<br>\n`;
+    html += `</p>\n`;
+
+    html += '<h5>Winners Bracket - Round 3</h5>\n';
+    html += `<p>\n`;
+    html += `Winner 7# <11#> Winner 8#<br>\n`;
+    html += `</p>\n`;
+
+    html += '<h5>Losers Bracket - Round 3</h5>\n';
+    html += `<p>\n`;
+    html += `Winner 9# <12#> Winner 10#<br>\n`;
+    html += `</p>\n`;
+
+    html += '<h5>Losers Bracket - Round 4</h5>\n';
+    html += `<p>\n`;
+    html += `Loser 11# <13#> Winner 12#<br>\n`;
+    html += `</p>\n`;
+
+    html += '<h5>Final</h5>\n';
+    html += `<p>\n`;
+    html += `Winner 11# <14#> Winner 13#<br>\n`;
+    html += `</p>\n`;
+
+    // fill in the players
+    let i = 0;
+    while (i < players.length) {
+        html = html.replace(`Player ${i + 1}`, players[i]);
+        i++;
+    }
+    while (i < 8) {
+        html = html.replace(`Player ${i + 1}`, 'Bye');
+        i++;
+    }
+
+    document.getElementById('tournament').innerHTML = html;
+    document.getElementById('tournamentSummary').innerHTML = '';
+    tournamentGenerated = true;
+}
+
 function generateTournament(selectedPlayers) {
+    let tournamentType = document.getElementById('tournamentType').value;
+    switch (tournamentType) {
+        case 'Round Robin':
+            generateRoundRobins(selectedPlayers);
+            break;
+        case 'Double Elimination':
+            generateDoubleElimination(selectedPlayers);
+            break;
+        default:
+            alert(tournamentType + ' tournament type is currently not supported!');
+            return;
+    }
+}
+
+function generateRoundRobins(selectedPlayers) {
     let maximumPlayers = document.getElementById('maximumTournamentPlayers').value;
     if (isNaN(maximumPlayers) || maximumPlayers < 3) {
         alert('Invalid maximum players per group!\nNot a number or less than 3.');
@@ -278,18 +363,68 @@ function highlightTodaysMatches() {
             const winner = matchInfo[2];
             const loser = matchInfo[3];
             const matchLength = matchInfo[4];
-            const matchRegex = new RegExp(`\\b(${winner}|${loser}) &lt;-&gt; (${winner}|${loser})\\b`, 'i');
+
+            const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) &lt;-&gt; (${winner}|${loser})\\b`, 'i');
+            const doubleEliminationMatchRegex = new RegExp(`\\b(${winner}|${loser}) &lt;(\\d+)#&gt; (${winner}|${loser})\\b`, 'i');
+
             for (var j = 0; j < tournamentLines.length; j++) {
-                if (tournamentLines[j].match(matchRegex)) {
+                // Round Robin match
+                if (tournamentLines[j].match(roundRobinMatchRegex)) { 
                     tournamentLines[j] = tournamentLines[j].replace(
-                        matchRegex,
+                        roundRobinMatchRegex,
                         `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
                     );
                     break; // Exit the inner loop once a match is found and replaced
                 }
+
+                // Double Elimination match
+                if (tournamentLines[j].match(doubleEliminationMatchRegex)) { 
+                    const matchNumber = tournamentLines[j].match(doubleEliminationMatchRegex)[2]; // Get the match number
+                    tournamentLines[j] = tournamentLines[j].replace(
+                        doubleEliminationMatchRegex,
+                        `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
+                    );
+
+                    // Replace Loser and Winner references in the rest of the tournament
+                    const winnerRegex = new RegExp(`Winner ${matchNumber}#`, 'g');
+                    const loserRegex = new RegExp(`Loser ${matchNumber}#`, 'g');
+                    for (let k = 0; k < tournamentLines.length; k++) { 
+                        tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
+                        tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
+                    }
+                    break; // Exit the inner loop once a match is found and replaced
+                }
+
             }
         }
     }
+
+    const doubleEliminationMatchRegex = new RegExp(`\\b(.+) &lt;(\\d+)#&gt; (.+)\\b`, 'i');
+    for (var j = 0; j < tournamentLines.length; j++) {
+        if (tournamentLines[j].includes('Bye')) {
+            if (tournamentLines[j].match(doubleEliminationMatchRegex)) {
+                const playerA = tournamentLines[j].match(doubleEliminationMatchRegex)[1]; // Get player A
+                const matchNumber = tournamentLines[j].match(doubleEliminationMatchRegex)[2]; // Get the match number
+                let playerB = tournamentLines[j].match(doubleEliminationMatchRegex)[3]; // Get player B
+                playerB = playerB.slice(0, -3);
+                const winner = playerA === 'Bye' ? playerB : playerA;
+                const loser = 'Bye';
+
+                tournamentLines[j] = tournamentLines[j].replace(
+                    doubleEliminationMatchRegex,
+                    `<span style="color: green;">${winner}</span> < 0 > <span style="color: gray;">${loser}</span><br`
+                );
+
+                const winnerRegex = new RegExp(`Winner ${matchNumber}#`, 'g');
+                const loserRegex = new RegExp(`Loser ${matchNumber}#`, 'g');
+                for (let k = 0; k < tournamentLines.length; k++) { 
+                    tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
+                    tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
+                }
+            }
+        }
+    }
+
     html = tournamentLines.join('\n');
     tournamentDiv.innerHTML = html;
 }
