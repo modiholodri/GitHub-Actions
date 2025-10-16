@@ -73,7 +73,14 @@
             <h5 id="tournamentDirectorToggle" type="button" data-toggle="collapse" data-target="#tournamentDirector" aria-expanded="true" aria-controls="tournamentDirector">
                 Tournament Director ⇅
             </h5>
-            <div id="tournamentDirector" class="collapse">
+            <div id="tournamentDirector"> <!-- class="collapse"> -->
+                <div class="input-group">
+                    <span class="input-group-text">Type</span>
+                    <select id="tournamentType" title="Tournament Type" class="form-select">
+                        <option class="centered" value="Double Elimination">Double Elimination</option>
+                        <option class="centered" value="Round Robin">Round Robin</option>
+                    </select>
+                </div>
                 <div class="input-group">
                     <button id="generateTournamentButton" type="button" title="Generate Tournament" class="btn btn-primary">Generate</button>
                     <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered">

@@ -23,11 +23,12 @@ function loadSettings() {
     loadToggleSetting('tournamentManagement');
 
     // Tournament Management
+    const tournamentType = localStorage.getItem('tournamentType') || 'Double Elimination';
+    document.getElementById('tournamentType').value = tournamentType;
     const maximumTournamentPlayers = localStorage.getItem('maximumTournamentPlayers') || '7';
     document.getElementById('maximumTournamentPlayers').value = maximumTournamentPlayers;
     const matchLengths = localStorage.getItem('matchLengths') || '5 5 5 5 5';
     document.getElementById('matchLengths').value = matchLengths;
-
 
     loadToggleSetting('ratingList');
     loadToggleSetting('rankingLists');
@@ -88,6 +89,7 @@ function saveSettings() {
     saveToggleSetting('matchReportForm');
 
     saveToggleSetting('tournamentManagement');
+    saveValueSetting('tournamentType');
     saveValueSetting('maximumTournamentPlayers')
     saveValueSetting('matchLengths');
     // Save selected players from multi-select with id 'playersList'
