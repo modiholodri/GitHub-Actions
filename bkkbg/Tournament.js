@@ -6,50 +6,35 @@ function generateDoubleElimination(selectedPlayers) {
     const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
     
     let html = `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
-    html += '<h5>Double Elimination<br>Progressive Consultation</h5>\n';
+    html += '<h5>Double Elimination</h5>\n';
     
-    html += '<h5>Winners Bracket - Round 1</h5>\n';
+    html += '<h5>Main - 5 points</h5>\n';
     html += `<p>\n`;
     html += `Player 1 <1#> Player 8<br>\n`;
     html += `Player 4 <2#> Player 5<br>\n`;
     html += `Player 3 <3#> Player 6<br>\n`;
     html += `Player 2 <4#> Player 7<br>\n`;
-    html += `</p>\n`;
-
-    html += '<h5>Losers Bracket - Round 1</h5>\n';
-    html += `<p>\n`;
-    html += `Loser 1# <5#> Loser 2#<br>\n`;
-    html += `Loser 3# <6#> Loser 4#<br>\n`;
-    html += `</p>\n`;
-
-    html += '<h5>Winners Bracket - Round 2</h5>\n';
-    html += `<p>\n`;
+    html += `</p><p>\n`;
     html += `Winner 1# <7#> Winner 2#<br>\n`;
     html += `Winner 3# <8#> Winner 4#<br>\n`;
-    html += `</p>\n`;
-
-    html += '<h5>Losers Bracket - Round 2</h5>\n';
-    html += `<p>\n`;
-    html += `Loser 8# <9#> Winner 5#<br>\n`;
-    html += `Loser 7# <10#> Winner 6#<br>\n`;
-    html += `</p>\n`;
-
-    html += '<h5>Winners Bracket - Round 3</h5>\n';
-    html += `<p>\n`;
+    html += `</p><p>\n`;
     html += `Winner 7# <11#> Winner 8#<br>\n`;
     html += `</p>\n`;
 
-    html += '<h5>Losers Bracket - Round 3</h5>\n';
+    html += '<h5>Consolation - 3 points</h5>\n';
     html += `<p>\n`;
+    html += `Loser 1# <5#> Loser 2#<br>\n`;
+    html += `Loser 3# <6#> Loser 4#<br>\n`;
+    html += `</p><p>\n`;
+    html += `Loser 8# <9#> Winner 5#<br>\n`;
+    html += `Loser 7# <10#> Winner 6#<br>\n`;
+    html += `</p><p>\n`;
     html += `Winner 9# <12#> Winner 10#<br>\n`;
-    html += `</p>\n`;
-
-    html += '<h5>Losers Bracket - Round 4</h5>\n';
-    html += `<p>\n`;
+    html += `</p><p>\n`;
     html += `Loser 11# <13#> Winner 12#<br>\n`;
     html += `</p>\n`;
 
-    html += '<h5>Final</h5>\n';
+    html += '<h5>Final - 5 points</h5>\n';
     html += `<p>\n`;
     html += `Winner 11# <14#> Winner 13#<br>\n`;
     html += `</p>\n`;
