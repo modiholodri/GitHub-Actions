@@ -10,43 +10,43 @@ function generateDoubleElimination(selectedPlayers) {
     
     html += '<h5>Main - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `Player 1 <1#> Player 8<br>\n`;
-    html += `Player 4 <2#> Player 5<br>\n`;
-    html += `Player 3 <3#> Player 6<br>\n`;
-    html += `Player 2 <4#> Player 7<br>\n`;
+    html += `Player~1~ #1# Player~8~<br>\n`;
+    html += `Player~4~ #2# Player~5~<br>\n`;
+    html += `Player~3~ #3# Player~6~<br>\n`;
+    html += `Player~2~ #4# Player~7~<br>\n`;
     html += `</p><p>\n`;
-    html += `Winner 1# <7#> Winner 2#<br>\n`;
-    html += `Winner 3# <8#> Winner 4#<br>\n`;
+    html += `Winner~1~ #7# Winner~2~<br>\n`;
+    html += `Winner~3~ #8# Winner~4~<br>\n`;
     html += `</p><p>\n`;
-    html += `Winner 7# <11#> Winner 8#<br>\n`;
+    html += `Winner~7~ #11# Winner~8~<br>\n`;
     html += `</p>\n`;
 
     html += '<h5>Consolation - 3 points</h5>\n';
     html += `<p>\n`;
-    html += `Loser 1# <5#> Loser 2#<br>\n`;
-    html += `Loser 3# <6#> Loser 4#<br>\n`;
+    html += `Loser~1~ #5# Loser~2~<br>\n`;
+    html += `Loser~3~ #6# Loser~4~<br>\n`;
     html += `</p><p>\n`;
-    html += `Loser 8# <9#> Winner 5#<br>\n`;
-    html += `Loser 7# <10#> Winner 6#<br>\n`;
+    html += `Loser~8~ #9# Winner~5~<br>\n`;
+    html += `Loser~7~ #10# Winner~6~<br>\n`;
     html += `</p><p>\n`;
-    html += `Winner 9# <12#> Winner 10#<br>\n`;
+    html += `Winner~9~ #12# Winner~10~<br>\n`;
     html += `</p><p>\n`;
-    html += `Loser 11# <13#> Winner 12#<br>\n`;
+    html += `Loser~11~ #13# Winner~12~<br>\n`;
     html += `</p>\n`;
 
     html += '<h5>Final - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `Winner 11# <14#> Winner 13#<br>\n`;
+    html += `Winner~11~ #14# Winner~13~<br>\n`;
     html += `</p>\n`;
 
     // fill in the players
     let i = 0;
     while (i < players.length) {
-        html = html.replace(`Player ${i + 1}`, players[i]);
+        html = html.replace(`Player~${i + 1}~`, players[i]);
         i++;
     }
     while (i < 8) {
-        html = html.replace(`Player ${i + 1}`, 'Bye');
+        html = html.replace(`Player~${i + 1}~`, 'Bye');
         i++;
     }
 
@@ -350,7 +350,7 @@ function highlightTodaysMatches() {
             const matchLength = matchInfo[4];
 
             const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) &lt;-&gt; (${winner}|${loser})\\b`, 'i');
-            const doubleEliminationMatchRegex = new RegExp(`\\b(${winner}|${loser}) &lt;(\\d+)#&gt; (${winner}|${loser})\\b`, 'i');
+            const doubleEliminationMatchRegex = new RegExp(`\\b(${winner}|${loser}) #(\\d+)# (${winner}|${loser})\\b`, 'i');
 
             for (var j = 0; j < tournamentLines.length; j++) {
                 // Round Robin match
@@ -359,7 +359,7 @@ function highlightTodaysMatches() {
                         roundRobinMatchRegex,
                         `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
                     );
-                    break; // Exit the inner loop once a match is found and replaced
+                    // break; // Exit the inner loop once a match is found and replaced
                 }
 
                 // Double Elimination match
@@ -370,21 +370,24 @@ function highlightTodaysMatches() {
                         `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
                     );
 
+                    i = 0; // start from the beginning again to replace all references
+
                     // Replace Loser and Winner references in the rest of the tournament
-                    const winnerRegex = new RegExp(`Winner ${matchNumber}#`, 'g');
-                    const loserRegex = new RegExp(`Loser ${matchNumber}#`, 'g');
+                    const winnerRegex = new RegExp(`Winner~${matchNumber}~`, 'g');
+                    const loserRegex = new RegExp(`Loser~${matchNumber}~`, 'g');
                     for (let k = 0; k < tournamentLines.length; k++) { 
                         tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
                         tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
                     }
-                    break; // Exit the inner loop once a match is found and replaced
+                    // break; // Exit the inner loop once a match is found and replaced
                 }
 
             }
         }
     }
 
-    const doubleEliminationMatchRegex = new RegExp(`\\b(.+) &lt;(\\d+)#&gt; (.+)\\b`, 'i');
+    // fix the Byes
+    const doubleEliminationMatchRegex = new RegExp(`\\b(.+) #(\\d+)# (.+)\\b`, 'i');
     for (var j = 0; j < tournamentLines.length; j++) {
         if (tournamentLines[j].includes('Bye')) {
             if (tournamentLines[j].match(doubleEliminationMatchRegex)) {
@@ -400,8 +403,8 @@ function highlightTodaysMatches() {
                     `<span style="color: green;">${winner}</span> < 0 > <span style="color: gray;">${loser}</span><br`
                 );
 
-                const winnerRegex = new RegExp(`Winner ${matchNumber}#`, 'g');
-                const loserRegex = new RegExp(`Loser ${matchNumber}#`, 'g');
+                const winnerRegex = new RegExp(`Winner~${matchNumber}~`, 'g');
+                const loserRegex = new RegExp(`Loser~${matchNumber}~`, 'g');
                 for (let k = 0; k < tournamentLines.length; k++) { 
                     tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
                     tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
@@ -462,9 +465,9 @@ class LCG {
     }
 }
 
-// Example usage:
 const generator = new LCG(Date.now()); // Initialize with current time as seed
 
+// Example usage:
 // console.log("Next pseudo-random integer:", generator.next());
 // console.log("Pseudo-random float (0-1):", generator.random());
 // console.log("Pseudo-random integer (1-10):", generator.randomInt(1, 10));
