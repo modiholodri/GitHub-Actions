@@ -1,9 +1,7 @@
 Awful
 Expert
-Loser
 Master
 Beginner
-Winner
 Sucker
 Comet
 Star
