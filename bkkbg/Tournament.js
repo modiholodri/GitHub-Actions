@@ -6,6 +6,7 @@ function generateDoubleElimination(selectedPlayers) {
     let html = `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
 
     const numPlayers = selectedPlayers.length;
+    const numPlayersAndByes = numPlayers <= 8 ? 8 : 16;
     if (numPlayers <= 8)
         html += make8PlayersDoubleElimination();
     else
@@ -14,12 +15,12 @@ function generateDoubleElimination(selectedPlayers) {
     const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
     // fill in the players
     let i = 0;
-    while (i < players.length) {
+    while (i < numPlayers) {
         html = html.replace(`Player~${i + 1}~`, players[i]);
         i++;
     }
     // fill the rest with Byes
-    while (i < numPlayers) {
+    while (i < numPlayersAndByes) {
         html = html.replace(`Player~${i + 1}~`, 'Bye');
         i++;
     }
@@ -206,7 +207,6 @@ function generateRoundRobinSummary() {
         }
     });
     if (Object.keys(winCounts).length > 0) {
-        roundRobinSummary += `\n##### Round Robin ${roundRobin++}\n\n`;
         roundRobinSummary += generateRankingTable(winCounts);
     }
 
