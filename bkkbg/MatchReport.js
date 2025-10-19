@@ -22,7 +22,7 @@ function showSubmissionStatus() {
                 newSubmission = false;
                 document.getElementById("submit").disabled = false;
                 document.getElementById("startTournamentButton").disabled = false;
-                document.getElementById("finishTournamentButton").disabled = false;
+                document.getElementById("freezeTournamentButton").disabled = false;
             }
         }
     }
@@ -35,7 +35,7 @@ function showSubmissionStatus() {
             anotherSubmissionActive = false;
             document.getElementById("submit").disabled = false;
             document.getElementById("startTournamentButton").disabled = false;
-            document.getElementById("finishTournamentButton").disabled = false;
+            document.getElementById("freezeTournamentButton").disabled = false;
         }
     }
 }
@@ -77,7 +77,7 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
             anotherSubmissionActive = true;
             document.getElementById("submit").disabled = true;
             document.getElementById("startTournamentButton").disabled = true;
-            document.getElementById("finishTournamentButton").disabled = true;
+            document.getElementById("freezeTournamentButton").disabled = true;
         }
         else try {
             const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
@@ -100,7 +100,7 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
             newSubmission = true;
             document.getElementById("submit").disabled = true;
             document.getElementById("startTournamentButton").disabled = true;
-            document.getElementById("finishTournamentButton").disabled = true;
+            document.getElementById("freezeTournamentButton").disabled = true;
 
             // reset the inputs
             document.getElementById('winnerName').value = 'Select or edit';

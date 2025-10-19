@@ -6,11 +6,13 @@ function generateTournament(selectedPlayers) {
         case 'Round Robin':
             generateRoundRobins(selectedPlayers);
             highlightTodaysMatches();
+            highlightYourNameInTournament();
             break;
         case 'Double Elimination':
             generateDoubleElimination(selectedPlayers);
             resolveDoubleEliminationByes();
             highlightTodaysMatches();
+            highlightYourNameInTournament();
             break;
         default:
             alert(tournamentType + ' tournament type is currently not supported!');
@@ -18,17 +20,20 @@ function generateTournament(selectedPlayers) {
     }
 }
 
-function generateDoubleElimination(selectedPlayers) {
+function tournamentInfo() {
     const today = new Date().toISOString().slice(0, 10);
     const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
-    let html = `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
+    return `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
+}
 
+function generateDoubleElimination(selectedPlayers) {
     const numPlayers = selectedPlayers.length;
-
     if (numPlayers < 4 || numPlayers > 16) {
         alert('Invalid number of players for Double Elimination!\nMust be between 4 and 16.');
         return;
     }
+
+    let html = tournamentInfo();
 
     const numPlayersAndByes = numPlayers <= 8 ? 8 : 16;
     if (numPlayers <= 8)
@@ -61,9 +66,7 @@ function generateRoundRobins(selectedPlayers) {
         return;
     }
 
-    const today = new Date().toISOString().slice(0, 10);
-    const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
-    let html = `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
+    let html = tournamentInfo();
     
     const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
     let tournamentPlayer = players.length;
@@ -165,6 +168,38 @@ function generateRankingTable(winCounts) {
     return rankingTable;
 }
 
+function generateDoubleEliminationTable(lossCounts) {
+    // Convert to array and sort by losses ascending
+    const sorted = Object.entries(lossCounts)
+        .sort((a, b) => a[1] - b[1]);
+
+    let ranking = [];
+    let currentRank = 1;
+    for (let i = 0; i < sorted.length; i++) {
+        const [name, losses] = sorted[i];
+        // If not the first, and previous wins are same, keep the same rank
+        if (i > 0 && sorted[i][1] === sorted[i - 1][1]) {
+            ranking.push({ rank: currentRank, name, losses });
+        } else {
+            currentRank = i + 1;
+            ranking.push({ rank: currentRank, name, losses });
+        }
+    }
+
+    // Build the ranking table
+    let rankingTable = '|Rank|   |Losses|\n|:---:|:---:|:---:|\n';
+    ranking.forEach(row => {
+        if (row.losses < 2) {
+            rankingTable += `|${row.rank}|${row.name}|${row.losses}|\n`;
+        }
+        else {
+            rankingTable += `|${row.rank}|~${row.name}~|${row.losses}|\n`;
+        }
+    });
+
+    return rankingTable;
+}
+
 function generateTournamentSummary() {
     const tournamentDiv = document.getElementById('tournament');
     const summaryDiv = document.getElementById('tournamentSummary');
@@ -172,15 +207,17 @@ function generateTournamentSummary() {
 
     const lines = tournamentDiv.innerText.split('\n');
     let winCounts = {};
+    let lossCounts = {};
 
-    let roundRobinSummary = '### Tournament Summary\n\n';
+    let tournamentSummary = '### Tournament Summary\n\n';
     let roundRobin = 0;
     lines.forEach(line => {
         if(line.match(/Round Robin/)) {
             if (Object.keys(winCounts).length > 0) {
-                roundRobinSummary += `\n##### Round Robin ${roundRobin}\n\n`;
-                roundRobinSummary += generateRankingTable(winCounts);
+                tournamentSummary += `\n##### Round Robin ${roundRobin}\n\n`;
+                tournamentSummary += generateRankingTable(winCounts);
                 winCounts = {};
+                lossCounts = {};
             }
             roundRobin++;
         }
@@ -193,14 +230,21 @@ function generateTournamentSummary() {
                 const loser = match[3].trim();
                 winCounts[winner] = (winCounts[winner] || 0) + 1;
                 winCounts[loser] = winCounts[loser] || 0;
+                lossCounts[winner] = lossCounts[winner] || 0;
+                lossCounts[loser] = (lossCounts[loser] || 0) + 1;
             }
         }
     });
     if (Object.keys(winCounts).length > 0) {
-        roundRobinSummary += generateRankingTable(winCounts);
+        if (roundRobin > 0) {
+            tournamentSummary += generateRankingTable(winCounts);
+        }
+        else {
+            tournamentSummary += generateDoubleEliminationTable(lossCounts);
+        }
     }
 
-    summaryDiv.innerHTML = marked.parse(roundRobinSummary);
+    summaryDiv.innerHTML = marked.parse(tournamentSummary);
 }
 
 var todaysMatches = [];
@@ -483,7 +527,7 @@ function highlightYourNameInTournament() {
     const yourName = document.getElementById('yourName').value.trim();
     const tournamentDiv = document.getElementById('tournament');
     if (!tournamentDiv || !yourName) {
-        tournamentGenerated = false;
+        // tournamentGenerated = false;
         return;
     }
 
@@ -493,7 +537,7 @@ function highlightYourNameInTournament() {
         regex,
         `<span style="background-color: blue;">${yourName}</span>`
     );
-    tournamentGenerated = false;
+    // tournamentGenerated = false;
 }
 
 // Get todays matches
@@ -506,7 +550,7 @@ function getTodaysMatches(matchRecords) {
             const matchDate = matchInfo[1];
             const matchLength = matchInfo[4];
             if (matchDate === today) {
-                if (matchLength > 4) todaysMatches.push(matchRecords[i]); // try to get rid of short matches played before the tournament
+                if (matchLength > 2) todaysMatches.push(matchRecords[i]); // try to get rid of short matches played before the tournament
             }
             else {
                 break; // since the list is in reverse chronological order, we can stop once we reach a different date
