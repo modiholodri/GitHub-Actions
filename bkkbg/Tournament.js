@@ -1,11 +1,33 @@
 let tournamentGenerated = false;
 
+function generateTournament(selectedPlayers) {
+    let tournamentType = document.getElementById('tournamentType').value;
+    switch (tournamentType) {
+        case 'Round Robin':
+            generateRoundRobins(selectedPlayers);
+            break;
+        case 'Double Elimination':
+            generateDoubleElimination(selectedPlayers);
+            resolveDoubleEliminationByes();
+            break;
+        default:
+            alert(tournamentType + ' tournament type is currently not supported!');
+            return;
+    }
+}
+
 function generateDoubleElimination(selectedPlayers) {
     const today = new Date().toISOString().slice(0, 10);
     const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
     let html = `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
 
     const numPlayers = selectedPlayers.length;
+
+    if (numPlayers < 4 || numPlayers > 16) {
+        alert('Invalid number of players for Double Elimination!\nMust be between 4 and 16.');
+        return;
+    }
+
     const numPlayersAndByes = numPlayers <= 8 ? 8 : 16;
     if (numPlayers <= 8)
         html += make8PlayersDoubleElimination();
@@ -30,32 +52,18 @@ function generateDoubleElimination(selectedPlayers) {
     tournamentGenerated = true;
 }
 
-function generateTournament(selectedPlayers) {
-    let tournamentType = document.getElementById('tournamentType').value;
-    switch (tournamentType) {
-        case 'Round Robin':
-            generateRoundRobins(selectedPlayers);
-            break;
-        case 'Double Elimination':
-            generateDoubleElimination(selectedPlayers);
-            break;
-        default:
-            alert(tournamentType + ' tournament type is currently not supported!');
-            return;
-    }
-}
-
 function generateRoundRobins(selectedPlayers) {
     let maximumPlayers = document.getElementById('maximumTournamentPlayers').value;
     if (isNaN(maximumPlayers) || maximumPlayers < 3) {
         alert('Invalid maximum players per group!\nNot a number or less than 3.');
         return;
     }
-    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+
     const today = new Date().toISOString().slice(0, 10);
     const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
     let html = `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
     
+    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
     let tournamentPlayer = players.length;
 
     let groups = Math.floor(tournamentPlayer / maximumPlayers);
@@ -128,26 +136,6 @@ function generateRoundRobinTournament(groupName, selectedPlayers, length) {
     return html;
 }
 
-// Start a new tournament after the Start button is clicked
-document.getElementById('tournamentManagement').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    if (!tournamentGenerated) {
-        alert('Generate the tournament first!\nWarning: Do that only if you are sure you want to overwrite the existing tournament!!!');
-        return;
-    }
-    uploadTournament();
-});
-
-// Finish the tournament after Finish button is clicked
-document.getElementById('finishTournamentButton').addEventListener('click', function () {
-    if (tournamentGenerated) {
-        alert('Cannot finish a generated tournament!');
-        return;
-    }
-    uploadTournament();
-});
-
 function generateRankingTable(winCounts) {
     // Convert to array and sort by wins descending
     const sorted = Object.entries(winCounts)
@@ -175,7 +163,7 @@ function generateRankingTable(winCounts) {
     return rankingTable;
 }
 
-function generateRoundRobinSummary() {
+function generateTournamentSummary() {
     const tournamentDiv = document.getElementById('tournament');
     const summaryDiv = document.getElementById('tournamentSummary');
     if (!tournamentDiv || !summaryDiv) return;
@@ -262,6 +250,15 @@ function highlightTodaysMatches() {
         }
     }
 
+    // resolveDoubleEliminationByes();
+
+    html = tournamentLines.join('\n');
+    tournamentDiv.innerHTML = html;
+}
+
+function resolveDoubleEliminationByes() {
+    const tournamentDiv = document.getElementById('tournament');
+    const tournamentLines = tournamentDiv.innerHTML.split('\n');
     // fix the Byes
     const doubleEliminationMatchRegex = new RegExp(`\\b(.+) #(\\d+)# (.+)\\b`, 'i');
     for (var j = 0; j < tournamentLines.length; j++) {
@@ -288,7 +285,6 @@ function highlightTodaysMatches() {
             }
         }
     }
-
     html = tournamentLines.join('\n');
     tournamentDiv.innerHTML = html;
 }
@@ -382,6 +378,26 @@ function make16PlayersDoubleElimination() {
     return html;
 }
 
+// Start a new tournament after the Start button is clicked
+document.getElementById('tournamentManagement').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!tournamentGenerated) {
+        alert('Generate the tournament first!\nWarning: Do that only if you are sure you want to overwrite the existing tournament!!!');
+        return;
+    }
+    uploadTournament();
+});
+
+// Finish the tournament after Finish button is clicked
+document.getElementById('finishTournamentButton').addEventListener('click', function () {
+    if (tournamentGenerated) {
+        alert('Cannot finish a generated tournament!');
+        return;
+    }
+    uploadTournament();
+});
+
 async function uploadTournament() {
     // Remove blue background spans before uploading
     let tournamentDiv = document.createElement('div');
@@ -453,7 +469,7 @@ function fetchLastTournament() {
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
             highlightYourNameInTournament();
-            generateRoundRobinSummary();
+            generateTournamentSummary();
         } else {
             console.log('Failed to fetch Last Tournament!');
         }
