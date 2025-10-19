@@ -237,6 +237,7 @@ function generateTournamentSummary() {
     });
     if (Object.keys(winCounts).length > 0) {
         if (roundRobin > 0) {
+            tournamentSummary += `\n##### Round Robin ${roundRobin}\n\n`;
             tournamentSummary += generateRankingTable(winCounts);
         }
         else {
