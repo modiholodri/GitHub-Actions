@@ -5,10 +5,12 @@ function generateTournament(selectedPlayers) {
     switch (tournamentType) {
         case 'Round Robin':
             generateRoundRobins(selectedPlayers);
+            highlightTodaysMatches();
             break;
         case 'Double Elimination':
             generateDoubleElimination(selectedPlayers);
             resolveDoubleEliminationByes();
+            highlightTodaysMatches();
             break;
         default:
             alert(tournamentType + ' tournament type is currently not supported!');
@@ -217,17 +219,16 @@ function highlightTodaysMatches() {
             const doubleEliminationMatchRegex = new RegExp(`\\b(${winner}|${loser}) #(\\d+)# (${winner}|${loser})\\b`, 'i');
 
             for (var j = 0; j < tournamentLines.length; j++) {
-                // Round Robin match
-                if (tournamentLines[j].match(roundRobinMatchRegex)) { 
+                if (tournamentLines[j][0] === '<') continue; // skip HTML tags - info and completed matches
+                
+                if (tournamentLines[j].match(roundRobinMatchRegex)) { // Round Robin match
                     tournamentLines[j] = tournamentLines[j].replace(
                         roundRobinMatchRegex,
                         `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
                     );
-                    // break; // Exit the inner loop once a match is found and replaced
+                    break; // Exit the inner loop once a match is found and replaced
                 }
-
-                // Double Elimination match
-                if (tournamentLines[j].match(doubleEliminationMatchRegex)) { 
+                else if (tournamentLines[j].match(doubleEliminationMatchRegex)) { // Double Elimination match
                     const matchNumber = tournamentLines[j].match(doubleEliminationMatchRegex)[2]; // Get the match number
                     tournamentLines[j] = tournamentLines[j].replace(
                         doubleEliminationMatchRegex,
@@ -240,17 +241,16 @@ function highlightTodaysMatches() {
                     const winnerRegex = new RegExp(`Winner~${matchNumber}~`, 'g');
                     const loserRegex = new RegExp(`Loser~${matchNumber}~`, 'g');
                     for (let k = 0; k < tournamentLines.length; k++) { 
+                        if (tournamentLines[k][0] === '<') continue; // skip HTML tags - info and completed matches
                         tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
                         tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
                     }
-                    // break; // Exit the inner loop once a match is found and replaced
+                    break; // Exit the inner loop once a match is found and replaced
                 }
 
             }
         }
     }
-
-    // resolveDoubleEliminationByes();
 
     html = tournamentLines.join('\n');
     tournamentDiv.innerHTML = html;
@@ -331,8 +331,8 @@ function make16PlayersDoubleElimination() {
     html += '<h5>Main - 5 points</h5>\n';
     html += `<p>\n`;
     html += `Player~1~ #1# Player~16~<br>\n`;
-    html += `Player~8~ #3# Player~9~<br>\n`;
-    html += `Player~4~ #2# Player~13~<br>\n`;
+    html += `Player~8~ #2# Player~9~<br>\n`;
+    html += `Player~4~ #3# Player~13~<br>\n`;
     html += `Player~12~ #4# Player~5~<br>\n`;
     html += `Player~2~ #5# Player~15~<br>\n`;
     html += `Player~10~ #6# Player~7~<br>\n`;
@@ -367,6 +367,8 @@ function make16PlayersDoubleElimination() {
     html += `</p><p>\n`;
     html += `Loser~22~ #26# Winner~23~<br>\n`;
     html += `Winner~24~ #27# Loser~21~<br>\n`;
+    html += `</p><p>\n`;
+    html += `Winner~26~ #28# Winner~27~<br>\n`;
     html += `</p><p>\n`;
     html += `Loser~27~ #29# Winner~28~<br>\n`;
     html += `</p>\n`;
@@ -511,6 +513,7 @@ function getTodaysMatches(matchRecords) {
             }
         }
     }
+    todaysMatches.reverse(); // reverse to maintain original order
 }
 
 // Linear Congruential Generator (LCG) for pseudo-random number generation
