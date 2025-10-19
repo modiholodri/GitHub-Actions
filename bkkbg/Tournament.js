@@ -195,10 +195,14 @@ function generateRoundRobinSummary() {
         }
         const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
         if (match) {
-            const winner = match[1].trim();
-            const loser = match[3].trim();
-            winCounts[winner] = (winCounts[winner] || 0) + 1;
-            winCounts[loser] = winCounts[loser] || 0;
+            const length = match[2].trim();
+
+            if (length !== '0') { // ignore Byes
+                const winner = match[1].trim();
+                const loser = match[3].trim();
+                winCounts[winner] = (winCounts[winner] || 0) + 1;
+                winCounts[loser] = winCounts[loser] || 0;
+            }
         }
     });
     if (Object.keys(winCounts).length > 0) {
