@@ -175,3 +175,4 @@
 |2025-10-19|Moon|Hell|5|
 |2025-10-19|Expert|Lucky|5|
 |2025-10-19|Lucky|Black|5|
+|2025-10-19|Bastard|Awful|5|
