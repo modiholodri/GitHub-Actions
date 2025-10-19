@@ -241,7 +241,7 @@ function highlightTodaysMatches() {
                     const winnerRegex = new RegExp(`Winner~${matchNumber}~`, 'g');
                     const loserRegex = new RegExp(`Loser~${matchNumber}~`, 'g');
                     for (let k = 0; k < tournamentLines.length; k++) { 
-                        if (tournamentLines[k][0] === '<') continue; // skip HTML tags - info and completed matches
+                        if (!tournamentLines[k].includes("Bye") && tournamentLines[k][0] === '<') continue; // skip HTML tags - info and completed matches
                         tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
                         tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
                     }
