@@ -392,7 +392,7 @@ document.getElementById('tournamentManagement').addEventListener('submit', async
 });
 
 // Finish the tournament after Finish button is clicked
-document.getElementById('finishTournamentButton').addEventListener('click', function () {
+document.getElementById('freezeTournamentButton').addEventListener('click', function () {
     if (tournamentGenerated) {
         alert('Cannot finish a generated tournament!');
         return;
@@ -422,7 +422,7 @@ async function uploadTournament() {
         anotherSubmissionActive = true;
         document.getElementById("submit").disabled = true;
         document.getElementById("startTournamentButton").disabled = true;
-        document.getElementById("finishTournamentButton").disabled = true;
+        document.getElementById("freezeTournamentButton").disabled = true;
     }
     else try {
         const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
@@ -443,7 +443,7 @@ async function uploadTournament() {
         newSubmission = true;
         document.getElementById("submit").disabled = true;
         document.getElementById("startTournamentButton").disabled = true;
-        document.getElementById("finishTournamentButton").disabled = true;
+        document.getElementById("freezeTournamentButton").disabled = true;
     } 
     catch (error) { 
         // Error triggering GitHub Action: Failed to execute 'json' on 'Response': Unexpected end of JSON input
