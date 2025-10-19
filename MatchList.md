@@ -164,3 +164,4 @@
 |2025-10-19|Sun|Sucker|5|
 |2025-10-19|Unlucky|Turnip|5|
 |2025-10-19|Sun|Star|5|
+|2025-10-19|Moon|Unlucky|5|
