@@ -261,7 +261,7 @@ function highlightTodaysMatches() {
             const matchLength = matchInfo[4];
 
             const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) &lt;-&gt; (${winner}|${loser})\\b`, 'i');
-            const doubleEliminationMatchRegex = new RegExp(`\\b(${winner}|${loser}) #(\\d+)# (${winner}|${loser})\\b`, 'i');
+            const doubleEliminationMatchRegex = new RegExp(`^(${winner}|${loser}) #(\\d+)# (${winner}|${loser})\\b`, 'i');
 
             for (var j = 0; j < tournamentLines.length; j++) {
                 if (tournamentLines[j][0] === '<') continue; // skip HTML tags - info and completed matches
@@ -283,8 +283,8 @@ function highlightTodaysMatches() {
                     i = 0; // start from the beginning again to replace all references
 
                     // Replace Loser and Winner references in the rest of the tournament
-                    const winnerRegex = new RegExp(`W~${matchNumber}~`, 'g');
-                    const loserRegex = new RegExp(`L~${matchNumber}~`, 'g');
+                    const winnerRegex = new RegExp(`~W${matchNumber}~`, 'g');
+                    const loserRegex = new RegExp(`~L${matchNumber}~`, 'g');
                     for (let k = 0; k < tournamentLines.length; k++) { 
                         if (!tournamentLines[k].includes("Bye") && tournamentLines[k][0] === '<') continue; // skip HTML tags - info and completed matches
                         tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
@@ -305,7 +305,7 @@ function resolveDoubleEliminationByes() {
     const tournamentDiv = document.getElementById('tournament');
     const tournamentLines = tournamentDiv.innerHTML.split('\n');
     // fix the Byes
-    const doubleEliminationMatchRegex = new RegExp(`\\b(.+) #(\\d+)# (.+)\\b`, 'i');
+    const doubleEliminationMatchRegex = new RegExp(`^(.+) #(\\d+)# (.+)\\b`, 'i');
     for (var j = 0; j < tournamentLines.length; j++) {
         if (tournamentLines[j].includes('Bye')) {
             if (tournamentLines[j].match(doubleEliminationMatchRegex)) {
@@ -321,8 +321,8 @@ function resolveDoubleEliminationByes() {
                     `<span style="color: green;">${winner}</span> < 0 > <span style="color: gray;">${loser}</span><br`
                 );
 
-                const winnerRegex = new RegExp(`W~${matchNumber}~`, 'g');
-                const loserRegex = new RegExp(`L~${matchNumber}~`, 'g');
+                const winnerRegex = new RegExp(`~W${matchNumber}~`, 'g');
+                const loserRegex = new RegExp(`~L${matchNumber}~`, 'g');
                 for (let k = 0; k < tournamentLines.length; k++) { 
                     tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
                     tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
@@ -344,28 +344,28 @@ function make8PlayersDoubleElimination() {
     html += `Player~3~ #3# Player~6~<br>\n`;
     html += `Player~2~ #4# Player~7~<br>\n`;
     html += `</p><p>\n`;
-    html += `W~1~ #7# W~2~<br>\n`;
-    html += `W~3~ #8# W~4~<br>\n`;
+    html += `~W1~ #7# ~W2~<br>\n`;
+    html += `~W3~ #8# ~W4~<br>\n`;
     html += `</p><p>\n`;
-    html += `W~7~ #11# W~8~<br>\n`;
+    html += `~W7~ #11# ~W8~<br>\n`;
     html += `</p>\n`;
     // Consolation Bracket
     html += '<h5>Consolation - 3 points</h5>\n';
     html += `<p>\n`;
-    html += `L~1~ #5# L~2~<br>\n`;
-    html += `L~3~ #6# L~4~<br>\n`;
+    html += `~L1~ #5# ~L2~<br>\n`;
+    html += `~L3~ #6# ~L4~<br>\n`;
     html += `</p><p>\n`;
-    html += `L~8~ #9# W~5~<br>\n`;
-    html += `L~7~ #10# W~6~<br>\n`;
+    html += `~L8~ #9# ~W5~<br>\n`;
+    html += `~L7~ #10# ~W6~<br>\n`;
     html += `</p><p>\n`;
-    html += `W~9~ #12# W~10~<br>\n`;
+    html += `~W9~ #12# ~W10~<br>\n`;
     html += `</p><p>\n`;
-    html += `L~11~ #13# W~12~<br>\n`;
+    html += `~L11~ #13# ~W12~<br>\n`;
     html += `</p>\n`;
     // Final
     html += '<h5>Final - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `W~11~ #14# W~13~<br>\n`;
+    html += `~W11~ #14# ~W13~<br>\n`;
     html += `</p>\n`;
     return html;
 }
@@ -384,43 +384,43 @@ function make16PlayersDoubleElimination() {
     html += `Player~3~ #7# Player~14~<br>\n`;
     html += `Player~11~ #8# Player~6~<br>\n`;
     html += `</p><p>\n`;
-    html += `W~1~ #13# W~2~<br>\n`;
-    html += `W~3~ #14# W~4~<br>\n`;
-    html += `W~5~ #15# W~6~<br>\n`;
-    html += `W~7~ #16# W~8~<br>\n`;
+    html += `~W1~ #13# ~W2~<br>\n`;
+    html += `~W3~ #14# ~W4~<br>\n`;
+    html += `~W5~ #15# ~W6~<br>\n`;
+    html += `~W7~ #16# ~W8~<br>\n`;
     html += `</p><p>\n`;
-    html += `W~13~ #21# W~14~<br>\n`;
-    html += `W~15~ #22# W~16~<br>\n`;
+    html += `~W13~ #21# ~W14~<br>\n`;
+    html += `~W15~ #22# ~W16~<br>\n`;
     html += `</p><p>\n`;
-    html += `W~21~ #25# W~22~<br>\n`;
+    html += `~W21~ #25# ~W22~<br>\n`;
     html += `</p>\n`;
     // Consolation Bracket
     html += '<h5>Consolation - 3 points</h5>\n';
     html += `<p>\n`;
-    html += `L~1~ #9# L~2~<br>\n`;
-    html += `L~3~ #10# L~4~<br>\n`;
-    html += `L~5~ #11# L~6~<br>\n`;
-    html += `L~7~ #12# L~8~<br>\n`;
+    html += `~L1~ #9# ~L2~<br>\n`;
+    html += `~L3~ #10# ~L4~<br>\n`;
+    html += `~L5~ #11# ~L6~<br>\n`;
+    html += `~L7~ #12# ~L8~<br>\n`;
     html += `</p><p>\n`;
-    html += `L~16~ #17# W~9~<br>\n`;
-    html += `L~15~ #18# W~10~<br>\n`;
-    html += `L~14~ #19# W~11~<br>\n`;
-    html += `L~13~ #20# W~12~<br>\n`;
+    html += `~L16~ #17# ~W9~<br>\n`;
+    html += `~L15~ #18# ~W10~<br>\n`;
+    html += `~L14~ #19# ~W11~<br>\n`;
+    html += `~L13~ #20# ~W12~<br>\n`;
     html += `</p><p>\n`;
-    html += `W~17~ #23# W~18~<br>\n`;
-    html += `W~19~ #24# W~20~<br>\n`;
+    html += `~W17~ #23# ~W18~<br>\n`;
+    html += `~W19~ #24# ~W20~<br>\n`;
     html += `</p><p>\n`;
-    html += `L~22~ #26# W~23~<br>\n`;
-    html += `W~24~ #27# L~21~<br>\n`;
+    html += `~L22~ #26# ~W23~<br>\n`;
+    html += `~W24~ #27# ~L21~<br>\n`;
     html += `</p><p>\n`;
-    html += `W~26~ #28# W~27~<br>\n`;
+    html += `~W26~ #28# ~W27~<br>\n`;
     html += `</p><p>\n`;
-    html += `L~27~ #29# W~28~<br>\n`;
+    html += `~L27~ #29# ~W28~<br>\n`;
     html += `</p>\n`;
     // Final
     html += '<h5>Final - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `W~25~ #30# W~29~<br>\n`;
+    html += `~W25~ #30# ~W29~<br>\n`;
     html += `</p>\n`;
     return html;
 }
