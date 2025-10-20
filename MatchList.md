@@ -160,3 +160,13 @@
 |2025-10-18|Expert|Comet|5|
 |2025-10-18|Sucker|Master|5|
 |2025-10-18|Beginner|Star|5|
+|2025-10-20|Moron|Turnip|5|
+|2025-10-20|Sucker|Sun|5|
+|2025-10-20|Moron|Star|5|
+|2025-10-20|Unlucky|Sucker|5|
+|2025-10-20|Sun|Star|5|
+|2025-10-20|Turnip|Sucker|5|
+|2025-10-20|Unlucky|Moron|5|
+|2025-10-20|Sun|Turnip|5|
+|2025-10-20|Sun|Moron|5|
+|2025-10-20|Sun|Unlucky|5|
