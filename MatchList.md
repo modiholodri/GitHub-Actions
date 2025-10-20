@@ -176,4 +176,3 @@
 |2025-10-20|Black|Expert|5|
 |2025-10-20|Happy|Awful|5|
 |2025-10-20|Comet|Beginner|5|
-|2025-10-20|Happy|Comet|5|
