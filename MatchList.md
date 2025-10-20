@@ -173,12 +173,3 @@
 |2025-10-20|Awful|Bastard|5|
 |2025-10-20|Comet|Expert|5|
 |2025-10-20|Beginner|Black|5|
-|2025-10-20|Expert|Black|5|
-|2025-10-20|Awful|Happy|5|
-|2025-10-20|Comet|Beginner|5|
-|2025-10-20|Beginner|Bastard|5|
-|2025-10-20|Expert|Happy|5|
-|2025-10-20|Beginner|Expert|5|
-|2025-10-20|Awful|Comet|5|
-|2025-10-20|Beginner|Comet|5|
-|2025-10-20|Awful|Beginner|5|
