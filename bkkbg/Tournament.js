@@ -45,12 +45,12 @@ function generateDoubleElimination(selectedPlayers) {
     // fill in the players
     let i = 0;
     while (i < numPlayers) {
-        html = html.replace(`Player~${i + 1}~`, players[i]);
+        html = html.replace(`~P${i + 1}~`, players[i]);
         i++;
     }
     // fill the rest with Byes
     while (i < numPlayersAndByes) {
-        html = html.replace(`Player~${i + 1}~`, 'Bye');
+        html = html.replace(`~P${i + 1}~`, 'Bye');
         i++;
     }
 
@@ -275,12 +275,14 @@ function highlightTodaysMatches() {
                 }
                 else if (tournamentLines[j].match(doubleEliminationMatchRegex)) { // Double Elimination match
                     const matchNumber = tournamentLines[j].match(doubleEliminationMatchRegex)[2]; // Get the match number
-                    tournamentLines[j] = tournamentLines[j].replace(
-                        doubleEliminationMatchRegex,
-                        `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
-                    );
 
-                    i = 0; // start from the beginning again to replace all references
+                    // Consider only the last played matches if we are in the Final round
+                    if (j < tournamentLines.length - 5 || i > todaysMatches.length - 2) {
+                        tournamentLines[j] = tournamentLines[j].replace(
+                            doubleEliminationMatchRegex,
+                            `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
+                        );
+                    }
 
                     // Replace Loser and Winner references in the rest of the tournament
                     const winnerRegex = new RegExp(`~W${matchNumber}~`, 'g');
@@ -339,10 +341,10 @@ function make8PlayersDoubleElimination() {
     // Main Bracket
     html += '<h5>Main - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `Player~1~ #1# Player~8~<br>\n`;
-    html += `Player~4~ #2# Player~5~<br>\n`;
-    html += `Player~3~ #3# Player~6~<br>\n`;
-    html += `Player~2~ #4# Player~7~<br>\n`;
+    html += `~P1~ #1# ~P8~<br>\n`;
+    html += `~P4~ #2# ~P5~<br>\n`;
+    html += `~P3~ #3# ~P6~<br>\n`;
+    html += `~P2~ #4# ~P7~<br>\n`;
     html += `</p><p>\n`;
     html += `~W1~ #7# ~W2~<br>\n`;
     html += `~W3~ #8# ~W4~<br>\n`;
@@ -375,14 +377,14 @@ function make16PlayersDoubleElimination() {
     // Main Bracket
     html += '<h5>Main - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `Player~1~ #1# Player~16~<br>\n`;
-    html += `Player~8~ #2# Player~9~<br>\n`;
-    html += `Player~4~ #3# Player~13~<br>\n`;
-    html += `Player~12~ #4# Player~5~<br>\n`;
-    html += `Player~2~ #5# Player~15~<br>\n`;
-    html += `Player~10~ #6# Player~7~<br>\n`;
-    html += `Player~3~ #7# Player~14~<br>\n`;
-    html += `Player~11~ #8# Player~6~<br>\n`;
+    html += `~P1~ #1# ~P16~<br>\n`;
+    html += `~P8~ #2# ~P9~<br>\n`;
+    html += `~P4~ #3# ~P13~<br>\n`;
+    html += `~P12~ #4# ~P5~<br>\n`;
+    html += `~P2~ #5# ~P15~<br>\n`;
+    html += `~P10~ #6# ~P7~<br>\n`;
+    html += `~P3~ #7# ~P14~<br>\n`;
+    html += `~P11~ #8# ~P6~<br>\n`;
     html += `</p><p>\n`;
     html += `~W1~ #13# ~W2~<br>\n`;
     html += `~W3~ #14# ~W4~<br>\n`;
