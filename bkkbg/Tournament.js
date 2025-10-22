@@ -282,6 +282,9 @@ function highlightTodaysMatches() {
                             doubleEliminationMatchRegex,
                             `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
                         );
+                        // if (j >= tournamentLines.length - 5 && i > todaysMatches.length - 2) {
+                        //     tournamentLines[j+1] += `${loser} #555# ${winner}`;
+                        // }
                     }
 
                     // Replace Loser and Winner references in the rest of the tournament
@@ -317,7 +320,9 @@ function resolveDoubleEliminationByes() {
                 const playerA = tournamentLines[j].match(doubleEliminationMatchRegex)[1]; // Get player A
                 const matchNumber = tournamentLines[j].match(doubleEliminationMatchRegex)[2]; // Get the match number
                 let playerB = tournamentLines[j].match(doubleEliminationMatchRegex)[3]; // Get player B
-                playerB = playerB.slice(0, -3);
+                
+                playerB = playerB.slice(0, -3);  // TODO: fix this hack to remove <br
+                
                 const winner = playerA === 'Bye' ? playerB : playerA;
                 const loser = 'Bye';
 

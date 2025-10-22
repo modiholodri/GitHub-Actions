@@ -73,7 +73,7 @@
             <h5 id="tournamentDirectorToggle" type="button" data-toggle="collapse" data-target="#tournamentDirector" aria-expanded="true" aria-controls="tournamentDirector">
                 Tournament Director ⇅
             </h5>
-            <div id="tournamentDirector"> <!-- class="collapse"> -->
+            <div id="tournamentDirector" class="collapse">
                 <div class="input-group">
                     <span class="input-group-text">Type</span>
                     <select id="tournamentType" title="Tournament Type" class="form-select">
@@ -190,22 +190,6 @@
         </div>
 
 
-        <!-- Settings -->
-        <hr class="rounded">
-        <div class="container">
-            <h3 id="settingsToggle" type="button" data-toggle="collapse" data-target="#settings" aria-expanded="false" aria-controls="settings">
-                ⚙ Settings ⇅
-            </button></h3>
-            <div id="settings" class="collapse">
-                <div class="input-group">
-                    <span class="input-group-text">Your Name</span>
-                    <input id="yourName" type="text" class="form-control centered" placeholder="Enter your name">
-                </div>
-                <button id="saveSettingsButton" class="btn btn-primary mt-3">Save Settings</button>
-            </div>
-        </div>
-
-
         <!-- Additional Stuff / Rating Formula  / Reporting Guidelines-->
         <hr class="rounded">
         <h3 id="additionalInfoToggle" type="button" data-toggle="collapse" data-target="#additionalInfo" aria-expanded="false" aria-controls="additionalInfo">
@@ -220,22 +204,30 @@
         </div>
 
         
-        <!-- Submission Test -->
+        <!-- Settings -->
         <hr class="rounded">
-        <h3 id="clubSelectionSectionToggle" type="button" data-toggle="collapse" data-target="#clubSelectionSection" aria-expanded="false" aria-controls="clubSelectionSection">
-            Club Selection ⇅
-        </h3>
-        <div id="clubSelectionSection" class="collapse">
-            <p>To test/exercise match report submissions or tournament management you can change to a Fake Backgammon club below.
-            To ensure that test match submissions are not messing up the actual rating list, you can choose fake names like Winner and Loser.
-            </p>
-            <div class="input-group">
-                <span class="input-group-text">Club</span>
-                <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
-                    <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
-                </select>
+        <div class="container">
+            <h3 id="settingsToggle" type="button" data-toggle="collapse" data-target="#settings" aria-expanded="false" aria-controls="settings">
+                ⚙ Settings ⇅
+            </button></h3>
+            <!-- You Name -->
+            <div id="settings" class="collapse">
+                <div class="input-group">
+                    <span class="input-group-text">Your Name</span>
+                    <input id="yourName" type="text" class="form-control centered" placeholder="Enter your name">
+                </div>
+                <!-- Club Selection -->
+                <div class="input-group">
+                    <span class="input-group-text">Club</span>
+                    <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
+                        <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
+                    </select>
+                </div>
+                <button id="saveSettingsButton" class="btn btn-primary mt-3">Save Settings</button>
             </div>
         </div>
+
+
         <footer class="text-center mt-4 mb-2">
             <small>&copy; 2025 Reinhold Lauer. All rights reserved.</small>
         </footer>
