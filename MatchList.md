@@ -199,3 +199,4 @@
 |2025-10-22|Black|Beginner|5|
 |2025-10-22|Comet|Beginner|5|
 |2025-10-22|Beginner|Comet|5|
+|2025-10-22|Black|Expert|5|
