@@ -58,7 +58,7 @@ function loadSettings() {
     loadToggleSetting('rankingChart');
     loadToggleSetting('rankingSummary');
     loadToggleSetting('matchList');
-    loadToggleSetting('additionalInfo');
+    loadToggleSetting('importantInfo');
 
     // Club Selection
     const clubSelectionElement = document.getElementById('clubSelection');
@@ -68,7 +68,7 @@ function loadSettings() {
             ? clubSelectionElement.options[0].value
             : '';
     }
-    document.getElementById('clubSelection').value = clubSelection;
+    clubSelectionElement.value = clubSelection;
 }
 
 // save the settings of a toggle element to localStorage
@@ -108,7 +108,7 @@ function saveSettings() {
     saveToggleSetting('rankingChart');
     saveToggleSetting('rankingSummary');
     saveToggleSetting('matchList');
-    saveToggleSetting('additionalInfo');
+    saveToggleSetting('importantInfo');
 
     saveValueSetting('clubSelection');
 }
