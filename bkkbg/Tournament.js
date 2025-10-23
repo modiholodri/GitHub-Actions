@@ -8,9 +8,15 @@ function generateTournament(selectedPlayers) {
             highlightTodaysMatches();
             highlightYourNameInTournament();
             break;
+        case 'Single Elimination':
+            generateSingleElimination(selectedPlayers);
+            resolveByes();
+            highlightTodaysMatches();
+            highlightYourNameInTournament();
+            break;
         case 'Double Elimination':
             generateDoubleElimination(selectedPlayers);
-            resolveDoubleEliminationByes();
+            resolveByes();
             highlightTodaysMatches();
             highlightYourNameInTournament();
             break;
@@ -26,6 +32,63 @@ function tournamentInfo() {
     return `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
 }
 
+function generateSingleElimination(selectedPlayers) {
+    const numPlayers = selectedPlayers.length;
+    if (numPlayers < 3) {
+        alert('Invalid number of players for Single Elimination!\nMust be at least 3.');
+        return;
+    }
+
+    let html = tournamentInfo();
+
+    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+
+    // Ensure the number of participants is a power of 2
+    const rounds = Math.ceil(Math.log2(players.length));
+    const totalSlots = Math.pow(2, rounds);
+    const byes = totalSlots - players.length;
+
+    // Add "BYE" placeholders for empty slots
+    for (let i = 0; i < byes; i++) {
+        players.push("Bye");
+    }
+    const length = document.getElementById('matchLengths').value.split(/\s+/)[0] || '5';
+
+    html += `<h5>Single Elimination - ${length} points</h5>\n`;
+    // populate the players in the first round
+    let matchNumber = 1;
+    let matchesPlayed = [];
+    const half = players.length / 2;
+    html += `<p>\n`;
+    for (let i = 0; i < half; i++ ) {
+        html += `${players[i]} #${matchNumber}# ${players[players.length - 1 - i]}<br>\n`;
+        matchesPlayed.push(matchNumber++);
+    }
+    html += `</p>\n`;
+
+    // generate the rest of the rounds
+    while ( matchesPlayed.length > 1 ) {
+        let matchesPlayedLastRound = matchesPlayed;
+        matchesPlayed = [];
+        html += `<p>\n`;
+        for (let i = 0; i < matchesPlayedLastRound.length; i += 2 ) {
+            html += `~W${matchesPlayedLastRound[i]}~ #${matchNumber}# ~W${matchesPlayedLastRound[i+1] || 'Bye'}~<br>\n`;
+            matchesPlayed.push(matchNumber++);
+        }
+        html += `</p>\n`;
+    }
+
+    // fill in the players
+    let i = 0;
+    for ( ; i < numPlayers; i++ ) {
+        html = html.replace(`~P${i + 1}~`, players[i]);
+    }
+
+    document.getElementById('tournament').innerHTML = html;
+    document.getElementById('tournamentSummary').innerHTML = '';
+    tournamentGenerated = true;
+}
+
 function generateDoubleElimination(selectedPlayers) {
     const numPlayers = selectedPlayers.length;
     if (numPlayers < 4 || numPlayers > 16) {
@@ -35,20 +98,22 @@ function generateDoubleElimination(selectedPlayers) {
 
     let html = tournamentInfo();
 
-    const numPlayersAndByes = numPlayers <= 8 ? 8 : 16;
     if (numPlayers <= 8)
         html += make8PlayersDoubleElimination();
     else
         html += make16PlayersDoubleElimination();
 
     const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+
     // fill in the players
     let i = 0;
     while (i < numPlayers) {
         html = html.replace(`~P${i + 1}~`, players[i]);
         i++;
     }
+
     // fill the rest with Byes
+    const numPlayersAndByes = numPlayers <= 8 ? 8 : 16;
     while (i < numPlayersAndByes) {
         html = html.replace(`~P${i + 1}~`, 'Bye');
         i++;
@@ -309,7 +374,7 @@ function highlightTodaysMatches() {
     tournamentDiv.innerHTML = html;
 }
 
-function resolveDoubleEliminationByes() {
+function resolveByes() {
     const tournamentDiv = document.getElementById('tournament');
     const tournamentLines = tournamentDiv.innerHTML.split('\n');
     // fix the Byes
