@@ -16,6 +16,11 @@ function loadToggleSetting(elementName) {
     toggleState === 'expanded' ? element.classList.add('show') : element.classList.remove('show');
 }
 
+function loadCheckedSetting(elementName, defaultValue) {
+    const checked = localStorage.getItem(elementName) || defaultValue;
+    document.getElementById(elementName).checked = checked == 'true';
+}
+
 // Load settings from localStorage
 function loadSettings() {
     loadToggleSetting('matchReportForm');
@@ -23,6 +28,10 @@ function loadSettings() {
     loadToggleSetting('tournamentManagement');
 
     // Tournament Management
+    loadCheckedSetting('showPastMatches', 'true');
+    loadCheckedSetting('showBeautiful', 'true');
+    loadCheckedSetting('showFutureMatches', 'false');
+
     const tournamentType = localStorage.getItem('tournamentType') || 'Double Elimination';
     document.getElementById('tournamentType').value = tournamentType;
     const maximumTournamentPlayers = localStorage.getItem('maximumTournamentPlayers') || '7';
@@ -83,11 +92,22 @@ function saveValueSetting(elementName) {
     localStorage.setItem(elementName, rankingListSelection);
 }
 
+// save the value of a specific element to localStorage
+function saveCheckedSetting(elementName) {
+    const checked = document.getElementById(elementName).checked;
+    localStorage.setItem(elementName, checked);
+}
+
 // Save settings to localStorage
 function saveSettings() {
     saveToggleSetting('matchReportForm');
 
     saveToggleSetting('tournamentManagement');
+    
+    saveCheckedSetting('showPastMatches');
+    saveCheckedSetting('showBeautiful');
+    saveCheckedSetting('showFutureMatches');
+
     saveValueSetting('tournamentType');
     saveValueSetting('maximumTournamentPlayers')
     saveValueSetting('matchLengths');

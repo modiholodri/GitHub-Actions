@@ -1,24 +1,24 @@
 let tournamentGenerated = false;
 
+let tournamentData = [];
+let tournamentHTML = [];
+
 function generateTournament(selectedPlayers) {
     let tournamentType = document.getElementById('tournamentType').value;
     switch (tournamentType) {
         case 'Round Robin':
             generateRoundRobins(selectedPlayers);
             highlightTodaysMatches();
-            highlightYourNameInTournament();
             break;
         case 'Single Elimination':
             generateSingleElimination(selectedPlayers);
             resolveByes();
             highlightTodaysMatches();
-            highlightYourNameInTournament();
             break;
         case 'Double Elimination':
             generateDoubleElimination(selectedPlayers);
             resolveByes();
             highlightTodaysMatches();
-            highlightYourNameInTournament();
             break;
         default:
             alert(tournamentType + ' tournament type is currently not supported!');
@@ -84,9 +84,51 @@ function generateSingleElimination(selectedPlayers) {
         html = html.replace(`~P${i + 1}~`, players[i]);
     }
 
-    document.getElementById('tournament').innerHTML = html;
-    document.getElementById('tournamentSummary').innerHTML = '';
+    setTournamentData(1, html);
     tournamentGenerated = true;
+}
+
+function beautifyTournament(tournament) {
+    const showPastMatches = document.getElementById('showPastMatches').checked;
+    const showBeautiful = document.getElementById('showBeautiful').checked;
+    const showFutureMatches = document.getElementById('showFutureMatches').checked;
+
+    tournamentHTML[tournament] = '';
+    if (!showPastMatches || !showFutureMatches) {
+        let lines = tournamentData[tournament].split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (!showPastMatches && lines[i].match(/(&lt;)|(&gt;)/)) ;
+            else if (!showFutureMatches && lines[i].match(/~/)) ;
+            else tournamentHTML[tournament] += lines[i] + '\n';
+        }
+    }
+    else {
+        tournamentHTML[tournament] = tournamentData[tournament];
+    }
+
+    // beautify the tournament
+    if (showBeautiful && tournamentHTML[tournament]) {
+        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/(&lt;)|(&gt;)/g, '🖤');
+        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/_/g, '💤');
+        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/#/g, '🎲');
+        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/~W/g, '🥇');
+        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/~L/g, '🥈');
+        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/~/g, '');
+    }
+
+    highlightYourNameInTournament(tournament);
+    showTournament(tournament);
+}
+
+function showTournament(tournament) {
+    document.getElementById('tournament').innerHTML = tournamentHTML[tournament];
+    document.getElementById('tournamentSummary').innerHTML = '';
+}
+
+function setTournamentData(tournament, data) {
+    tournamentData[tournament] = data;
+    tournamentHTML[tournament] = data;
+    beautifyTournament(tournament);
 }
 
 function generateDoubleElimination(selectedPlayers) {
@@ -119,8 +161,7 @@ function generateDoubleElimination(selectedPlayers) {
         i++;
     }
 
-    document.getElementById('tournament').innerHTML = html;
-    document.getElementById('tournamentSummary').innerHTML = '';
+    setTournamentData(1, html);
     tournamentGenerated = true;
 }
 
@@ -165,8 +206,7 @@ function generateRoundRobins(selectedPlayers) {
         groupPlayers = Math.ceil(remainingPlayers / remainingGroups);
     }
 
-    document.getElementById('tournament').innerHTML = html;
-    document.getElementById('tournamentSummary').innerHTML = '';
+    setTournamentData(1, html);
     tournamentGenerated = true;
 }
 
@@ -347,9 +387,6 @@ function highlightTodaysMatches() {
                             doubleEliminationMatchRegex,
                             `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
                         );
-                        // if (j >= tournamentLines.length - 5 && i > todaysMatches.length - 2) {
-                        //     tournamentLines[j+1] += `${loser} #555# ${winner}`;
-                        // }
                     }
 
                     // Replace Loser and Winner references in the rest of the tournament
@@ -365,7 +402,6 @@ function highlightTodaysMatches() {
                     }
                     break; // Exit the inner loop once a match is found and replaced
                 }
-
             }
         }
     }
@@ -587,10 +623,10 @@ function fetchLastTournament() {
     .then(data => {
         if (data.content) {
             const fileContent = decodeURIComponent(window.atob( data.content ));
-            document.getElementById('tournament').innerHTML = fileContent.replace(/\\n/g, '\n');
+            // document.getElementById('tournament').innerHTML = fileContent.replace(/\\n/g, '\n');
+            setTournamentData(1, fileContent.replace(/\\n/g, '\n'));
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
-            highlightYourNameInTournament();
             generateTournamentSummary();
         } else {
             console.log('Failed to fetch Last Tournament!');
@@ -599,16 +635,15 @@ function fetchLastTournament() {
     .catch(error => console.error('Error:', error));
 }
 
-function highlightYourNameInTournament() {
+function highlightYourNameInTournament(tournament) {
     const yourName = document.getElementById('yourName').value.trim();
-    const tournamentDiv = document.getElementById('tournament');
-    if (!tournamentDiv || !yourName) {
+    if (!yourName) {
         return;
     }
 
     // Use regex to match yourName as a whole word, case-insensitive
     const regex = new RegExp(`\\b(${yourName})\\b`, 'gi');
-    tournamentDiv.innerHTML = tournamentDiv.innerHTML.replace(
+    tournamentHTML[tournament] = tournamentHTML[tournament].replace(
         regex,
         `<span style="background-color: blue;">${yourName}</span>`
     );
