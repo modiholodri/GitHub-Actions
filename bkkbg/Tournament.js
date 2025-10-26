@@ -249,7 +249,7 @@ function generateRoundRobinTournament(groupName, selectedPlayers, length) {
             const home = players[i];
             const away = players[players.length - 1 - i];
             if (home !== 'Bye' && away !== 'Bye') {
-                matches.push(`${home} <-> ${away}`);
+                matches.push(`${home} #-# ${away}`);
             }
         }
         rounds.push(matches);
@@ -389,7 +389,7 @@ function highlightTodaysMatches() {
             const loser = matchInfo[3];
             const matchLength = matchInfo[4];
 
-            const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) &lt;-&gt; (${winner}|${loser})\\b`, 'i');
+            const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) #-# (${winner}|${loser})\\b`, 'i');
             const doubleEliminationMatchRegex = new RegExp(`^(${winner}|${loser}) #(\\d+)# (${winner}|${loser})\\b`, 'i');
 
             for (var j = 0; j < tournamentLines.length; j++) {
@@ -398,7 +398,7 @@ function highlightTodaysMatches() {
                 if (tournamentLines[j].match(roundRobinMatchRegex)) { // Round Robin match
                     tournamentLines[j] = tournamentLines[j].replace(
                         roundRobinMatchRegex,
-                        `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
+                        `<span style="color: green;">${winner}</span> &lt; ${matchLength} &gt; <span style="color: red;">${loser}</span>`
                     );
                     break; // Exit the inner loop once a match is found and replaced
                 }
@@ -409,7 +409,7 @@ function highlightTodaysMatches() {
                     if (j < tournamentLines.length - 5 || i > todaysMatches.length - 2) {
                         tournamentLines[j] = tournamentLines[j].replace(
                             doubleEliminationMatchRegex,
-                            `<span style="color: green;">${winner}</span> < ${matchLength} > <span style="color: red;">${loser}</span>`
+                            `<span style="color: green;">${winner}</span> &lt; ${matchLength} &gt; <span style="color: red;">${loser}</span>`
                         );
                     }
 
