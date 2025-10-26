@@ -72,7 +72,7 @@ function generateSingleElimination(selectedPlayers) {
         matchesPlayed = [];
         html += `<p>\n`;
         for (let i = 0; i < matchesPlayedLastRound.length; i += 2 ) {
-            html += `~W${matchesPlayedLastRound[i]}~ #${matchNumber}# ~W${matchesPlayedLastRound[i+1] || 'Bye'}~<br>\n`;
+            html += `~W${matchesPlayedLastRound[i]}~ _${matchNumber}_ ~W${matchesPlayedLastRound[i+1] || 'Bye'}~<br>\n`;
             matchesPlayed.push(matchNumber++);
         }
         html += `</p>\n`;
@@ -121,7 +121,33 @@ function beautifyTournament(tournament) {
 }
 
 function showTournament(tournament) {
-    document.getElementById('tournament').innerHTML = tournamentHTML[tournament];
+    let lines = tournamentHTML[tournament].split('\n');
+
+    // add tournament info
+    let groupsHTML = lines[0] + '\n';
+
+    // make the different groups/columns
+    // <div class="row text-center">
+    //     <div class="col-lg-4">
+    //         <div id="group1" class="tournament">Group 1</div>
+    //     </div>
+    // </div>
+
+    groupsHTML += '<div class="row text-center">\n';
+    let group = 0;
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i].match(/(Round Robin)|(Main)|(Consolation)|(Final)/)) {
+            if (group > 0) { // close previous group
+                groupsHTML += `</div>\n</div>\n`;
+            }
+            group++;
+            groupsHTML += `<div class="col-lg-4">\n<div id="group${group}" class="tournament">\n`;
+        }
+        groupsHTML += lines[i] + '\n';
+    }
+    groupsHTML += `</div>\n</div>\n`; // close last group
+
+    document.getElementById('tournament').innerHTML = groupsHTML;
     document.getElementById('tournamentSummary').innerHTML = '';
 }
 
@@ -565,7 +591,7 @@ async function uploadTournament() {
         span.replaceWith(document.createTextNode(span.textContent));
     });
 
-    let tournamentHTML = tournamentDiv.innerHTML;
+    let tournamentHTML = tournamentData[1];
 
     const repoName = document.getElementById('clubSelection').value;
 

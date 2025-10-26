@@ -67,30 +67,33 @@
         <h3 id="tournamentManagementToggle" type="button" data-toggle="collapse" data-target="#tournamentManagement" aria-expanded="true" aria-controls="tournamentManagement">
             Tournament ⇅
         </h3>
-        <div class="d-flex justify-content-center gap-4">
-            <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="showPastMatches" onchange="beautifyTournament(1)">
-            <label class="form-check-label" for="showPastMatches">
-                Past
-            </label>
-            </div>
-            <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="showBeautiful" onchange="beautifyTournament(1)">
-            <label class="form-check-label" for="showBeautiful">
-                Beautiful
-            </label>
-            </div>
-            <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="showFutureMatches" onchange="beautifyTournament(1)">
-            <label class="form-check-label" for="showFutureMatches">
-                Future
-            </label>
-            </div>
-        </div>
         <form id="tournamentManagement" class="collapse">
-
-            <div id="tournament" class="text-center"></div>
+            <div id="tournament" class="tournament">Tournament Data</div>
             <div id="tournamentSummary"></div>
+
+            <!-- Display options -->
+            <div class="d-flex justify-content-center gap-4">
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="showPastMatches" onchange="beautifyTournament(1)">
+                <label class="form-check-label" for="showPastMatches">
+                    Past
+                </label>
+                </div>
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="showBeautiful" onchange="beautifyTournament(1)">
+                <label class="form-check-label" for="showBeautiful">
+                    Beautiful
+                </label>
+                </div>
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="showFutureMatches" onchange="beautifyTournament(1)">
+                <label class="form-check-label" for="showFutureMatches">
+                    Future
+                </label>
+                </div>
+            </div>
+
+            <!-- Tournament Director -->
             <h5 id="tournamentDirectorToggle" type="button" data-toggle="collapse" data-target="#tournamentDirector" aria-expanded="true" aria-controls="tournamentDirector">
                 Tournament Director ⇅
             </h5>
