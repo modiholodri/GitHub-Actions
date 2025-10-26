@@ -437,8 +437,7 @@ function highlightTodaysMatches() {
 }
 
 function resolveByes() {
-    const tournamentDiv = document.getElementById('tournament');
-    const tournamentLines = tournamentDiv.innerHTML.split('\n');
+    const tournamentLines = tournamentData[1].split('\n');
     // fix the Byes
     const doubleEliminationMatchRegex = new RegExp(`^(.+) [#_](\\d+)[#_] (.+)\\b`, 'i');
     for (var j = 0; j < tournamentLines.length; j++) {
@@ -463,12 +462,15 @@ function resolveByes() {
                 for (let k = 0; k < tournamentLines.length; k++) { 
                     tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
                     tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
+                    if (!tournamentLines[k].includes("~")) { // replace future matches with current matches if there is no placeholder
+                        tournamentLines[k] = tournamentLines[k].replace(/_/g, '#');
+                    }
                 }
             }
         }
     }
-    html = tournamentLines.join('\n');
-    tournamentDiv.innerHTML = html;
+
+    setTournamentData(1, tournamentLines.join('\n'));
 }
 
 function make8PlayersDoubleElimination() {
