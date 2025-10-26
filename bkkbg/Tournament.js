@@ -8,22 +8,20 @@ function generateTournament(selectedPlayers) {
     switch (tournamentType) {
         case 'Round Robin':
             generateRoundRobins(selectedPlayers);
-            highlightTodaysMatches();
             break;
         case 'Single Elimination':
             generateSingleElimination(selectedPlayers);
-            resolveByes();
-            highlightTodaysMatches();
             break;
         case 'Double Elimination':
             generateDoubleElimination(selectedPlayers);
-            resolveByes();
-            highlightTodaysMatches();
             break;
         default:
             alert(tournamentType + ' tournament type is currently not supported!');
             return;
     }
+    resolveByes();
+    highlightTodaysMatches();
+    beautifyTournament(1);
 }
 
 function tournamentInfo() {
@@ -154,7 +152,7 @@ function showTournament(tournament) {
 function setTournamentData(tournament, data) {
     tournamentData[tournament] = data;
     tournamentHTML[tournament] = data;
-    beautifyTournament(tournament);
+    // beautifyTournament(tournament);
 }
 
 function generateDoubleElimination(selectedPlayers) {
@@ -332,11 +330,12 @@ function generateDoubleEliminationTable(lossCounts) {
 }
 
 function generateTournamentSummary() {
-    const tournamentDiv = document.getElementById('tournament');
     const summaryDiv = document.getElementById('tournamentSummary');
-    if (!tournamentDiv || !summaryDiv) return;
+    if (!summaryDiv) return;
 
-    const lines = tournamentDiv.innerText.split('\n');
+    let tempDIV = document.createElement('div');
+    tempDIV.innerHTML = tournamentData[1];
+    const lines = tempDIV.innerText.split('\n');
     let winCounts = {};
     let lossCounts = {};
 
@@ -382,8 +381,7 @@ function generateTournamentSummary() {
 var todaysMatches = [];
 // Get todays matches
 function highlightTodaysMatches() {
-    const tournamentDiv = document.getElementById('tournament');
-    const tournamentLines = tournamentDiv.innerHTML.split('\n');
+    const tournamentLines = tournamentData[1].split('\n');
     for (var i = 0; i < todaysMatches.length; i++) {
         if (todaysMatches[i].length > 0) {
             const matchInfo = todaysMatches[i].split('|');
@@ -433,7 +431,7 @@ function highlightTodaysMatches() {
     }
 
     html = tournamentLines.join('\n');
-    tournamentDiv.innerHTML = html;
+    tournamentData[1] = html;
 }
 
 function resolveByes() {
@@ -454,7 +452,7 @@ function resolveByes() {
 
                 tournamentLines[j] = tournamentLines[j].replace(
                     doubleEliminationMatchRegex,
-                    `<span style="color: green;">${winner}</span> < 0 > <span style="color: gray;">${loser}</span><br`
+                    `<span style="color: green;">${winner}</span> &lt; 0 &gt; <span style="color: gray;">${loser}</span><br`
                 );
 
                 const winnerRegex = new RegExp(`~W${matchNumber}~`, 'g');
@@ -585,14 +583,6 @@ document.getElementById('freezeTournamentButton').addEventListener('click', func
 });
 
 async function uploadTournament() {
-    // Remove blue background spans before uploading
-    let tournamentDiv = document.createElement('div');
-    tournamentDiv.innerHTML = document.getElementById('tournament').innerHTML;
-    // Remove all <span style="background-color: blue;">...</span>
-    tournamentDiv.querySelectorAll('span[style="background-color: blue;"]').forEach(span => {
-        span.replaceWith(document.createTextNode(span.textContent));
-    });
-
     let tournamentHTML = tournamentData[1];
 
     const repoName = document.getElementById('clubSelection').value;
@@ -655,6 +645,7 @@ function fetchLastTournament() {
             setTournamentData(1, fileContent.replace(/\\n/g, '\n'));
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
+            beautifyTournament(1);
             generateTournamentSummary();
         } else {
             console.log('Failed to fetch Last Tournament!');
