@@ -20,7 +20,7 @@ function generateTournament(selectedPlayers) {
             return;
     }
     resolveByes();
-    highlightTodaysMatches();
+    // highlightTodaysMatches(); // only add it again when debugging
     beautifyTournament(1);
 }
 
