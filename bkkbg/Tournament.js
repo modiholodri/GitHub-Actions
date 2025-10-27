@@ -15,6 +15,9 @@ function generateTournament(selectedPlayers) {
         case 'Double Elimination':
             generateDoubleElimination(selectedPlayers);
             break;
+        case 'Last Chance':
+            generateSingleElimination(selectedPlayers, 'Last Chance');
+            break;
         default:
             alert(tournamentType + ' tournament type is currently not supported!');
             return;
@@ -30,14 +33,14 @@ function tournamentInfo() {
     return `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
 }
 
-function generateSingleElimination(selectedPlayers) {
+function generateSingleElimination(selectedPlayers, lastChance = '') {
     const numPlayers = selectedPlayers.length;
     if (numPlayers < 3) {
         alert('Invalid number of players for Single Elimination!\nMust be at least 3.');
         return;
     }
 
-    let html = tournamentInfo();
+    let html = lastChance === 'Last Chance' ? '\n' : tournamentInfo();
 
     const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
 
@@ -52,9 +55,11 @@ function generateSingleElimination(selectedPlayers) {
     }
     const length = document.getElementById('matchLengths').value.split(/\s+/)[0] || '5';
 
-    html += `<h5>Single Elimination - ${length} points</h5>\n`;
+    const name = lastChance === 'Last Chance' ? 'Last Chance' : 'Single Elimination';
+    html += `<h5>${name} - ${length} points</h5>\n`;
+
     // populate the players in the first round
-    let matchNumber = 1;
+    let matchNumber = 101;
     let matchesPlayed = [];
     const half = players.length / 2;
     html += `<p>\n`;
@@ -82,7 +87,11 @@ function generateSingleElimination(selectedPlayers) {
         html = html.replace(`~P${i + 1}~`, players[i]);
     }
 
-    setTournamentData(1, html);
+    if (lastChance === 'Last Chance') {
+        setTournamentData(1, tournamentData[1] + html);
+    } else {
+        setTournamentData(1, html);
+    }
     tournamentGenerated = true;
 }
 
