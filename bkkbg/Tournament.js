@@ -59,7 +59,7 @@ function generateSingleElimination(selectedPlayers) {
     const half = players.length / 2;
     html += `<p>\n`;
     for (let i = 0; i < half; i++ ) {
-        html += `${players[i]} #${matchNumber}# ${players[players.length - 1 - i]}<br>\n`;
+        html += `${players[i]} # ${matchNumber} # ${players[players.length - 1 - i]}<br>\n`;
         matchesPlayed.push(matchNumber++);
     }
     html += `</p>\n`;
@@ -70,7 +70,7 @@ function generateSingleElimination(selectedPlayers) {
         matchesPlayed = [];
         html += `<p>\n`;
         for (let i = 0; i < matchesPlayedLastRound.length; i += 2 ) {
-            html += `~W${matchesPlayedLastRound[i]}~ _${matchNumber}_ ~W${matchesPlayedLastRound[i+1] || 'Bye'}~<br>\n`;
+            html += `~W${matchesPlayedLastRound[i]}~ _ ${matchNumber} _ ~W${matchesPlayedLastRound[i+1] || 'Bye'}~<br>\n`;
             matchesPlayed.push(matchNumber++);
         }
         html += `</p>\n`;
@@ -249,7 +249,7 @@ function generateRoundRobinTournament(groupName, selectedPlayers, length) {
             const home = players[i];
             const away = players[players.length - 1 - i];
             if (home !== 'Bye' && away !== 'Bye') {
-                matches.push(`${home} #-# ${away}`);
+                matches.push(`${home} # - # ${away}`);
             }
         }
         rounds.push(matches);
@@ -389,8 +389,8 @@ function highlightTodaysMatches() {
             const loser = matchInfo[3];
             const matchLength = matchInfo[4];
 
-            const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) #-# (${winner}|${loser})\\b`, 'i');
-            const doubleEliminationMatchRegex = new RegExp(`^(${winner}|${loser}) #(\\d+)# (${winner}|${loser})\\b`, 'i');
+            const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) # - # (${winner}|${loser})\\b`, 'i');
+            const doubleEliminationMatchRegex = new RegExp(`^(${winner}|${loser}) # (\\d+) # (${winner}|${loser})\\b`, 'i');
 
             for (var j = 0; j < tournamentLines.length; j++) {
                 if (tournamentLines[j][0] === '<') continue; // skip HTML tags - info and completed matches
@@ -437,7 +437,7 @@ function highlightTodaysMatches() {
 function resolveByes() {
     const tournamentLines = tournamentData[1].split('\n');
     // fix the Byes
-    const doubleEliminationMatchRegex = new RegExp(`^(.+) [#_](\\d+)[#_] (.+)\\b`, 'i');
+    const doubleEliminationMatchRegex = new RegExp(`^(.+) [#_] (\\d+) [#_] (.+)\\b`, 'i');
     for (var j = 0; j < tournamentLines.length; j++) {
         if (tournamentLines[j].includes('Bye')) {
             if (tournamentLines[j].match(doubleEliminationMatchRegex)) {
@@ -476,33 +476,33 @@ function make8PlayersDoubleElimination() {
     // Main Bracket
     html += '<h5>Main - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `~P1~ #1# ~P8~<br>\n`;
-    html += `~P4~ #2# ~P5~<br>\n`;
-    html += `~P3~ #3# ~P6~<br>\n`;
-    html += `~P2~ #4# ~P7~<br>\n`;
+    html += `~P1~ # 1 # ~P8~<br>\n`;
+    html += `~P4~ # 2 # ~P5~<br>\n`;
+    html += `~P3~ # 3 # ~P6~<br>\n`;
+    html += `~P2~ # 4 # ~P7~<br>\n`;
     html += `</p><p>\n`;
-    html += `~W1~ _7_ ~W2~<br>\n`;
-    html += `~W3~ _8_ ~W4~<br>\n`;
+    html += `~W1~ _ 7 _ ~W2~<br>\n`;
+    html += `~W3~ _ 8 _ ~W4~<br>\n`;
     html += `</p><p>\n`;
-    html += `~W7~ _11_ ~W8~<br>\n`;
+    html += `~W7~ _ 11 _ ~W8~<br>\n`;
     html += `</p>\n`;
     // Consolation Bracket
     html += '<h5>Consolation - 3 points</h5>\n';
     html += `<p>\n`;
-    html += `~L1~ _5_ ~L2~<br>\n`;
-    html += `~L3~ _6_ ~L4~<br>\n`;
+    html += `~L1~ _ 5 _ ~L2~<br>\n`;
+    html += `~L3~ _ 6 _ ~L4~<br>\n`;
     html += `</p><p>\n`;
-    html += `~L8~ _9_ ~W5~<br>\n`;
-    html += `~L7~ _10_ ~W6~<br>\n`;
+    html += `~L8~ _ 9 _ ~W5~<br>\n`;
+    html += `~L7~ _ 10 _ ~W6~<br>\n`;
     html += `</p><p>\n`;
-    html += `~W9~ _12_ ~W10~<br>\n`;
+    html += `~W9~ _ 12 _ ~W10~<br>\n`;
     html += `</p><p>\n`;
-    html += `~L11~ _13_ ~W12~<br>\n`;
+    html += `~L11~ _ 13 _ ~W12~<br>\n`;
     html += `</p>\n`;
     // Final
     html += '<h5>Final - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `~W11~ _14_ ~W13~<br>\n`;
+    html += `~W11~ _ 14 _ ~W13~<br>\n`;
     html += `</p>\n`;
     return html;
 }
@@ -512,52 +512,52 @@ function make16PlayersDoubleElimination() {
     // Main Bracket
     html += '<h5>Main - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `~P1~ #1# ~P16~<br>\n`;
-    html += `~P8~ #2# ~P9~<br>\n`;
-    html += `~P4~ #3# ~P13~<br>\n`;
-    html += `~P12~ #4# ~P5~<br>\n`;
-    html += `~P2~ #5# ~P15~<br>\n`;
-    html += `~P10~ #6# ~P7~<br>\n`;
-    html += `~P3~ #7# ~P14~<br>\n`;
-    html += `~P11~ #8# ~P6~<br>\n`;
+    html += `~P1~ # 1 # ~P16~<br>\n`;
+    html += `~P8~ # 2 # ~P9~<br>\n`;
+    html += `~P4~ # 3 # ~P13~<br>\n`;
+    html += `~P12~ # 4 # ~P5~<br>\n`;
+    html += `~P2~ # 5 # ~P15~<br>\n`;
+    html += `~P10~ # 6 # ~P7~<br>\n`;
+    html += `~P3~ # 7 # ~P14~<br>\n`;
+    html += `~P11~ # 8 # ~P6~<br>\n`;
     html += `</p><p>\n`;
-    html += `~W1~ _13_ ~W2~<br>\n`;
-    html += `~W3~ _14_ ~W4~<br>\n`;
-    html += `~W5~ _15_ ~W6~<br>\n`;
-    html += `~W7~ _16_ ~W8~<br>\n`;
+    html += `~W1~ _ 13 _ ~W2~<br>\n`;
+    html += `~W3~ _ 14 _ ~W4~<br>\n`;
+    html += `~W5~ _ 15 _ ~W6~<br>\n`;
+    html += `~W7~ _ 16 _ ~W8~<br>\n`;
     html += `</p><p>\n`;
-    html += `~W13~ _21_ ~W14~<br>\n`;
-    html += `~W15~ _22_ ~W16~<br>\n`;
+    html += `~W13~ _ 21 _ ~W14~<br>\n`;
+    html += `~W15~ _ 22 _ ~W16~<br>\n`;
     html += `</p><p>\n`;
-    html += `~W21~ _25_ ~W22~<br>\n`;
+    html += `~W21~ _ 25 _ ~W22~<br>\n`;
     html += `</p>\n`;
     // Consolation Bracket
     html += '<h5>Consolation - 3 points</h5>\n';
     html += `<p>\n`;
-    html += `~L1~ _9_ ~L2~<br>\n`;
-    html += `~L3~ _10_ ~L4~<br>\n`;
-    html += `~L5~ _11_ ~L6~<br>\n`;
-    html += `~L7~ _12_ ~L8~<br>\n`;
+    html += `~L1~ _ 9 _ ~L2~<br>\n`;
+    html += `~L3~ _ 10 _ ~L4~<br>\n`;
+    html += `~L5~ _ 11 _ ~L6~<br>\n`;
+    html += `~L7~ _ 12 _ ~L8~<br>\n`;
     html += `</p><p>\n`;
-    html += `~L16~ _17_ ~W9~<br>\n`;
-    html += `~L15~ _18_ ~W10~<br>\n`;
-    html += `~L14~ _19_ ~W11~<br>\n`;
-    html += `~L13~ _20_ ~W12~<br>\n`;
+    html += `~L16~ _ 17 _ ~W9~<br>\n`;
+    html += `~L15~ _ 18 _ ~W10~<br>\n`;
+    html += `~L14~ _ 19 _ ~W11~<br>\n`;
+    html += `~L13~ _ 20 _ ~W12~<br>\n`;
     html += `</p><p>\n`;
-    html += `~W17~ _23_ ~W18~<br>\n`;
-    html += `~W19~ _24_ ~W20~<br>\n`;
+    html += `~W17~ _ 23 _ ~W18~<br>\n`;
+    html += `~W19~ _ 24 _ ~W20~<br>\n`;
     html += `</p><p>\n`;
-    html += `~L22~ _26_ ~W23~<br>\n`;
-    html += `~W24~ _27_ ~L21~<br>\n`;
+    html += `~L22~ _ 26 _ ~W23~<br>\n`;
+    html += `~W24~ _ 27 _ ~L21~<br>\n`;
     html += `</p><p>\n`;
-    html += `~W26~ _28_ ~W27~<br>\n`;
+    html += `~W26~ _ 28 _ ~W27~<br>\n`;
     html += `</p><p>\n`;
-    html += `~L27~ _29_ ~W28~<br>\n`;
+    html += `~L27~ _ 29 _ ~W28~<br>\n`;
     html += `</p>\n`;
     // Final
     html += '<h5>Final - 5 points</h5>\n';
     html += `<p>\n`;
-    html += `~W25~ _30_ ~W29~<br>\n`;
+    html += `~W25~ _ 30 _ ~W29~<br>\n`;
     html += `</p>\n`;
     return html;
 }
