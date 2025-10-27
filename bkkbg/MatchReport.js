@@ -44,6 +44,11 @@ function showSubmissionStatus() {
 document.getElementById('matchReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    if (document.getElementById('debugMode').value === 'Fake') {
+        submitFakeMatchReport();
+        return;
+    }
+
     // get the winner name
     let winnerName = document.getElementById('winnerName').value;
     if (winnerName === 'Select') winnerName = document.getElementById('winnerNameTyped').value;
@@ -198,3 +203,38 @@ document.getElementById("updateSubmissionStatus").addEventListener("click", asyn
     setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
 });
 
+
+function submitFakeMatchReport() {
+    // get the winner name
+    let winnerName = document.getElementById('winnerName').value;
+    if (winnerName === 'Select') winnerName = document.getElementById('winnerNameTyped').value;
+    
+    // get the loser name
+    let loserName = document.getElementById('loserName').value;
+    if (loserName === 'Select') loserName = document.getElementById('loserNameTyped').value;
+    
+    // get the match length
+    let matchLength = document.getElementById('matchLengthTyped').value;
+    if (matchLength === '') matchLength = document.getElementById('matchLength').value;
+
+    const repoName = document.getElementById('clubSelection').value;
+
+    if (!winnerName) {
+        alert('Select or edit the Winner name!');
+    }
+    else if (!loserName) {
+        alert('Select or edit the Loser name!');
+    }
+    else {
+        const datetime = new Date();
+        const dateString = datetime.toISOString().split('T')[0];
+        const fakeMatch = `|${dateString}|${winnerName}|${loserName}|${matchLength}|`;
+
+        setSubmissionStatus(`Faking match...\n ${fakeMatch}`);
+        matchRecords.push(fakeMatch);
+        getTodaysMatches(matchRecords);
+        highlightTodaysMatches();
+        beautifyTournament(1);
+        generateTournamentSummary();
+    }
+}
