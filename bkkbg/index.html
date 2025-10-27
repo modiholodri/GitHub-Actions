@@ -108,15 +108,21 @@
                 </div>
                 <div class="input-group">
                     <button id="generateTournamentButton" type="button" title="Generate Tournament" class="btn btn-primary">Generate</button>
-                    <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered">
+                    <input id="spacer" type="text" title="Spacer" class="form-control centered">
                     <button id="startTournamentButton" type="submit" title="Start Tournament" class="btn btn-primary float-right">Start</button>
                     <button id="freezeTournamentButton" type="button" title = "Freeze Tournament" class="btn btn-primary float-right">Freeze</button>
                     <select id="playersList" title="Players List" class="multiple_select" multiple>
                         <option value="Winner">Winner</option>
                         <option value="Loser">Loser</option>
                     </select>
-                    <span class="input-group-text">Match Lengths</span>
-                    <input id="matchLengths" type="text" class="form-control centered" value="5 5 5 5 5">
+                    <div class="input-group w-100 mt-2">
+                        <span class="input-group-text" id="maximumTournamentPlayersLabel">Maximum Round Robin Players</span>
+                        <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered" aria-label="Maximum Round Robin Players" aria-describedby="maximumTournamentPlayersLabel">
+                    </div>
+                    <div class="input-group w-100 mt-2">
+                        <span class="input-group-text" id="matchLengthsLabel">Match Lengths</span>
+                        <input id="matchLengths" type="text" title="Match Lengths" class="form-control centered" aria-label="Match Lengths" aria-describedby="matchLengthsLabel" value="5 5 5 5 5">
+                    </div>
                 </div>
             </div>
         </form>
