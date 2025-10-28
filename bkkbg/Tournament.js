@@ -279,7 +279,7 @@ function generateRoundRobinTournament(groupName, selectedPlayers, length) {
     return html;
 }
 
-function generateRankingTable(winCounts) {
+function generateWinsTable(winCounts) {
     // Convert to array and sort by wins descending
     const sorted = Object.entries(winCounts)
         .sort((a, b) => b[1] - a[1]);
@@ -306,7 +306,7 @@ function generateRankingTable(winCounts) {
     return rankingTable;
 }
 
-function generateDoubleEliminationTable(lossCounts) {
+function generateLossesTable(lossCounts) {
     // Convert to array and sort by losses ascending
     const sorted = Object.entries(lossCounts)
         .sort((a, b) => a[1] - b[1]);
@@ -349,17 +349,38 @@ function generateTournamentSummary() {
     let lossCounts = {};
 
     let tournamentSummary = '### Tournament Summary\n\n';
-    let roundRobin = 0;
+    tournamentSummary += `<div class="row text-center">\n`;
+    let showWinsNext = true;
     lines.forEach(line => {
-        if(line.match(/Round Robin/)) {
-            if (Object.keys(winCounts).length > 0) {
-                tournamentSummary += `\n##### Round Robin ${roundRobin}\n\n`;
-                tournamentSummary += generateRankingTable(winCounts);
-                winCounts = {};
-                lossCounts = {};
+        // generate the headings
+        const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Last Chance)/);
+        if(winsTournament) {
+            if (showWinsNext && Object.keys(winCounts).length > 0) {
+                tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
             }
-            roundRobin++;
+            else if (!showWinsNext && Object.keys(lossCounts).length > 0) {
+                tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
+            }
+            winCounts = {};
+            lossCounts = {};
+            showWinsNext = true;
+            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${winsTournament[0]}\n\n`;
         }
+        const lossesTournament = line.match(/(Double Elimination)|(Triple Elimination)/);
+        if(lossesTournament) {
+            if (showWinsNext && Object.keys(winCounts).length > 0) {
+                tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
+            }
+            else if (!showWinsNext && Object.keys(lossCounts).length > 0) {
+                tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
+            }
+            winCounts = {};
+            lossCounts = {};
+            showWinsNext = false;
+            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${lossesTournament[0]}\n`;
+        }
+
+        // count the wins and losses
         const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
         if (match) {
             const length = match[2].trim();
@@ -374,14 +395,13 @@ function generateTournamentSummary() {
             }
         }
     });
-    if (Object.keys(winCounts).length > 0) {
-        if (roundRobin > 0) {
-            tournamentSummary += `\n##### Round Robin ${roundRobin}\n\n`;
-            tournamentSummary += generateRankingTable(winCounts);
-        }
-        else {
-            tournamentSummary += generateDoubleEliminationTable(lossCounts);
-        }
+
+    // show the rest
+    if (showWinsNext && Object.keys(winCounts).length > 0) {
+        tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
+    }
+    else if (!showWinsNext && Object.keys(lossCounts).length > 0) {
+        tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
     }
 
     summaryDiv.innerHTML = marked.parse(tournamentSummary);
