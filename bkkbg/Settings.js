@@ -21,6 +21,11 @@ function loadCheckedSetting(elementName, defaultValue) {
     document.getElementById(elementName).checked = checked == 'true';
 }
 
+function loadValueSetting(elementName, defaultValue) {
+    const value = localStorage.getItem(elementName) || defaultValue;
+    document.getElementById(elementName).value = value;
+}
+
 // Load settings from localStorage
 function loadSettings() {
     loadToggleSetting('matchReportForm');
@@ -32,23 +37,19 @@ function loadSettings() {
     loadCheckedSetting('showBeautiful', 'true');
     loadCheckedSetting('showFutureMatches', 'false');
 
-    const tournamentType = localStorage.getItem('tournamentType') || 'Double Elimination';
-    document.getElementById('tournamentType').value = tournamentType;
-    const maximumTournamentPlayers = localStorage.getItem('maximumTournamentPlayers') || '7';
-    document.getElementById('maximumTournamentPlayers').value = maximumTournamentPlayers;
-    const matchLengths = localStorage.getItem('matchLengths') || '5 5 5 5 5';
-    document.getElementById('matchLengths').value = matchLengths;
+    loadValueSetting('debugMode', '');
+    loadValueSetting('tournamentType', 'Double Elimination');
+    loadValueSetting('maximumTournamentPlayers', '7');
+    loadValueSetting('matchLengths', '5 5 5 5 5');
 
     loadToggleSetting('ratingList');
     loadToggleSetting('rankingLists');
 
     // Ranking List Selection
-    const rankingListSelection = localStorage.getItem('rankingListSelection') || 'matchesPlayed';
-    document.getElementById('rankingListSelection').value = rankingListSelection;
+    loadValueSetting('rankingListSelection', 'matchesPlayed');
 
     // Player Name Selection
-    const yourName = localStorage.getItem('yourName') || '';
-    document.getElementById('yourName').value = yourName;
+    loadValueSetting('yourName', '');
     // Players List Selection (multi-select)
     // loaded after the Frequent Players have been fetched
 
@@ -61,8 +62,7 @@ function loadSettings() {
     replaySection.style.display = rankingListSelection === "ratingList" ? "flex" : "none"; // Hide the element
 
     // Interval Selection
-    const intervalSelection = localStorage.getItem('intervalSelection') || 'Daily';
-    document.getElementById('intervalSelection').value = intervalSelection;
+    loadValueSetting('intervalSelection', 'Daily');
 
     loadToggleSetting('rankingChart');
     loadToggleSetting('rankingSummary');
@@ -108,6 +108,7 @@ function saveSettings() {
     saveCheckedSetting('showBeautiful');
     saveCheckedSetting('showFutureMatches');
 
+    saveValueSetting('debugMode');
     saveValueSetting('tournamentType');
     saveValueSetting('maximumTournamentPlayers')
     saveValueSetting('matchLengths');
