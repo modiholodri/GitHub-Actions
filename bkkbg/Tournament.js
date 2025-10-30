@@ -24,6 +24,7 @@ function generateTournament(selectedPlayers) {
     resolveByes();
     if (document.getElementById('debugMode').value === 'Fake') {
         highlightTodaysMatches(); // only add it again when debugging
+        generateTournamentSummary();
     }
     beautifyTournament();
 }
@@ -89,9 +90,9 @@ function generateSingleElimination(selectedPlayers, lastChance = '') {
     }
 
     if (lastChance === 'Last Chance') {
-        setTournamentData(1, tournamentData + html);
+        setTournamentData(tournamentData + html);
     } else {
-        setTournamentData(1, html);
+        setTournamentData(html);
     }
     tournamentGenerated = true;
 }
