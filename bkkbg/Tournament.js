@@ -43,7 +43,7 @@ function generateSingleElimination(selectedPlayers, lastChance = '') {
 
     let html = lastChance === 'Last Chance' ? '\n' : tournamentInfo();
 
-    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+    const players = fisherYatesShuffle(selectedPlayers);
 
     // Ensure the number of participants is a power of 2
     const rounds = Math.ceil(Math.log2(players.length));
@@ -160,7 +160,7 @@ function setTournamentData(data) {
 function generateDoubleElimination(selectedPlayers) {
     const numPlayers = selectedPlayers.length;
     if (numPlayers < 4 || numPlayers > 16) {
-        alert('Invalid number of players for Double Elimination!\nMust be between 4 and 16.');
+        alert('Invalid number of players for Double Elimination!\nMust be from 4 to 16 players.');
         return;
     }
 
@@ -171,7 +171,7 @@ function generateDoubleElimination(selectedPlayers) {
     else
         html += make16PlayersDoubleElimination();
 
-    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+    const players = fisherYatesShuffle(selectedPlayers);
 
     // fill in the players
     let i = 0;
@@ -200,7 +200,7 @@ function generateRoundRobins(selectedPlayers) {
 
     let html = tournamentInfo();
     
-    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+    const players = fisherYatesShuffle(selectedPlayers);
     let tournamentPlayer = players.length;
 
     let groups = Math.floor(tournamentPlayer / maximumPlayers);
@@ -238,7 +238,7 @@ function generateRoundRobins(selectedPlayers) {
 
 function generateRoundRobinTournament(groupName, selectedPlayers, length) {
     const rounds = [];
-    const players = [...selectedPlayers].sort(() => generator.random() - 0.5);
+    const players = fisherYatesShuffle(selectedPlayers);
     if (players.length % 2 !== 0) {
         players.push('Bye');
     }
@@ -728,21 +728,9 @@ class LCG {
     random() {
         return this.next() / this.m;
     }
-
-    // Generates a pseudo-random integer within a specified range [min, max]
-    randomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(this.random() * (max - min + 1)) + min;
-    }
 }
 
 const generator = new LCG(Date.now()); // Initialize with current time as seed
-
-// Example usage:
-// console.log("Next pseudo-random integer:", generator.next());
-// console.log("Pseudo-random float (0-1):", generator.random());
-// console.log("Pseudo-random integer (1-10):", generator.randomInt(1, 10));
 
 // Fisher-Yates Shuffle using the LCG
 function fisherYatesShuffle(arr) {
@@ -753,8 +741,3 @@ function fisherYatesShuffle(arr) {
     }
     return arr;
 }
-
-// Example usage
-// let array = [1, 2, 3, 4, 5];
-// let shuffledArray = fisherYatesShuffle(array);
-// console.log(shuffledArray);
