@@ -1,7 +1,6 @@
 let tournamentGenerated = false;
 
-let tournamentData = [];
-let tournamentHTML = [];
+let tournamentData = '';
 
 function generateTournament(selectedPlayers) {
     let tournamentType = document.getElementById('tournamentType').value;
@@ -23,8 +22,10 @@ function generateTournament(selectedPlayers) {
             return;
     }
     resolveByes();
-    // highlightTodaysMatches(); // only add it again when debugging
-    beautifyTournament(1);
+    if (document.getElementById('debugMode').value === 'Fake') {
+        highlightTodaysMatches(); // only add it again when debugging
+    }
+    beautifyTournament();
 }
 
 function tournamentInfo() {
@@ -88,58 +89,52 @@ function generateSingleElimination(selectedPlayers, lastChance = '') {
     }
 
     if (lastChance === 'Last Chance') {
-        setTournamentData(1, tournamentData[1] + html);
+        setTournamentData(1, tournamentData + html);
     } else {
         setTournamentData(1, html);
     }
     tournamentGenerated = true;
 }
 
-function beautifyTournament(tournament) {
+function beautifyTournament() {
     const showPastMatches = document.getElementById('showPastMatches').checked;
     const showBeautiful = document.getElementById('showBeautiful').checked;
     const showFutureMatches = document.getElementById('showFutureMatches').checked;
 
-    tournamentHTML[tournament] = '';
+    let tournamentHTML = '';
     if (!showPastMatches || !showFutureMatches) {
-        let lines = tournamentData[tournament].split('\n');
+        let lines = tournamentData.split('\n');
         for (let i = 0; i < lines.length; i++) {
             if (!showPastMatches && lines[i].match(/(&lt;)|(&gt;)/)) ;
             else if (!showFutureMatches && lines[i].match(/~/)) ;
-            else tournamentHTML[tournament] += lines[i] + '\n';
+            else tournamentHTML += lines[i] + '\n';
         }
     }
     else {
-        tournamentHTML[tournament] = tournamentData[tournament];
+        tournamentHTML = tournamentData;
     }
 
     // beautify the tournament
-    if (showBeautiful && tournamentHTML[tournament]) {
-        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/(&lt;)|(&gt;)/g, '🖤');
-        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/_/g, '💤');
-        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/#/g, '🎲');
-        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/~W/g, '🥇');
-        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/~L/g, '🥈');
-        tournamentHTML[tournament] = tournamentHTML[tournament].replace(/~/g, '');
+    if (showBeautiful && tournamentHTML) {
+        tournamentHTML = tournamentHTML.replace(/(&lt;)|(&gt;)/g, '🖤');
+        tournamentHTML = tournamentHTML.replace(/_/g, '💤');
+        tournamentHTML = tournamentHTML.replace(/#/g, '🎲');
+        tournamentHTML = tournamentHTML.replace(/~W/g, '🥇');
+        tournamentHTML = tournamentHTML.replace(/~L/g, '🥈');
+        tournamentHTML = tournamentHTML.replace(/~/g, '');
     }
 
-    highlightYourNameInTournament(tournament);
-    showTournament(tournament);
+    tournamentHTML = highlightYourNameInTournament(tournamentHTML);
+    showTournament(tournamentHTML);
 }
 
-function showTournament(tournament) {
-    let lines = tournamentHTML[tournament].split('\n');
+function showTournament(tournamentHTML) {
+    let lines = tournamentHTML.split('\n');
 
     // add tournament info
     let groupsHTML = lines[0] + '\n';
 
     // make the different groups/columns
-    // <div class="row text-center">
-    //     <div class="col-lg-4">
-    //         <div id="group1" class="tournament">Group 1</div>
-    //     </div>
-    // </div>
-
     groupsHTML += '<div class="row text-center">\n';
     let group = 0;
     for (let i = 1; i < lines.length; i++) {
@@ -158,10 +153,8 @@ function showTournament(tournament) {
     document.getElementById('tournamentSummary').innerHTML = '';
 }
 
-function setTournamentData(tournament, data) {
-    tournamentData[tournament] = data;
-    tournamentHTML[tournament] = data;
-    // beautifyTournament(tournament);
+function setTournamentData(data) {
+    tournamentData = data;
 }
 
 function generateDoubleElimination(selectedPlayers) {
@@ -194,7 +187,7 @@ function generateDoubleElimination(selectedPlayers) {
         i++;
     }
 
-    setTournamentData(1, html);
+    setTournamentData(html);
     tournamentGenerated = true;
 }
 
@@ -239,7 +232,7 @@ function generateRoundRobins(selectedPlayers) {
         groupPlayers = Math.ceil(remainingPlayers / remainingGroups);
     }
 
-    setTournamentData(1, html);
+    setTournamentData(html);
     tournamentGenerated = true;
 }
 
@@ -343,7 +336,7 @@ function generateTournamentSummary() {
     if (!summaryDiv) return;
 
     let tempDIV = document.createElement('div');
-    tempDIV.innerHTML = tournamentData[1];
+    tempDIV.innerHTML = tournamentData;
     const lines = tempDIV.innerText.split('\n');
     let winCounts = {};
     let lossCounts = {};
@@ -410,7 +403,7 @@ function generateTournamentSummary() {
 var todaysMatches = [];
 // Get todays matches
 function highlightTodaysMatches() {
-    const tournamentLines = tournamentData[1].split('\n');
+    const tournamentLines = tournamentData.split('\n');
     for (var i = 0; i < todaysMatches.length; i++) {
         if (todaysMatches[i].length > 0) {
             const matchInfo = todaysMatches[i].split('|');
@@ -460,11 +453,11 @@ function highlightTodaysMatches() {
     }
 
     html = tournamentLines.join('\n');
-    tournamentData[1] = html;
+    tournamentData = html;
 }
 
 function resolveByes() {
-    const tournamentLines = tournamentData[1].split('\n');
+    const tournamentLines = tournamentData.split('\n');
     // fix the Byes
     const doubleEliminationMatchRegex = new RegExp(`^(.+) [#_] (\\d+) [#_] (.+)\\b`, 'i');
     for (var j = 0; j < tournamentLines.length; j++) {
@@ -497,7 +490,7 @@ function resolveByes() {
         }
     }
 
-    setTournamentData(1, tournamentLines.join('\n'));
+    setTournamentData(tournamentLines.join('\n'));
 }
 
 function make8PlayersDoubleElimination() {
@@ -612,8 +605,6 @@ document.getElementById('freezeTournamentButton').addEventListener('click', func
 });
 
 async function uploadTournament() {
-    let tournamentHTML = tournamentData[1];
-
     const repoName = document.getElementById('clubSelection').value;
 
     await refreshRunsStatus();
@@ -638,7 +629,7 @@ async function uploadTournament() {
             body: JSON.stringify({ 
                 event_type: 'start_tournament', 
                 client_payload: { 
-                    tournament_html: `${tournamentHTML}`,
+                    tournament_html: `${tournamentData}`,
                 } 
             })
         });
@@ -670,8 +661,7 @@ function fetchLastTournament() {
     .then(data => {
         if (data.content) {
             const fileContent = decodeURIComponent(window.atob( data.content ));
-            // document.getElementById('tournament').innerHTML = fileContent.replace(/\\n/g, '\n');
-            setTournamentData(1, fileContent.replace(/\\n/g, '\n'));
+            setTournamentData(fileContent.replace(/\\n/g, '\n'));
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
             beautifyTournament(1);
@@ -683,7 +673,7 @@ function fetchLastTournament() {
     .catch(error => console.error('Error:', error));
 }
 
-function highlightYourNameInTournament(tournament) {
+function highlightYourNameInTournament(tournamentHTML) {
     const yourName = document.getElementById('yourName').value.trim();
     if (!yourName) {
         return;
@@ -691,10 +681,11 @@ function highlightYourNameInTournament(tournament) {
 
     // Use regex to match yourName as a whole word, case-insensitive
     const regex = new RegExp(`\\b(${yourName})\\b`, 'gi');
-    tournamentHTML[tournament] = tournamentHTML[tournament].replace(
+    tournamentHTML = tournamentHTML.replace(
         regex,
         `<span style="background-color: blue;">${yourName}</span>`
     );
+    return tournamentHTML;
 }
 
 // Get todays matches
