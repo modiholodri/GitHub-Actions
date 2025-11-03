@@ -5,17 +5,20 @@ let tournamentData = '';
 function generateTournament(selectedPlayers) {
     let tournamentType = document.getElementById('tournamentType').value;
     switch (tournamentType) {
+        case 'Double Elimination':
+            generateDoubleElimination(selectedPlayers);
+            break;
+        case 'Last Chance':
+            generateSingleElimination(selectedPlayers, 'Last Chance');
+            break;
         case 'Round Robin':
             generateRoundRobins(selectedPlayers);
             break;
         case 'Single Elimination':
             generateSingleElimination(selectedPlayers);
             break;
-        case 'Double Elimination':
-            generateDoubleElimination(selectedPlayers);
-            break;
-        case 'Last Chance':
-            generateSingleElimination(selectedPlayers, 'Last Chance');
+        case 'Swiss':
+            generateSwiss(selectedPlayers);
             break;
         default:
             alert(tournamentType + ' tournament type is currently not supported!');
@@ -139,7 +142,7 @@ function showTournament(tournamentHTML) {
     groupsHTML += '<div class="row text-center">\n';
     let group = 0;
     for (let i = 1; i < lines.length; i++) {
-        if (lines[i].match(/(Round Robin)|(Main)|(Consolation)|(Final)/)) {
+        if (lines[i].match(/(Round Robin)|(Swiss Round)|(Main)|(Consolation)|(Final)|(Qualified)/)) {
             if (group > 0) { // close previous group
                 groupsHTML += `</div>\n</div>\n`;
             }
@@ -192,6 +195,45 @@ function generateDoubleElimination(selectedPlayers) {
     tournamentGenerated = true;
 }
 
+function generateSwiss(selectedPlayers) {
+    const numPlayers = selectedPlayers.length;
+    if (numPlayers < 16 || numPlayers > 16) {
+        alert('Invalid number of players for Swiss!\nMust be 16 players.');
+        return;
+    }
+
+    let html = tournamentInfo();
+    html += make16PlayersSwiss();
+
+    const players = fisherYatesShuffle(selectedPlayers);
+
+    // fill in the players
+    let i = 0;
+    while (i < numPlayers) {
+        html = html.replace(`~P${i + 1}~`, players[i]);
+        i++;
+    }
+
+    // fill the rest with Byes
+    const numPlayersAndByes = 16;
+    while (i < numPlayersAndByes) {
+        html = html.replace(`~P${i + 1}~`, 'Bye');
+        i++;
+    }
+
+    setTournamentData(html);
+    tournamentGenerated = true;
+}
+
+function getMatchLengths() {
+    // read matchLengths input and create array of lengths (one per group)
+    const matchLengthsInput = document.getElementById('matchLengths').value.trim();
+    return matchLengthsInput ? matchLengthsInput.split(/\s+/).map(s => {
+        const n = parseInt(s, 10);
+        return Number.isFinite(n) ? n : s;
+    }) : [];
+}
+
 function generateRoundRobins(selectedPlayers) {
     let maximumPlayers = document.getElementById('maximumTournamentPlayers').value;
     if (isNaN(maximumPlayers) || maximumPlayers < 3) {
@@ -209,12 +251,7 @@ function generateRoundRobins(selectedPlayers) {
 
     let groupPlayers = Math.ceil(tournamentPlayer / groups);
 
-    // read matchLengths input and create array of lengths (one per group)
-    const matchLengthsInput = document.getElementById('matchLengths').value.trim();
-    const matchLengths = matchLengthsInput ? matchLengthsInput.split(/\s+/).map(s => {
-        const n = parseInt(s, 10);
-        return Number.isFinite(n) ? n : s;
-    }) : [];
+    const matchLengths = getMatchLengths();
 
     let start = 0;
     let remainingPlayers = tournamentPlayer;
@@ -332,6 +369,45 @@ function generateLossesTable(lossCounts) {
     return rankingTable;
 }
 
+function generateWinsLossesTable(winCounts, lossCounts) {
+    // Merge players from both counts
+    const players = Array.from(new Set([
+        ...Object.keys(winCounts || {}),
+        ...Object.keys(lossCounts || {})
+    ]));
+
+    // Build array with wins/losses and sort: wins desc, losses asc, name asc
+    const rows = players.map(name => ({
+        name,
+        wins: winCounts[name] || 0,
+        losses: lossCounts[name] || 0
+    })).sort((a, b) => {
+        if (b.wins !== a.wins) return b.wins - a.wins;          // more wins first
+        if (a.losses !== b.losses) return a.losses - b.losses;  // fewer losses first
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+    });
+
+    // Assign ranks (same rank for identical wins & losses)
+    let ranking = [];
+    let currentRank = 1;
+    for (let i = 0; i < rows.length; i++) {
+        const r = rows[i];
+        if (i > 0 && (r.wins !== rows[i - 1].wins || r.losses !== rows[i - 1].losses)) {
+            currentRank = i + 1;
+        }
+        ranking.push({ rank: currentRank, ...r });
+    }
+
+    // Build markdown table
+    let table = '|Rank|Name|Wins|Losses|\n|:---:|:---:|:---:|:---:|\n';
+    ranking.forEach(row => {
+        table += `|${row.rank}|${row.name}|${row.wins}|${row.losses}|\n`;
+    });
+
+    return table;
+}
+
+
 function generateTournamentSummary() {
     const summaryDiv = document.getElementById('tournamentSummary');
     if (!summaryDiv) return;
@@ -344,20 +420,32 @@ function generateTournamentSummary() {
 
     let tournamentSummary = '### Tournament Summary\n\n';
     tournamentSummary += `<div class="row text-center">\n`;
-    let showWinsNext = true;
+    
+    let showWinsNext = false;
+    let showLossesNext = false;
+    let showWinsLossesNext = false;
     lines.forEach(line => {
         // generate the headings
+        const swissTournament = line.match(/Swiss Style/);
+        if(swissTournament) {
+            winCounts = {};
+            lossCounts = {};
+            showWinsLossesNext = true;
+            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${swissTournament[0]}\n`;
+        }
+
         const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Last Chance)/);
         if(winsTournament) {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
                 tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
             }
-            else if (!showWinsNext && Object.keys(lossCounts).length > 0) {
+            else if (showLossesNext && Object.keys(lossCounts).length > 0) {
                 tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
             }
             winCounts = {};
             lossCounts = {};
             showWinsNext = true;
+            showLossesNext = false;
             tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${winsTournament[0]}\n\n`;
         }
         const lossesTournament = line.match(/(Double Elimination)|(Triple Elimination)/);
@@ -365,12 +453,13 @@ function generateTournamentSummary() {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
                 tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
             }
-            else if (!showWinsNext && Object.keys(lossCounts).length > 0) {
+            else if (showLossesNext && Object.keys(lossCounts).length > 0) {
                 tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
             }
             winCounts = {};
             lossCounts = {};
             showWinsNext = false;
+            showLossesNext = true;
             tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${lossesTournament[0]}\n`;
         }
 
@@ -391,10 +480,13 @@ function generateTournamentSummary() {
     });
 
     // show the rest
+    if (showWinsLossesNext) {
+        tournamentSummary += generateWinsLossesTable(winCounts, lossCounts) + `\n</div>\n`;
+    }
     if (showWinsNext && Object.keys(winCounts).length > 0) {
         tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
     }
-    else if (!showWinsNext && Object.keys(lossCounts).length > 0) {
+    else if (showLossesNext && Object.keys(lossCounts).length > 0) {
         tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
     }
 
@@ -581,6 +673,84 @@ function make16PlayersDoubleElimination() {
     html += '<h5>Final - 5 points</h5>\n';
     html += `<p>\n`;
     html += `~W25~ _ 30 _ ~W29~<br>\n`;
+    html += `</p>\n`;
+    return html;
+}
+
+function make16PlayersSwiss() {
+    let matchLengths = getMatchLengths();
+    const length = matchLengths[0] !== undefined ? matchLengths[0] : '5';
+
+    let html = '<h5>Swiss Style</h5>\n';
+    // Round 1
+    html += `<h5>Swiss Round 1 - ${length} points</h5>\n`;
+    html += `<p>\n`;
+    html += `~P1~ # 1 # ~P9~<br>\n`;
+    html += `~P2~ # 2 # ~P10~<br>\n`;
+    html += `~P3~ # 3 # ~P11~<br>\n`;
+    html += `~P4~ # 4 # ~P12~<br>\n`;
+    html += `~P5~ # 5 # ~P13~<br>\n`;
+    html += `~P6~ # 6 # ~P14~<br>\n`;
+    html += `~P7~ # 7 # ~P15~<br>\n`;
+    html += `~P8~ # 8 # ~P16~<br>\n`;
+    html += `</p>`;
+    
+    // Round 2
+    html += `<h5>Swiss Round 2 - ${length} points</h5>\n`;
+    html += `<p>\n`;
+    html += `~W1~ _ 9 _ ~W2~<br>\n`;
+    html += `~W3~ _ 10 _ ~W4~<br>\n`;
+    html += `~W5~ _ 11 _ ~W6~<br>\n`;
+    html += `~W7~ _ 12 _ ~W8~<br>\n`;
+
+    html += `~L1~ _ 13 _ ~L2~<br>\n`;
+    html += `~L3~ _ 14 _ ~L4~<br>\n`;
+    html += `~L5~ _ 15 _ ~L6~<br>\n`;
+    html += `~L7~ _ 16 _ ~L8~<br>\n`;
+    html += `</p>\n`;
+    
+    // Round 3
+    html += `<h5>Swiss Round 3 - ${length} points</h5>\n`;
+    html += `<p>\n`;
+    html += `~W9~ _ 17 _ ~W10~<br>\n`;
+    html += `~W11~ _ 18 _ ~W12~<br>\n`;
+    
+    html += `~L9~ _ 19 _ ~W13~<br>\n`;
+    html += `~L10~ _ 20 _ ~W14~<br>\n`;
+    html += `~L11~ _ 21 _ ~W15~<br>\n`;
+    html += `~L12~ _ 22 _ ~W16~<br>\n`;
+
+    html += `~L13~ _ 23 _ ~L14~<br>\n`;
+    html += `~L15~ _ 24 _ ~L16~<br>\n`;
+    html += `</p>\n`;
+
+    // Round 4
+    html += `<h5>Swiss Round 4 - ${length} points</h5>\n`;
+    html += `<p>\n`;
+    html += `~L17~ _ 25 _ ~L18~<br>\n`;
+    html += `~W19~ _ 26 _ ~W20~<br>\n`;
+    html += `~W21~ _ 27 _ ~W22~<br>\n`;
+
+    html += `~L19~ _ 28 _ ~L20~<br>\n`;
+    html += `~L21~ _ 29 _ ~L22~<br>\n`;
+    html += `~W23~ _ 30 _ ~W24~<br>\n`;
+    html += `</p>\n`;
+
+    // Round 5
+    html += `<h5>Swiss Round 5 - ${length} points</h5>\n`;
+    html += `<p>\n`;
+    html += `~L25~ _ 31 _ ~L26~<br>\n`;
+    html += `~L27~ _ 32 _ ~W28~<br>\n`;
+    html += `~W29~ _ 33 _ ~W30~<br>\n`;
+    html += `</p>\n`;
+
+    // End
+    html += `<h5>Qualified</h5>\n`;
+    html += `<p>\n`;
+    html += `~W17~ +++ ~W18~<br>\n`;
+    html += `~W25~ +++ ~W26~<br>\n`;
+    html += `~W27~ +++ ~W31~<br>\n`;
+    html += `~W32~ +++ ~W33~<br>\n`;
     html += `</p>\n`;
     return html;
 }
