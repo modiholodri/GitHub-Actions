@@ -755,6 +755,61 @@ function make16PlayersSwiss() {
     return html;
 }
 
+
+let autoModeIntervalId = null;
+
+function autoMode() {
+    // periodic task executed every second while auto mode is active
+    try {
+        if (typeof refreshRunsStatus === 'function') refreshRunsStatus();
+        if (typeof beautifyTournament === 'function') beautifyTournament();
+        // add other periodic work here as needed
+        const btn = document.getElementById('autoModeButton');
+        if (!btn) return;
+
+        // initialize counter on first run
+        if (!btn.dataset.counter) {
+            btn.dataset.counter = '0';
+
+            // observe the button so we can restore its label when auto mode is disabled
+            const observer = new MutationObserver(() => {
+            if (btn.dataset.autostate === 'off' || !btn.classList.contains('active')) {
+                btn.textContent = 'Auto';
+                delete btn.dataset.counter;
+                observer.disconnect();
+            }
+            });
+            observer.observe(btn, { attributes: true, attributeFilter: ['data-autostate', 'class'] });
+        }
+
+        // increment simple counter and update the button text
+        const count = (parseInt(btn.dataset.counter, 10) || 0) + 1;
+        btn.dataset.counter = count.toString();
+        btn.textContent = count.toString();
+    } catch (err) {
+        console.error('autoMode error:', err);
+    }
+}
+
+const autoModeButton = document.getElementById('autoModeButton');
+if (autoModeButton) {
+    autoModeButton.addEventListener('click', () => {
+        if (autoModeIntervalId === null) {
+            // start auto mode: run once immediately and then every second
+            autoMode();
+            autoModeIntervalId = setInterval(autoMode, 1000);
+            autoModeButton.dataset.autostate = 'on';
+            autoModeButton.classList.add('active');
+        } else {
+            // stop auto mode
+            clearInterval(autoModeIntervalId);
+            autoModeIntervalId = null;
+            autoModeButton.dataset.autostate = 'off';
+            autoModeButton.classList.remove('active');
+        }
+    });
+}
+
 // Start a new tournament after the Start button is clicked
 document.getElementById('tournamentManagement').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -835,7 +890,7 @@ function fetchLastTournament() {
             setTournamentData(fileContent.replace(/\\n/g, '\n'));
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
-            beautifyTournament(1);
+            beautifyTournament();
             generateTournamentSummary();
         } else {
             console.log('Failed to fetch Last Tournament!');

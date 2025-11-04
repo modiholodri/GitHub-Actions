@@ -234,7 +234,7 @@ function submitFakeMatchReport() {
         matchRecords.push(fakeMatch);
         getTodaysMatches(matchRecords);
         highlightTodaysMatches();
-        beautifyTournament(1);
+        beautifyTournament();
         generateTournamentSummary();
     }
 }
