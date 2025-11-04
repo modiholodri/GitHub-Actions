@@ -756,17 +756,56 @@ function make16PlayersSwiss() {
 }
 
 
+
+function extractFirstActiveMatchPlayers() {
+    const tournamentLines = tournamentData.split('\n');
+    const combinedMatchRegex = /(\w+)\s*#\s*(?:-|\d+)\s*#\s*(\w+)/i;
+
+    for (let line of tournamentLines) {
+        if (line.match(combinedMatchRegex)) {
+            const players = line.match(combinedMatchRegex);
+            return { player1: players[1], player2: players[2] };
+        } 
+    }
+    return null; // No active matches found
+}
+
 let autoModeIntervalId = null;
 
 function autoMode() {
+    const btn = document.getElementById('autoModeButton');
+    if (!btn) return;
+
     // periodic task executed every second while auto mode is active
     try {
-        if (typeof refreshRunsStatus === 'function') refreshRunsStatus();
-        if (typeof beautifyTournament === 'function') beautifyTournament();
-        // add other periodic work here as needed
-        const btn = document.getElementById('autoModeButton');
-        if (!btn) return;
+        const activeMatch = extractFirstActiveMatchPlayers();
 
+        if (activeMatch && activeMatch.player1 && activeMatch.player2) {
+            const matchLength = document.getElementById('matchLengths').value.split(/\s+/)[0] || '5';
+            
+            // if we have two players, use their names
+            const count = (parseInt(btn.dataset.counter, 10) || 0);
+            // swap players for odd counts so the later unconditional assignments pick the swapped names
+            if (count % 2 !== 0) {
+                const _tmp = activeMatch.player1;
+                activeMatch.player1 = activeMatch.player2;
+                activeMatch.player2 = _tmp;
+            }
+            winnerName = activeMatch.player1;
+            loserName = activeMatch.player2;
+
+            const datetime = new Date();
+            const dateString = datetime.toISOString().split('T')[0];
+            const autoMatch = `|${dateString}|${winnerName}|${loserName}|${matchLength}|`;
+
+            setSubmissionStatus(`Auto match...\n ${autoMatch}`);
+            matchRecords.push(autoMatch);
+            getTodaysMatches(matchRecords);
+            highlightTodaysMatches();
+            beautifyTournament();
+            generateTournamentSummary();
+        }
+        
         // initialize counter on first run
         if (!btn.dataset.counter) {
             btn.dataset.counter = '0';
