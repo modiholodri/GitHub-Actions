@@ -17,8 +17,8 @@ function generateTournament(selectedPlayers) {
         case 'Single Elimination':
             generateSingleElimination(selectedPlayers);
             break;
-        case 'Swiss':
-            generateSwiss(selectedPlayers);
+        case 'Siam':
+            generateSiam(selectedPlayers);
             break;
         default:
             alert(tournamentType + ' tournament type is currently not supported!');
@@ -142,7 +142,7 @@ function showTournament(tournamentHTML) {
     groupsHTML += '<div class="row text-center">\n';
     let group = 0;
     for (let i = 1; i < lines.length; i++) {
-        if (lines[i].match(/(Round Robin)|(Swiss Round)|(Main)|(Consolation)|(Final)|(Qualified)/)) {
+        if (lines[i].match(/(Round Robin)|(Siam Round)|(Main)|(Consolation)|(Final)|(Qualified)/)) {
             if (group > 0) { // close previous group
                 groupsHTML += `</div>\n</div>\n`;
             }
@@ -195,15 +195,15 @@ function generateDoubleElimination(selectedPlayers) {
     tournamentGenerated = true;
 }
 
-function generateSwiss(selectedPlayers) {
+function generateSiam(selectedPlayers) {
     const numPlayers = selectedPlayers.length;
     if (numPlayers < 16 || numPlayers > 16) {
-        alert('Invalid number of players for Swiss!\nMust be 16 players.');
+        alert('Invalid number of players for Siam!\nMust be 16 players.');
         return;
     }
 
     let html = tournamentInfo();
-    html += make16PlayersSwiss();
+    html += make16PlayersSiam();
 
     const players = fisherYatesShuffle(selectedPlayers);
 
@@ -426,12 +426,12 @@ function generateTournamentSummary() {
     let showWinsLossesNext = false;
     lines.forEach(line => {
         // generate the headings
-        const swissTournament = line.match(/Swiss Style/);
-        if(swissTournament) {
+        const siamTournament = line.match(/Siam Style/);
+        if(siamTournament) {
             winCounts = {};
             lossCounts = {};
             showWinsLossesNext = true;
-            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${swissTournament[0]}\n`;
+            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${siamTournament[0]}\n`;
         }
 
         const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Last Chance)/);
@@ -677,13 +677,13 @@ function make16PlayersDoubleElimination() {
     return html;
 }
 
-function make16PlayersSwiss() {
+function make16PlayersSiam() {
     let matchLengths = getMatchLengths();
     const length = matchLengths[0] !== undefined ? matchLengths[0] : '5';
 
-    let html = '<h5>Swiss Style</h5>\n';
+    let html = '<h5>Siam Style</h5>\n';
     // Round 1
-    html += `<h5>Swiss Round 1 - ${length} points</h5>\n`;
+    html += `<h5>Siam Round 1 - ${length} points</h5>\n`;
     html += `<p>\n`;
     html += `~P1~ # 1 # ~P9~<br>\n`;
     html += `~P2~ # 2 # ~P10~<br>\n`;
@@ -696,7 +696,7 @@ function make16PlayersSwiss() {
     html += `</p>`;
     
     // Round 2
-    html += `<h5>Swiss Round 2 - ${length} points</h5>\n`;
+    html += `<h5>Siam Round 2 - ${length} points</h5>\n`;
     html += `<p>\n`;
     html += `~W1~ _ 9 _ ~W2~<br>\n`;
     html += `~W3~ _ 10 _ ~W4~<br>\n`;
@@ -710,7 +710,7 @@ function make16PlayersSwiss() {
     html += `</p>\n`;
     
     // Round 3
-    html += `<h5>Swiss Round 3 - ${length} points</h5>\n`;
+    html += `<h5>Siam Round 3 - ${length} points</h5>\n`;
     html += `<p>\n`;
     html += `~W9~ _ 17 _ ~W10~<br>\n`;
     html += `~W11~ _ 18 _ ~W12~<br>\n`;
@@ -725,7 +725,7 @@ function make16PlayersSwiss() {
     html += `</p>\n`;
 
     // Round 4
-    html += `<h5>Swiss Round 4 - ${length} points</h5>\n`;
+    html += `<h5>Siam Round 4 - ${length} points</h5>\n`;
     html += `<p>\n`;
     html += `~L17~ _ 25 _ ~L18~<br>\n`;
     html += `~W19~ _ 26 _ ~W20~<br>\n`;
@@ -737,7 +737,7 @@ function make16PlayersSwiss() {
     html += `</p>\n`;
 
     // Round 5
-    html += `<h5>Swiss Round 5 - ${length} points</h5>\n`;
+    html += `<h5>Siam Round 5 - ${length} points</h5>\n`;
     html += `<p>\n`;
     html += `~L25~ _ 31 _ ~L26~<br>\n`;
     html += `~L27~ _ 32 _ ~W28~<br>\n`;
