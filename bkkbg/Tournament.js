@@ -195,31 +195,84 @@ function generateDoubleElimination(selectedPlayers) {
     tournamentGenerated = true;
 }
 
+function generateSiamRound(roundNumber, startMatch, matchesPerRound, length, matchNumber) {
+    let html = `<h5>Siam Round ${roundNumber} - ${length} points</h5>\n`;
+    
+    // Winner bracket matches
+    for (let i = startMatch; i <= startMatch + matchesPerRound - 1; i += 2) {
+        html += `~W${i}~ # ${matchNumber++} # ~W${i + 1}~<br>\n`;
+    }
+    
+    // Loser bracket matches
+    for (let i = startMatch; i <= startMatch + matchesPerRound - 1; i += 2) {
+        html += `~L${i}~ # ${matchNumber++} # ~L${i + 1}~<br>\n`;
+    }
+    
+    return { html, matchNumber };
+}
+
 function generateSiam(selectedPlayers) {
     const numPlayers = selectedPlayers.length;
-    if (numPlayers < 16 || numPlayers > 16) {
-        alert('Invalid number of players for Siam!\nMust be 16 players.');
+    if (numPlayers < 3) {
+        alert('Invalid number of players for Siam Style!\nMust be at least 3 players.');
         return;
     }
 
+    let matchLengths = getMatchLengths();
+    const length = matchLengths[0] !== undefined ? matchLengths[0] : '5';
+
     let html = tournamentInfo();
-    html += make16PlayersSiam();
+    html += '<h5>Siam Style</h5>\n';
+
+    let reminder = 4 - numPlayers % 4;
+    if (reminder === 4) reminder = 0;
+    const numPlayersAndByes = numPlayers + reminder; // make it im multiple of 4
+    const matchesPerRound = Math.round(numPlayersAndByes / 2);
+
+    // Round 1 
+    html += `<h5>Siam Round 1 - ${length} points</h5>\n`;
+    let matchNumber = 1;
+    for (let i = 1; i <= matchesPerRound; i++) {
+        html += `~P${i}~ # ${matchNumber++} # ~P${i + matchesPerRound}~<br>\n`;
+    }
+
+    // Generate Round 2
+    const round2 = generateSiamRound(2, 1, matchesPerRound, length, matchNumber);
+    html += round2.html;
+
+    // Generate Round 3
+    const round3 = generateSiamRound(3, matchNumber, matchesPerRound, length, round2.matchNumber);
+    html += round3.html;
+
+    // Generate Round 4
+    const round4 = generateSiamRound(4, round2.matchNumber, matchesPerRound, length, round3.matchNumber);
+    html += round4.html;
+
+    // Generate Round 5
+    const round5 = generateSiamRound(5, round3.matchNumber, matchesPerRound, length, round4.matchNumber);
+    html += round5.html;
+
+    // Generate Round 6
+    const round6 = generateSiamRound(6, round4.matchNumber, matchesPerRound, length, round5.matchNumber);
+    html += round6.html;
 
     const players = fisherYatesShuffle(selectedPlayers);
 
     // fill in the players
-    let i = 0;
-    while (i < numPlayers) {
-        html = html.replace(`~P${i + 1}~`, players[i]);
+    let i = 1;
+    const playerOffset = Math.ceil(numPlayers / 2);
+    while (i <= matchesPerRound) {
+        html = html.replace(`~P${i}~`, players[i] || 'Bye');
+        html = html.replace(`~P${matchesPerRound + i}~`, players[playerOffset + i] || 'Bye');
         i++;
     }
 
     // fill the rest with Byes
-    const numPlayersAndByes = 16;
-    while (i < numPlayersAndByes) {
-        html = html.replace(`~P${i + 1}~`, 'Bye');
-        i++;
-    }
+    // while (i < numPlayersAndByes) {
+    //     html = html.replace(`~P${i + 1}~`, 'Bye');
+    //     html = html.replace(`~P${i + 1}~`, 'Bye');
+    //     i++;
+    // }
 
     setTournamentData(html);
     tournamentGenerated = true;
@@ -369,7 +422,7 @@ function generateLossesTable(lossCounts) {
     return rankingTable;
 }
 
-function generateWinsLossesTable(winCounts, lossCounts) {
+function generateWinsLossesEloTable(winCounts, lossCounts, eloPoints) {
     // Merge players from both counts
     const players = Array.from(new Set([
         ...Object.keys(winCounts || {}),
@@ -380,10 +433,12 @@ function generateWinsLossesTable(winCounts, lossCounts) {
     const rows = players.map(name => ({
         name,
         wins: winCounts[name] || 0,
-        losses: lossCounts[name] || 0
+        losses: lossCounts[name] || 0,
+        elo: eloPoints[name] || 100
     })).sort((a, b) => {
+        if (b.elo !== a.elo) return b.elo - a.elo;             // higher ELO first
         if (b.wins !== a.wins) return b.wins - a.wins;          // more wins first
-        if (a.losses !== b.losses) return a.losses - b.losses;  // fewer losses first
+        if (a.losses !== b.losses) return a.losses - b.losses;  // fewer losses first 
         return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
     });
 
@@ -399,9 +454,9 @@ function generateWinsLossesTable(winCounts, lossCounts) {
     }
 
     // Build markdown table
-    let table = '|Rank|Name|Wins|Losses|\n|:---:|:---:|:---:|:---:|\n';
+    let table = '|R|Name|W|L|E|\n|:---:|:---:|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
-        table += `|${row.rank}|${row.name}|${row.wins}|${row.losses}|\n`;
+        table += `|${row.rank}|${row.name}|${row.wins}|${row.losses}|${Math.round(row.elo * 10) / 10}\n`;
     });
 
     return table;
@@ -430,6 +485,7 @@ function generateTournamentSummary() {
         if(siamTournament) {
             winCounts = {};
             lossCounts = {};
+            eloPoints = {};
             showWinsLossesNext = true;
             tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${siamTournament[0]}\n`;
         }
@@ -468,20 +524,40 @@ function generateTournamentSummary() {
         if (match) {
             const length = match[2].trim();
 
-            if (length !== '0') { // ignore Byes
-                const winner = match[1].trim();
-                const loser = match[3].trim();
-                winCounts[winner] = (winCounts[winner] || 0) + 1;
+            const winner = match[1].trim();
+            const loser = match[3].trim();
+
+            // ignore Byes and update ELO points
+            if (winner !== 'Bye' && loser !== 'Bye') {
+                // Initialize ELO points if not exist
+                winCounts[winner] = winCounts[winner] || 0;
                 winCounts[loser] = winCounts[loser] || 0;
                 lossCounts[winner] = lossCounts[winner] || 0;
-                lossCounts[loser] = (lossCounts[loser] || 0) + 1;
+                lossCounts[loser] = lossCounts[loser] || 0;
+
+                // Update win/loss counts
+                winCounts[winner] = winCounts[winner] + 1;
+                lossCounts[loser] = lossCounts[loser] + 1;
+
+                // Initialize ELO if not exists
+                eloPoints[winner] = eloPoints[winner] || 100.0;
+                eloPoints[loser] = eloPoints[loser] || 100.0;
+
+                // Calculate ELO changes
+                const k = length; // K-factor determines how much ratings change
+                const expectedWinner = 1 / (1 + Math.pow(10, (eloPoints[loser] - eloPoints[winner]) / 400));
+                const expectedLoser = 1 - expectedWinner;
+
+                // Update ELO ratings
+                eloPoints[winner] += k * (1 - expectedWinner);
+                eloPoints[loser] += k * (0 - expectedLoser);
             }
         }
     });
 
     // show the rest
     if (showWinsLossesNext) {
-        tournamentSummary += generateWinsLossesTable(winCounts, lossCounts) + `\n</div>\n`;
+        tournamentSummary += generateWinsLossesEloTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
     if (showWinsNext && Object.keys(winCounts).length > 0) {
         tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
@@ -673,84 +749,6 @@ function make16PlayersDoubleElimination() {
     html += '<h5>Final - 5 points</h5>\n';
     html += `<p>\n`;
     html += `~W25~ _ 30 _ ~W29~<br>\n`;
-    html += `</p>\n`;
-    return html;
-}
-
-function make16PlayersSiam() {
-    let matchLengths = getMatchLengths();
-    const length = matchLengths[0] !== undefined ? matchLengths[0] : '5';
-
-    let html = '<h5>Siam Style</h5>\n';
-    // Round 1
-    html += `<h5>Siam Round 1 - ${length} points</h5>\n`;
-    html += `<p>\n`;
-    html += `~P1~ # 1 # ~P9~<br>\n`;
-    html += `~P2~ # 2 # ~P10~<br>\n`;
-    html += `~P3~ # 3 # ~P11~<br>\n`;
-    html += `~P4~ # 4 # ~P12~<br>\n`;
-    html += `~P5~ # 5 # ~P13~<br>\n`;
-    html += `~P6~ # 6 # ~P14~<br>\n`;
-    html += `~P7~ # 7 # ~P15~<br>\n`;
-    html += `~P8~ # 8 # ~P16~<br>\n`;
-    html += `</p>`;
-    
-    // Round 2
-    html += `<h5>Siam Round 2 - ${length} points</h5>\n`;
-    html += `<p>\n`;
-    html += `~W1~ _ 9 _ ~W2~<br>\n`;
-    html += `~W3~ _ 10 _ ~W4~<br>\n`;
-    html += `~W5~ _ 11 _ ~W6~<br>\n`;
-    html += `~W7~ _ 12 _ ~W8~<br>\n`;
-
-    html += `~L1~ _ 13 _ ~L2~<br>\n`;
-    html += `~L3~ _ 14 _ ~L4~<br>\n`;
-    html += `~L5~ _ 15 _ ~L6~<br>\n`;
-    html += `~L7~ _ 16 _ ~L8~<br>\n`;
-    html += `</p>\n`;
-    
-    // Round 3
-    html += `<h5>Siam Round 3 - ${length} points</h5>\n`;
-    html += `<p>\n`;
-    html += `~W9~ _ 17 _ ~W10~<br>\n`;
-    html += `~W11~ _ 18 _ ~W12~<br>\n`;
-    
-    html += `~L9~ _ 19 _ ~W13~<br>\n`;
-    html += `~L10~ _ 20 _ ~W14~<br>\n`;
-    html += `~L11~ _ 21 _ ~W15~<br>\n`;
-    html += `~L12~ _ 22 _ ~W16~<br>\n`;
-
-    html += `~L13~ _ 23 _ ~L14~<br>\n`;
-    html += `~L15~ _ 24 _ ~L16~<br>\n`;
-    html += `</p>\n`;
-
-    // Round 4
-    html += `<h5>Siam Round 4 - ${length} points</h5>\n`;
-    html += `<p>\n`;
-    html += `~L17~ _ 25 _ ~L18~<br>\n`;
-    html += `~W19~ _ 26 _ ~W20~<br>\n`;
-    html += `~W21~ _ 27 _ ~W22~<br>\n`;
-
-    html += `~L19~ _ 28 _ ~L20~<br>\n`;
-    html += `~L21~ _ 29 _ ~L22~<br>\n`;
-    html += `~W23~ _ 30 _ ~W24~<br>\n`;
-    html += `</p>\n`;
-
-    // Round 5
-    html += `<h5>Siam Round 5 - ${length} points</h5>\n`;
-    html += `<p>\n`;
-    html += `~L25~ _ 31 _ ~L26~<br>\n`;
-    html += `~L27~ _ 32 _ ~W28~<br>\n`;
-    html += `~W29~ _ 33 _ ~W30~<br>\n`;
-    html += `</p>\n`;
-
-    // End
-    html += `<h5>Qualified</h5>\n`;
-    html += `<p>\n`;
-    html += `~W17~ +++ ~W18~<br>\n`;
-    html += `~W25~ +++ ~W26~<br>\n`;
-    html += `~W27~ +++ ~W31~<br>\n`;
-    html += `~W32~ +++ ~W33~<br>\n`;
     html += `</p>\n`;
     return html;
 }
