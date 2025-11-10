@@ -454,7 +454,7 @@ function generateWinsLossesEloTable(winCounts, lossCounts, eloPoints) {
     }
 
     // Build markdown table
-    let table = '|R|Name|W|L|E|\n|:---:|:---:|:---:|:---:|:---:|\n';
+    let table = '|#|Name|W|L|Elo|\n|:---:|:---:|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
         table += `|${row.rank}|${row.name}|${row.wins}|${row.losses}|${Math.round(row.elo * 10) / 10}\n`;
     });
