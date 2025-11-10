@@ -35,7 +35,7 @@ function loadSettings() {
     // Tournament Management
     loadCheckedSetting('showPastMatches', 'true');
     loadCheckedSetting('showBeautiful', 'true');
-    loadCheckedSetting('showFutureMatches', 'false');
+    loadCheckedSetting('showFutureMatches', 'true');
 
     loadValueSetting('debugMode', '');
     loadValueSetting('tournamentType', 'Double Elimination');
