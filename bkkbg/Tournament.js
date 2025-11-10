@@ -222,16 +222,20 @@ function generateSiam(selectedPlayers) {
     const length = matchLengths[0] !== undefined ? matchLengths[0] : '5';
 
     let html = tournamentInfo();
+    
+    // sort the players according to their rating
+    const sortedPlayers = selectedPlayers.sort((a, b) => playerRating[b]?.rating - playerRating[a]?.rating)
 
     // list the players
-    html += '<p>';
-    selectedPlayers.forEach((player, index) => {
-        // Ensure each item is a string
-        if (typeof player === "string" && player.trim() !== "") {
+    html += `<p>${numPlayers}: `;
+    sortedPlayers.forEach((player) => {
+        if (typeof player === "string" && player.trim() !== "") {          // Ensure each item is a string
             html += player + ' ';
         }
     });
     html += '</p>\n';
+    
+    html += `<h5>Siam Style</h5>\n`;
 
     let reminder = 4 - numPlayers % 4;
     if (reminder === 4) reminder = 0;
@@ -265,14 +269,14 @@ function generateSiam(selectedPlayers) {
     const round6 = generateSiamRound(6, round4.matchNumber, matchesPerRound, length, round5.matchNumber);
     html += round6.html;
 
-    const players = fisherYatesShuffle(selectedPlayers);
+    // const players = fisherYatesShuffle(selectedPlayers);
 
     // fill in the players
     let i = 1;
     const playerOffset = Math.ceil(numPlayers / 2);
     while (i <= matchesPerRound) {
-        html = html.replace(`~P${i}~`, players[i] || 'Bye');
-        html = html.replace(`~P${matchesPerRound + i}~`, players[playerOffset + i] || 'Bye');
+        html = html.replace(`~P${i}~`, sortedPlayers[i - 1] || 'Bye');
+        html = html.replace(`~P${matchesPerRound + i}~`, sortedPlayers[matchesPerRound + i - 1] || 'Bye');
         i++;
     }
 
@@ -474,6 +478,7 @@ function generateTournamentSummary() {
     const lines = tempDIV.innerText.split('\n');
     let winCounts = {};
     let lossCounts = {};
+    let eloPoints = {};
 
     let tournamentSummary = '### Tournament Summary\n\n';
     tournamentSummary += `<div class="row text-center">\n`;
