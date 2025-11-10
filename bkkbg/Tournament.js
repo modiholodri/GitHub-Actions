@@ -222,7 +222,16 @@ function generateSiam(selectedPlayers) {
     const length = matchLengths[0] !== undefined ? matchLengths[0] : '5';
 
     let html = tournamentInfo();
-    html += '<h5>Siam Style</h5>\n';
+
+    // list the players
+    html += '<p>';
+    selectedPlayers.forEach((player, index) => {
+        // Ensure each item is a string
+        if (typeof player === "string" && player.trim() !== "") {
+            html += player + ' ';
+        }
+    });
+    html += '</p>\n';
 
     let reminder = 4 - numPlayers % 4;
     if (reminder === 4) reminder = 0;
@@ -266,13 +275,6 @@ function generateSiam(selectedPlayers) {
         html = html.replace(`~P${matchesPerRound + i}~`, players[playerOffset + i] || 'Bye');
         i++;
     }
-
-    // fill the rest with Byes
-    // while (i < numPlayersAndByes) {
-    //     html = html.replace(`~P${i + 1}~`, 'Bye');
-    //     html = html.replace(`~P${i + 1}~`, 'Bye');
-    //     i++;
-    // }
 
     setTournamentData(html);
     tournamentGenerated = true;
