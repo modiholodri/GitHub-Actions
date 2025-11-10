@@ -17,7 +17,7 @@ function generateTournament(selectedPlayers) {
         case 'Single Elimination':
             generateSingleElimination(selectedPlayers);
             break;
-        case 'Siam':
+        case 'Siam Style':
             generateSiam(selectedPlayers);
             break;
         default:
@@ -133,6 +133,7 @@ function beautifyTournament() {
 }
 
 function showTournament(tournamentHTML) {
+    if (!tournamentHTML) return;
     let lines = tournamentHTML.split('\n');
 
     // add tournament info
