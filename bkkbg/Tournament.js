@@ -8,7 +8,7 @@ function generateTournament(selectedPlayers) {
         case 'Double Elimination':
             generateDoubleElimination(selectedPlayers);
             break;
-        case 'Last Chance':
+        case 'Add Last Chance':
             generateSingleElimination(selectedPlayers, 'Last Chance');
             break;
         case 'Round Robin':
@@ -143,7 +143,7 @@ function showTournament(tournamentHTML) {
     groupsHTML += '<div class="row text-center">\n';
     let group = 0;
     for (let i = 1; i < lines.length; i++) {
-        if (lines[i].match(/(Round Robin)|(Siam Round)|(Main)|(Consolation)|(Final)|(Qualified)/)) {
+        if (lines[i].match(/(Round Robin)|(Siam Round)|(Main)|(Consolation)|(Final)|(Last Chance)|(Qualified)/)) {
             if (group > 0) { // close previous group
                 groupsHTML += `</div>\n</div>\n`;
             }
