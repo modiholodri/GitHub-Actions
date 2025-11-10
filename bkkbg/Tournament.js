@@ -946,8 +946,8 @@ function fetchLastTournament() {
 
 function highlightYourNameInTournament(tournamentHTML) {
     const yourName = document.getElementById('yourName').value.trim();
-    if (!yourName) {
-        return;
+    if (!yourName || yourName == '') {
+        return tournamentHTML;
     }
 
     // Use regex to match yourName as a whole word, case-insensitive
