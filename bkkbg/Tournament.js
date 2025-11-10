@@ -522,7 +522,7 @@ function generateTournamentSummary() {
         // count the wins and losses
         const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
         if (match) {
-            const length = match[2].trim();
+            const matchLength = match[2].trim();
 
             const winner = match[1].trim();
             const loser = match[3].trim();
@@ -540,17 +540,18 @@ function generateTournamentSummary() {
                 lossCounts[loser] = lossCounts[loser] + 1;
 
                 // Initialize ELO if not exists
-                eloPoints[winner] = eloPoints[winner] || 100.0;
-                eloPoints[loser] = eloPoints[loser] || 100.0;
+                eloPoints[winner] = eloPoints[winner] || initialRating;
+                eloPoints[loser] = eloPoints[loser] || initialRating;
 
                 // Calculate ELO changes
-                const k = length; // K-factor determines how much ratings change
-                const expectedWinner = 1 / (1 + Math.pow(10, (eloPoints[loser] - eloPoints[winner]) / 400));
-                const expectedLoser = 1 - expectedWinner;
+                const matchLengthRoot = Math.sqrt(matchLength);
+                const ratingPointsAtStake = 4 * matchLengthRoot;
+                const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(eloPoints[winner] - eloPoints[loser] ) * matchLengthRoot / 2000.0));
+                const ratingDifference = (1.0 - winningProbability) * ratingPointsAtStake;
 
                 // Update ELO ratings
-                eloPoints[winner] += k * (1 - expectedWinner);
-                eloPoints[loser] += k * (0 - expectedLoser);
+                eloPoints[winner] += ratingDifference;
+                eloPoints[loser] -= ratingDifference;
             }
         }
     });
