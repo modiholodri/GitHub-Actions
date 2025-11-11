@@ -143,7 +143,7 @@ function showTournament(tournamentHTML) {
     groupsHTML += '<div class="row text-center">\n';
     let group = 0;
     for (let i = 1; i < lines.length; i++) {
-        if (lines[i].match(/(Round Robin)|(Siam Round)|(Main)|(Consolation)|(Final)|(Last Chance)|(Qualified)/)) {
+        if (lines[i].match(/(Round Robin)|(Siam Round)|(Siam Additional)|(Main)|(Consolation)|(Final)|(Last Chance)|(Qualified)/)) {
             if (group > 0) { // close previous group
                 groupsHTML += `</div>\n</div>\n`;
             }
@@ -530,7 +530,6 @@ function generateTournamentSummary() {
         const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
         if (match) {
             const matchLength = match[2].trim();
-
             const winner = match[1].trim();
             const loser = match[3].trim();
 
@@ -581,6 +580,7 @@ var todaysMatches = [];
 // Get todays matches
 function highlightTodaysMatches() {
     const tournamentLines = tournamentData.split('\n');
+    var siamAdditionalLine = -1;
     for (var i = 0; i < todaysMatches.length; i++) {
         if (todaysMatches[i].length > 0) {
             const matchInfo = todaysMatches[i].split('|');
@@ -591,8 +591,15 @@ function highlightTodaysMatches() {
             const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) # - # (${winner}|${loser})\\b`, 'i');
             const doubleEliminationMatchRegex = new RegExp(`^(${winner}|${loser}) # (\\d+) # (${winner}|${loser})\\b`, 'i');
 
+            // var foundAdditionalMatch = true;
             for (var j = 0; j < tournamentLines.length; j++) {
-                if (tournamentLines[j][0] === '<') continue; // skip HTML tags - info and completed matches
+                if (tournamentLines[j][0] === '<') {
+                    // check if the line matches Siam Additional
+                    if (siamAdditionalLine == -1 && tournamentLines[j].match(/Siam Additional/)) {
+                        siamAdditionalLine = j;
+                    }
+                    continue; // skip HTML tags - info and completed matches
+                }
                 
                 if (tournamentLines[j].match(roundRobinMatchRegex)) { // Round Robin match
                     tournamentLines[j] = tournamentLines[j].replace(
@@ -623,9 +630,54 @@ function highlightTodaysMatches() {
                             tournamentLines[k] = tournamentLines[k].replace(/_/g, '#');
                         }
                     }
+
                     break; // Exit the inner loop once a match is found and replaced
                 }
             }
+        }
+    }
+
+    // figure out which additional matches have been played and add them to the tournament lines
+    // very ugly implementation!!!
+    if (siamAdditionalLine > -1) {
+        tournamentLines.splice(siamAdditionalLine + 2);
+
+        const today = new Date().toISOString().slice(0, 10);
+
+        var playedMatches = [];
+        for (let i = 0; i < tournamentLines.length; i++) {
+            if (tournamentLines[i].startsWith('<span')) {
+                let tempDIV = document.createElement('div');
+                tempDIV.innerHTML = tournamentLines[i];
+                const line = tempDIV.innerText;
+
+                const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
+                if (match) {
+                    const matchLength = match[2].trim();
+                    const winner = match[1].trim();
+                    const loser = match[3].trim();
+
+                    // ignore Byes and update ELO points
+                    if (winner !== 'Bye' && loser !== 'Bye') {
+                        playedMatches.push(`|${today}|${winner}|${loser}|${matchLength}|`);
+                    }
+                }
+            }
+        }
+
+        var additionalMatches = todaysMatches;
+        for(let i = 0; i < playedMatches.length; i++) {
+            const index = additionalMatches.indexOf(playedMatches[i]); // Find the index of the value
+            if (index !== -1) {
+                additionalMatches.splice(index, 1); // Remove 1 element at that index
+            }
+        }
+        for(let i = 0; i < additionalMatches.length; i++) {
+            const matchInfo = additionalMatches[i].split('|');
+            const winner = matchInfo[2];
+            const loser = matchInfo[3];
+            const matchLength = matchInfo[4];
+            tournamentLines.push(`<span style="color: green;">${winner}</span> &lt; ${matchLength} &gt; <span style="color: red;">${loser}</span><br>\n`);
         }
     }
 
