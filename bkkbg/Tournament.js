@@ -266,9 +266,8 @@ function generateSiam(selectedPlayers) {
     const round5 = generateSiamRound(5, round3.matchNumber, matchesPerRound, length, round4.matchNumber);
     html += round5.html;
 
-    // Generate Round 6
-    const round6 = generateSiamRound(6, round4.matchNumber, matchesPerRound, length, round5.matchNumber);
-    html += round6.html;
+    // Add the heading for additional matches
+    html += `<h5>Siam Additional - X points</h5>\n`;
 
     // const players = fisherYatesShuffle(selectedPlayers);
 
