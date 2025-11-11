@@ -672,9 +672,14 @@ function resolveByes() {
 }
 
 function make8PlayersDoubleElimination() {
-    let html = '<h5>Double Elimination</h5>\n';
+    // get the match lengths
+    const matchLengths = document.getElementById('matchLengths').value.split(/\s+/);
+    const mainMatchLength = matchLengths[0] || '5';
+    const consolationMatchLength = matchLengths[1] || mainMatchLength - 2;
+
+    let html = `<h5>Double Elimination</h5>\n`;
     // Main Bracket
-    html += '<h5>Main - 5 points</h5>\n';
+    html += `<h5>Main - ${mainMatchLength} points</h5>\n`;
     html += `<p>\n`;
     html += `~P1~ # 1 # ~P8~<br>\n`;
     html += `~P4~ # 2 # ~P5~<br>\n`;
@@ -687,7 +692,7 @@ function make8PlayersDoubleElimination() {
     html += `~W7~ _ 11 _ ~W8~<br>\n`;
     html += `</p>\n`;
     // Consolation Bracket
-    html += '<h5>Consolation - 3 points</h5>\n';
+    html += `<h5>Consolation - ${consolationMatchLength} points</h5>\n`;
     html += `<p>\n`;
     html += `~L1~ _ 5 _ ~L2~<br>\n`;
     html += `~L3~ _ 6 _ ~L4~<br>\n`;
@@ -700,17 +705,23 @@ function make8PlayersDoubleElimination() {
     html += `~L11~ _ 13 _ ~W12~<br>\n`;
     html += `</p>\n`;
     // Final
-    html += '<h5>Final - 5 points</h5>\n';
+    html += `<h5>Final - ${mainMatchLength} points</h5>\n`;
     html += `<p>\n`;
     html += `~W11~ _ 14 _ ~W13~<br>\n`;
     html += `</p>\n`;
+
     return html;
 }
 
 function make16PlayersDoubleElimination() {
-    let html = '<h5>Double Elimination</h5>\n';
+    // get the match lengths
+    const matchLengths = document.getElementById('matchLengths').value.split(/\s+/);
+    const mainMatchLength = matchLengths[0] || '5';
+    const consolationMatchLength = matchLengths[1] || mainMatchLength - 2;
+
+    let html = `<h5>Double Elimination</h5>\n`;
     // Main Bracket
-    html += '<h5>Main - 5 points</h5>\n';
+    html += `<h5>Main - ${mainMatchLength} points</h5>\n`;
     html += `<p>\n`;
     html += `~P1~ # 1 # ~P16~<br>\n`;
     html += `~P8~ # 2 # ~P9~<br>\n`;
@@ -732,7 +743,7 @@ function make16PlayersDoubleElimination() {
     html += `~W21~ _ 25 _ ~W22~<br>\n`;
     html += `</p>\n`;
     // Consolation Bracket
-    html += '<h5>Consolation - 3 points</h5>\n';
+    html += `<h5>Consolation - ${consolationMatchLength} points</h5>\n`;
     html += `<p>\n`;
     html += `~L1~ _ 9 _ ~L2~<br>\n`;
     html += `~L3~ _ 10 _ ~L4~<br>\n`;
@@ -755,10 +766,11 @@ function make16PlayersDoubleElimination() {
     html += `~L27~ _ 29 _ ~W28~<br>\n`;
     html += `</p>\n`;
     // Final
-    html += '<h5>Final - 5 points</h5>\n';
+    html += `<h5>Final - ${mainMatchLength} points</h5>\n`;
     html += `<p>\n`;
     html += `~W25~ _ 30 _ ~W29~<br>\n`;
     html += `</p>\n`;
+
     return html;
 }
 
