@@ -138,6 +138,7 @@ function fetchMarkDownFromRepoSync(fileName, elementName) {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); // false for synchronous request
     xhr.setRequestHeader('Authorization', `token ${githubToken}`);
+    xhr.setRequestHeader('Content-Type', 'text/markdown');
     xhr.send(null);
 
     if (xhr.status === 200) {
@@ -159,7 +160,8 @@ function fetchMarkDownFromRepo(fileName, elementName) {
 
     const options = {
         headers: {
-            'Authorization': `token ${githubToken}`
+            'Authorization': `token ${githubToken}`,
+            'Content-Type': 'text/markdown',
         }
     };
 
@@ -191,7 +193,8 @@ function fetchMatchList() {
 
     const options = {
         headers: {
-            'Authorization': `token ${githubToken}`
+            'Authorization': `token ${githubToken}`,
+            'Content-Type': 'text/markdown',
         }
     };
 

@@ -958,7 +958,7 @@ async function uploadTournament() {
             method: 'POST',
             headers: {
                 'Authorization': `token ${githubToken}`,
-                'Content-Type': 'application/json',
+                'Content-Type': 'text/html',
                 'Accept': 'application/vnd.github.v3+json',
             },
             body: JSON.stringify({ 
@@ -987,7 +987,8 @@ function fetchLastTournament() {
 
     const options = {
         headers: {
-            'Authorization': `token ${githubToken}`
+            'Authorization': `token ${githubToken}`,
+            'Content-Type': 'text/html',
         }
     };
 
