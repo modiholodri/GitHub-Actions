@@ -201,12 +201,12 @@ function generateSiamRound(roundNumber, startMatch, matchesPerRound, length, mat
     
     // Winner bracket matches
     for (let i = startMatch; i <= startMatch + matchesPerRound - 1; i += 2) {
-        html += `~W${i}~ # ${matchNumber++} # ~W${i + 1}~<br>\n`;
+        html += `~W${i}~ _ ${matchNumber++} _ ~W${i + 1}~<br>\n`;
     }
     
     // Loser bracket matches
     for (let i = startMatch; i <= startMatch + matchesPerRound - 1; i += 2) {
-        html += `~L${i}~ # ${matchNumber++} # ~L${i + 1}~<br>\n`;
+        html += `~L${i}~ _ ${matchNumber++} _ ~L${i + 1}~<br>\n`;
     }
     
     return { html, matchNumber };
