@@ -391,9 +391,12 @@ function generateWinsSortedTable(winCounts, lossCounts, eloPoints) {
 }
 
 function generateLossesSortedTable(winCounts, lossCounts, eloPoints) {
-    // Convert to array and sort by losses ascending
+    // Convert to array and sort by losses ascending, then by wins descending
     const sorted = Object.entries(lossCounts)
-        .sort((a, b) => a[1] - b[1]);
+        .sort((a, b) => {
+            if (a[1] !== b[1]) return a[1] - b[1]; // Sort by losses ascending
+            return (winCounts[b[0]] || 0) - (winCounts[a[0]] || 0); // Then by wins descending
+        });
 
     let ranking = [];
     let currentRank = 1;
