@@ -365,7 +365,7 @@ function generateRoundRobinTournament(groupName, selectedPlayers, length) {
     return html;
 }
 
-function generateWinsTable(winCounts) {
+function generateWinsSortedTable(winCounts, lossCounts, eloPoints) {
     // Convert to array and sort by wins descending
     const sorted = Object.entries(winCounts)
         .sort((a, b) => b[1] - a[1]);
@@ -384,7 +384,7 @@ function generateWinsTable(winCounts) {
     }
 
     // Build the ranking table
-    let rankingTable = '|Rank|   |Wins|\n|:---:|:---:|:---:|\n';
+    let rankingTable = '|#|   |Wins|\n|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
         rankingTable += `|${row.rank}|${row.name}|${row.wins}|\n`;
     });
@@ -392,7 +392,7 @@ function generateWinsTable(winCounts) {
     return rankingTable;
 }
 
-function generateLossesTable(lossCounts) {
+function generateLossesSortedTable(winCounts, lossCounts, eloPoints) {
     // Convert to array and sort by losses ascending
     const sorted = Object.entries(lossCounts)
         .sort((a, b) => a[1] - b[1]);
@@ -411,7 +411,7 @@ function generateLossesTable(lossCounts) {
     }
 
     // Build the ranking table
-    let rankingTable = '|Rank|   |Losses|\n|:---:|:---:|:---:|\n';
+    let rankingTable = '|#|   |Losses|\n|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
         if (row.losses < 2) {
             rankingTable += `|${row.rank}|${row.name}|${row.losses}|\n`;
@@ -424,7 +424,7 @@ function generateLossesTable(lossCounts) {
     return rankingTable;
 }
 
-function generateWinsLossesEloTable(winCounts, lossCounts, eloPoints) {
+function generateEloSortedTable(winCounts, lossCounts, eloPoints) {
     // Merge players from both counts
     const players = Array.from(new Set([
         ...Object.keys(winCounts || {}),
@@ -436,7 +436,7 @@ function generateWinsLossesEloTable(winCounts, lossCounts, eloPoints) {
         name,
         wins: winCounts[name] || 0,
         losses: lossCounts[name] || 0,
-        elo: eloPoints[name] || 100
+        elo: eloPoints[name] || initialRating
     })).sort((a, b) => {
         if (b.elo !== a.elo) return b.elo - a.elo;             // higher ELO first
         if (b.wins !== a.wins) return b.wins - a.wins;          // more wins first
@@ -496,27 +496,29 @@ function generateTournamentSummary() {
         const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Last Chance)/);
         if(winsTournament) {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
-                tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
+                tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
             }
             else if (showLossesNext && Object.keys(lossCounts).length > 0) {
-                tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
+                tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
             }
             winCounts = {};
             lossCounts = {};
+            eloPoints = {};
             showWinsNext = true;
             showLossesNext = false;
             tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${winsTournament[0]}\n\n`;
         }
-        const lossesTournament = line.match(/(Double Elimination)|(Triple Elimination)/);
+        const lossesTournament = line.match(/Double Elimination/);
         if(lossesTournament) {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
-                tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
+                tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
             }
             else if (showLossesNext && Object.keys(lossCounts).length > 0) {
-                tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
+                tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
             }
             winCounts = {};
             lossCounts = {};
+            eloPoints = {};
             showWinsNext = false;
             showLossesNext = true;
             tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${lossesTournament[0]}\n`;
@@ -531,7 +533,7 @@ function generateTournamentSummary() {
 
             // ignore Byes and update ELO points
             if (winner !== 'Bye' && loser !== 'Bye') {
-                // Initialize ELO points if not exist
+                // Initialize win/loss counts if not exist
                 winCounts[winner] = winCounts[winner] || 0;
                 winCounts[loser] = winCounts[loser] || 0;
                 lossCounts[winner] = lossCounts[winner] || 0;
@@ -541,7 +543,7 @@ function generateTournamentSummary() {
                 winCounts[winner] = winCounts[winner] + 1;
                 lossCounts[loser] = lossCounts[loser] + 1;
 
-                // Initialize ELO if not exists
+                // Initialize ELO points if not exists
                 eloPoints[winner] = eloPoints[winner] || initialRating;
                 eloPoints[loser] = eloPoints[loser] || initialRating;
 
@@ -560,13 +562,13 @@ function generateTournamentSummary() {
 
     // show the rest
     if (showWinsLossesNext) {
-        tournamentSummary += generateWinsLossesEloTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
+        tournamentSummary += generateEloSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
     if (showWinsNext && Object.keys(winCounts).length > 0) {
-        tournamentSummary += generateWinsTable(winCounts) + `\n</div>\n`;
+        tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
     else if (showLossesNext && Object.keys(lossCounts).length > 0) {
-        tournamentSummary += generateLossesTable(lossCounts) + `\n</div>\n`;
+        tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
 
     summaryDiv.innerHTML = marked.parse(tournamentSummary);
