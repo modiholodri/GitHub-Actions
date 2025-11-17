@@ -265,8 +265,6 @@ function generateSiam(selectedPlayers) {
     // Add the heading for additional matches
     html += `<h5>Siam Additional - X points</h5>\n`;
 
-    // const players = fisherYatesShuffle(selectedPlayers);
-
     // fill in the players
     let i = 1;
     const playerOffset = Math.ceil(numPlayers / 2);
@@ -476,8 +474,7 @@ function generateTournamentSummary() {
     let lossCounts = {};
     let eloPoints = {};
 
-    let tournamentSummary = '### Tournament Summary\n\n';
-    tournamentSummary += `<div class="row text-center">\n`;
+    tournamentSummary = `<div class="row text-center">\n`;
     
     let showWinsNext = false;
     let showLossesNext = false;
@@ -490,7 +487,7 @@ function generateTournamentSummary() {
             lossCounts = {};
             eloPoints = {};
             showWinsLossesNext = true;
-            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${siamTournament[0]}\n`;
+            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${siamTournament[0]} Summary\n`;
         }
 
         const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Last Chance)/);
@@ -506,7 +503,7 @@ function generateTournamentSummary() {
             eloPoints = {};
             showWinsNext = true;
             showLossesNext = false;
-            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${winsTournament[0]}\n\n`;
+            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${winsTournament[0]} Summary\n\n`;
         }
         const lossesTournament = line.match(/Double Elimination/);
         if(lossesTournament) {
@@ -521,7 +518,7 @@ function generateTournamentSummary() {
             eloPoints = {};
             showWinsNext = false;
             showLossesNext = true;
-            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${lossesTournament[0]}\n`;
+            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${lossesTournament[0]} Summary\n`;
         }
 
         // count the wins and losses
