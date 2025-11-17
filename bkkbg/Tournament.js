@@ -262,10 +262,6 @@ function generateSiam(selectedPlayers) {
     const round4 = generateSiamRound(4, round2.matchNumber, matchesPerRound, length, round3.matchNumber);
     html += round4.html;
 
-    // Generate Round 5
-    const round5 = generateSiamRound(5, round3.matchNumber, matchesPerRound, length, round4.matchNumber);
-    html += round5.html;
-
     // Add the heading for additional matches
     html += `<h5>Siam Additional - X points</h5>\n`;
 
