@@ -384,9 +384,9 @@ function generateWinsSortedTable(winCounts, lossCounts, eloPoints) {
     }
 
     // Build the ranking table
-    let rankingTable = '|#|   |Wins|\n|:---:|:---:|:---:|\n';
+    let rankingTable = '|#|Name|W|L|Elo|\n|:---:|:---:|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
-        rankingTable += `|${row.rank}|${row.name}|${row.wins}|\n`;
+        rankingTable += `|${row.rank}|${row.name}|${row.wins}|${lossCounts[row.name]}|${Math.round(eloPoints[row.name] * 10) / 10}|\n`;
     });
 
     return rankingTable;
