@@ -411,13 +411,13 @@ function generateLossesSortedTable(winCounts, lossCounts, eloPoints) {
     }
 
     // Build the ranking table
-    let rankingTable = '|#|   |Losses|\n|:---:|:---:|:---:|\n';
+    let rankingTable = '|#|Name|L|W|Elo|\n|:---:|:---:|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
         if (row.losses < 2) {
-            rankingTable += `|${row.rank}|${row.name}|${row.losses}|\n`;
+            rankingTable += `|${row.rank}|${row.name}|${row.losses}|${winCounts[row.name]}|${Math.round(eloPoints[row.name] * 10) / 10}|\n`;
         }
         else {
-            rankingTable += `|${row.rank}|~${row.name}~|${row.losses}|\n`;
+            rankingTable += `|${row.rank}|~${row.name}~|${row.losses}|${winCounts[row.name]}|${Math.round(eloPoints[row.name] * 10) / 10}|\n`;
         }
     });
 
@@ -456,12 +456,12 @@ function generateEloSortedTable(winCounts, lossCounts, eloPoints) {
     }
 
     // Build markdown table
-    let table = '|#|Name|W|L|Elo|\n|:---:|:---:|:---:|:---:|:---:|\n';
+    let rankingTable = '|#|Name|W|L|Elo|\n|:---:|:---:|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
-        table += `|${row.rank}|${row.name}|${row.wins}|${row.losses}|${Math.round(row.elo * 10) / 10}\n`;
+        rankingTable += `|${row.rank}|${row.name}|${row.wins}|${row.losses}|${Math.round(row.elo * 10) / 10}|\n`;
     });
 
-    return table;
+    return rankingTable;
 }
 
 
