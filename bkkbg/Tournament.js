@@ -848,10 +848,8 @@ function autoMode() {
         if (activeMatch && activeMatch.player1 && activeMatch.player2) {
             const matchLength = document.getElementById('matchLengths').value.split(/\s+/)[0] || '5';
             
-            // if we have two players, use their names
-            const count = (parseInt(btn.dataset.counter, 10) || 0);
-            // swap players for odd counts so the later unconditional assignments pick the swapped names
-            if (count % 2 !== 0) {
+            // swap players randomly and let the luckiest bastard win
+            if (generator.random() > 0.5) {
                 const _tmp = activeMatch.player1;
                 activeMatch.player1 = activeMatch.player2;
                 activeMatch.player2 = _tmp;
@@ -1067,7 +1065,7 @@ const generator = new LCG(Date.now()); // Initialize with current time as seed
 function fisherYatesShuffle(arr) {
     let n = arr.length;
     for (let i = n - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1)); // Random index from 0 to i
+        let j = Math.floor(generator.random() * (i + 1)); // Random index from 0 to i
         [arr[i], arr[j]] = [arr[j], arr[i]]; // Swap elements
     }
     return arr;
