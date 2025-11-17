@@ -143,7 +143,7 @@ function showTournament(tournamentHTML) {
     groupsHTML += '<div class="row text-center">\n';
     let group = 0;
     for (let i = 1; i < lines.length; i++) {
-        if (lines[i].match(/(Round Robin)|(Siam Round)|(Siam Additional)|(Main)|(Consolation)|(Final)|(Last Chance)|(Qualified)/)) {
+        if (lines[i].match(/(Round Robin)|(Siam Round)|(Siam Additional)|(Main)|(Consolation)|(Last Chance)|(Single)/)) {
             if (group > 0) { // close previous group
                 groupsHTML += `</div>\n</div>\n`;
             }
@@ -844,6 +844,14 @@ function autoMode() {
     // periodic task executed every second while auto mode is active
     try {
         const activeMatch = extractFirstActiveMatchPlayers();
+
+        if (!activeMatch) {
+            // stop auto mode
+            clearInterval(autoModeIntervalId);
+            autoModeIntervalId = null;
+            autoModeButton.dataset.autostate = 'off';
+            autoModeButton.classList.remove('active');
+        }
 
         if (activeMatch && activeMatch.player1 && activeMatch.player2) {
             const matchLength = document.getElementById('matchLengths').value.split(/\s+/)[0] || '5';
