@@ -477,6 +477,45 @@ function generateEloSortedTable(winCounts, lossCounts, eloPoints) {
 }
 
 
+function replayMatchesXTimes(times, playedMatches, eloPoints) {
+    const elo = Object.assign({}, eloPoints || {});
+
+    for (let t = 0; t < times; t++) {
+        for (const rec of playedMatches) {
+            if (!rec) continue;
+
+            const match = rec.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
+            if (match) {
+                const matchLength = match[2].trim();
+                const winner = match[1].trim();
+                const loser = match[3].trim();
+
+                // ignore Byes and update ELO points
+                if (winner !== 'Bye' && loser !== 'Bye') {
+
+                    // if (!Number.isFinite(matchLength) || matchLength <= 0) matchLength = 5;
+
+                    // if (!winner || !loser || winner === 'Bye' || loser === 'Bye') continue;
+
+                    elo[winner] = elo[winner] || initialRating;
+                    elo[loser] = elo[loser] || initialRating;
+
+                    const matchLengthRoot = Math.sqrt(matchLength);
+                    const ratingPointsAtStake = 8 * matchLengthRoot;  // should be only 4
+                    const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(elo[winner] - elo[loser]) * matchLengthRoot / 2000.0));
+                    const ratingDifference = (1.0 - winningProbability) * ratingPointsAtStake;
+
+                    elo[winner] += ratingDifference;
+                    elo[loser] -= ratingDifference;
+                }
+            }
+        }
+    }
+
+    return elo;
+}
+
+
 function generateTournamentSummary() {
     let tempDIV = document.createElement('div');
     tempDIV.innerHTML = tournamentData;
@@ -485,11 +524,13 @@ function generateTournamentSummary() {
     let lossCounts = {};
     let eloPoints = {};
 
+    let playedMatches = [];
+
     let tournamentSummary = `\n`;
     
     let showWinsNext = false;
     let showLossesNext = false;
-    let showWinsLossesNext = false;
+    let showEloNext = false;
     lines.forEach(line => {
         // generate the headings
         const siamTournament = line.match(/Siam Style/);
@@ -497,21 +538,25 @@ function generateTournamentSummary() {
             winCounts = {};
             lossCounts = {};
             eloPoints = {};
-            showWinsLossesNext = true;
+            playedMatches = [];
+            showEloNext = true;
             tournamentSummary += `\n\n##### ${siamTournament[0]} Summary\n`;
         }
 
         const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Last Chance)/);
         if(winsTournament) {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
+                eloPoints = replayMatchesXTimes(17, playedMatches, eloPoints);
                 tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n\n`;
             }
             else if (showLossesNext && Object.keys(lossCounts).length > 0) {
+                eloPoints = replayMatchesXTimes(17, playedMatches, eloPoints);
                 tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n\n`;
             }
             winCounts = {};
             lossCounts = {};
             eloPoints = {};
+            playedMatches = [];
             showWinsNext = true;
             showLossesNext = false;
             tournamentSummary += `\n\n##### ${winsTournament[0]} Summary\n\n`;
@@ -519,14 +564,17 @@ function generateTournamentSummary() {
         const lossesTournament = line.match(/Double Elimination/);
         if(lossesTournament) {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
+                eloPoints = replayMatchesXTimes(17, playedMatches, eloPoints);
                 tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n\n`;
             }
             else if (showLossesNext && Object.keys(lossCounts).length > 0) {
+                eloPoints = replayMatchesXTimes(17, playedMatches, eloPoints);
                 tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n\n`;
             }
             winCounts = {};
             lossCounts = {};
             eloPoints = {};
+            playedMatches = [];
             showWinsNext = false;
             showLossesNext = true;
             tournamentSummary += `\n\n##### ${lossesTournament[0]} Summary\n`;
@@ -535,6 +583,8 @@ function generateTournamentSummary() {
         // count the wins and losses
         const match = line.match(/^\s*(.+?)\s*<\s*(\d+)\s*>\s*(.+)\s*$/);
         if (match) {
+            playedMatches.push(line);
+
             const matchLength = match[2].trim();
             const winner = match[1].trim();
             const loser = match[3].trim();
@@ -569,13 +619,16 @@ function generateTournamentSummary() {
     });
 
     // show the rest
-    if (showWinsLossesNext) {
+    if (showEloNext) {
+        eloPoints = replayMatchesXTimes(17, playedMatches, eloPoints);
         tournamentSummary += generateEloSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
     if (showWinsNext && Object.keys(winCounts).length > 0) {
+        eloPoints = replayMatchesXTimes(17, playedMatches, eloPoints);
         tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
     else if (showLossesNext && Object.keys(lossCounts).length > 0) {
+        eloPoints = replayMatchesXTimes(17, playedMatches, eloPoints);
         tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
 
