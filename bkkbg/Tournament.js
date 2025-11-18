@@ -27,9 +27,11 @@ function generateTournament(selectedPlayers) {
     resolveByes();
     if (document.getElementById('debugMode').value === 'Fake') {
         highlightTodaysMatches(); // only add it again when debugging
-        generateTournamentSummary();
+        beautifyTournament();
     }
-    beautifyTournament();
+    else {
+        beautifyTournament();
+    }
 }
 
 function tournamentInfo() {
@@ -129,10 +131,12 @@ function beautifyTournament() {
     }
 
     tournamentHTML = highlightYourNameInTournament(tournamentHTML);
-    showTournament(tournamentHTML);
+    const tournamentSummaryHTML = generateTournamentSummary();
+
+    showTournament(tournamentHTML, tournamentSummaryHTML);
 }
 
-function showTournament(tournamentHTML) {
+function showTournament(tournamentHTML, tournamentSummaryHTML) {
     if (!tournamentHTML) return;
     let lines = tournamentHTML.split('\n');
 
@@ -141,6 +145,7 @@ function showTournament(tournamentHTML) {
 
     // make the different groups/columns
     groupsHTML += '<div class="row text-center">\n';
+
     let group = 0;
     for (let i = 1; i < lines.length; i++) {
         if (lines[i].match(/(Round Robin)|(Siam Round)|(Siam Additional)|(Main)|(Consolation)|(Last Chance)|(Single)/)) {
@@ -152,10 +157,15 @@ function showTournament(tournamentHTML) {
         }
         groupsHTML += lines[i] + '\n';
     }
-    groupsHTML += `</div>\n</div>\n`; // close last group
+    groupsHTML += `</div>\n`; // close last group 
+
+    groupsHTML += `</div>\n`; // close the row
+
+    group++;
+    groupsHTML += `<div class="col-lg-4">\n<div id="group${group}" class="tournament">${tournamentSummaryHTML}\n</div>\n</div>\n`;  // add the tournament summary
 
     document.getElementById('tournament').innerHTML = groupsHTML;
-    document.getElementById('tournamentSummary').innerHTML = '';
+    // document.getElementById('tournamentSummary').innerHTML = '';
 }
 
 function setTournamentData(data) {
@@ -477,7 +487,7 @@ function generateTournamentSummary() {
     let lossCounts = {};
     let eloPoints = {};
 
-    tournamentSummary = `<div class="row text-center">\n`;
+    let tournamentSummary = `\n`;
     
     let showWinsNext = false;
     let showLossesNext = false;
@@ -490,38 +500,38 @@ function generateTournamentSummary() {
             lossCounts = {};
             eloPoints = {};
             showWinsLossesNext = true;
-            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${siamTournament[0]} Summary\n`;
+            tournamentSummary += `\n\n##### ${siamTournament[0]} Summary\n`;
         }
 
         const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Last Chance)/);
         if(winsTournament) {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
-                tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
+                tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n\n`;
             }
             else if (showLossesNext && Object.keys(lossCounts).length > 0) {
-                tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
+                tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n\n`;
             }
             winCounts = {};
             lossCounts = {};
             eloPoints = {};
             showWinsNext = true;
             showLossesNext = false;
-            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${winsTournament[0]} Summary\n\n`;
+            tournamentSummary += `\n\n##### ${winsTournament[0]} Summary\n\n`;
         }
         const lossesTournament = line.match(/Double Elimination/);
         if(lossesTournament) {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
-                tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
+                tournamentSummary += generateWinsSortedTable(winCounts, lossCounts, eloPoints) + `\n\n`;
             }
             else if (showLossesNext && Object.keys(lossCounts).length > 0) {
-                tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
+                tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n\n`;
             }
             winCounts = {};
             lossCounts = {};
             eloPoints = {};
             showWinsNext = false;
             showLossesNext = true;
-            tournamentSummary += `\n<div class="col-lg-4">\n\n##### ${lossesTournament[0]} Summary\n`;
+            tournamentSummary += `\n\n##### ${lossesTournament[0]} Summary\n`;
         }
 
         // count the wins and losses
@@ -571,7 +581,9 @@ function generateTournamentSummary() {
         tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
 
-    summaryDiv.innerHTML = marked.parse(tournamentSummary);
+    const tournamentSummaryHTML = marked.parse(tournamentSummary);
+    
+    return tournamentSummaryHTML;
 }
 
 var todaysMatches = [];
@@ -874,10 +886,10 @@ function autoMode() {
 
             setSubmissionStatus(`Auto match...\n ${autoMatch}`);
             matchRecords.push(autoMatch);
+
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
             beautifyTournament();
-            generateTournamentSummary();
         }
         
         // initialize counter on first run
@@ -1002,10 +1014,10 @@ function fetchLastTournament() {
         if (data.content) {
             const fileContent = decodeURIComponent(window.atob( data.content ));
             setTournamentData(fileContent.replace(/\\n/g, '\n'));
+
             getTodaysMatches(matchRecords);
             highlightTodaysMatches();
             beautifyTournament();
-            generateTournamentSummary();
         } else {
             console.log('Failed to fetch Last Tournament!');
         }
