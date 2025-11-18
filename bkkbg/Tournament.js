@@ -148,7 +148,7 @@ function showTournament(tournamentHTML, tournamentSummaryHTML) {
 
     let group = 0;
     for (let i = 1; i < lines.length; i++) {
-        if (lines[i].match(/(Round Robin)|(Siam Round)|(Siam Additional)|(Main)|(Consolation)|(Last Chance)|(Single)/)) {
+        if (lines[i].match(/(Round Robin)|(Siam Round)|(Main)|(Consolation)|(Last Chance)|(Single)/)) {
             if (group > 0) { // close previous group
                 groupsHTML += `</div>\n</div>\n`;
             }
@@ -207,18 +207,16 @@ function generateDoubleElimination(selectedPlayers) {
 }
 
 function generateSiamRound(roundNumber, startMatch, matchesPerRound, length, matchNumber) {
-    let html = `<h5>Siam Round ${roundNumber} - ${length} points</h5>\n`;
-    
+    let html = `<p>\n`;
     // Winner bracket matches
     for (let i = startMatch; i <= startMatch + matchesPerRound - 1; i += 2) {
         html += `~W${i}~ _ ${matchNumber++} _ ~W${i + 1}~<br>\n`;
     }
-    
     // Loser bracket matches
     for (let i = startMatch; i <= startMatch + matchesPerRound - 1; i += 2) {
         html += `~L${i}~ _ ${matchNumber++} _ ~L${i + 1}~<br>\n`;
     }
-    
+    html += `</p>\n`;
     return { html, matchNumber };
 }
 
@@ -254,11 +252,13 @@ function generateSiam(selectedPlayers) {
     const matchesPerRound = Math.round(numPlayersAndByes / 2);
 
     // Round 1 
-    html += `<h5>Siam Round 1 - ${length} points</h5>\n`;
+    html += `<h5>Siam Rounds 1,2,3 - ${length} points</h5>\n`;
+    html += `<p>\n`;
     let matchNumber = 1;
     for (let i = 1; i <= matchesPerRound; i++) {
         html += `~P${i}~ # ${matchNumber++} # ~P${i + matchesPerRound}~<br>\n`;
     }
+    html += `</p>\n`;
 
     // Generate Round 2
     const round2 = generateSiamRound(2, 1, matchesPerRound, length, matchNumber);
@@ -267,6 +267,8 @@ function generateSiam(selectedPlayers) {
     // Generate Round 3
     const round3 = generateSiamRound(3, matchNumber, matchesPerRound, length, round2.matchNumber);
     html += round3.html;
+
+    html += `<h5>Siam Round 4 - ${length} points</h5>\n`;
 
     // Generate Round 4
     const round4 = generateSiamRound(4, round2.matchNumber, matchesPerRound, length, round3.matchNumber);
