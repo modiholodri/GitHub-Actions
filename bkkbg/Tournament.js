@@ -157,15 +157,14 @@ function showTournament(tournamentHTML, tournamentSummaryHTML) {
         }
         groupsHTML += lines[i] + '\n';
     }
-    groupsHTML += `</div>\n`; // close last group 
-
-    groupsHTML += `</div>\n`; // close the row
+    groupsHTML += `</div>\n</div>\n`; // close last group 
 
     group++;
     groupsHTML += `<div class="col-lg-4">\n<div id="group${group}" class="tournament">${tournamentSummaryHTML}\n</div>\n</div>\n`;  // add the tournament summary
 
+    groupsHTML += `</div>\n`;  // close the row
+
     document.getElementById('tournament').innerHTML = groupsHTML;
-    // document.getElementById('tournamentSummary').innerHTML = '';
 }
 
 function setTournamentData(data) {
@@ -479,9 +478,6 @@ function generateEloSortedTable(winCounts, lossCounts, eloPoints) {
 
 
 function generateTournamentSummary() {
-    const summaryDiv = document.getElementById('tournamentSummary');
-    if (!summaryDiv) return;
-
     let tempDIV = document.createElement('div');
     tempDIV.innerHTML = tournamentData;
     const lines = tempDIV.innerText.split('\n');
