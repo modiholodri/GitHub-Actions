@@ -107,7 +107,7 @@
                         <option class="centered" value="Siam Style">Siam Style</option>
                         <option class="centered" value="Single Elimination">Single Elimination</option>
                     </select>
-                    <button id="autoModeButton" type="button" class="btn btn-secondary" style="display:none;" title="Auto">Auto</button>
+                    <button id="autoModeButton" type="button" class="btn btn-secondary" style="display:none;" title="Auto/Fake Button">Fake</button>
                 </div>
                 <div class="input-group">
                     <button id="generateTournamentButton" type="button" title="Generate Tournament" class="btn btn-primary">Generate</button>
@@ -469,6 +469,83 @@
     
     <!-- Events -->
     <script>
+        // Auto-refresh when #debugMode contains "Auto" (case-insensitive, substring match)
+        let autoRefreshIntervalId = null;
+
+        function updateAutoRefresh() {
+            const debugInput = document.getElementById('debugMode');
+            if (!debugInput) return;
+
+            const isAuto = debugInput.value && debugInput.value.toString().toLowerCase().includes('auto');
+
+            if (isAuto && autoRefreshIntervalId === null) {
+                // start refreshing every 17 seconds
+                autoRefreshIntervalId = setInterval(() => {
+                    try { 
+                        displayAutoRefreshCountdown(); // Call the countdown function here
+                        function displayAutoRefreshCountdown() {
+                            const debugInput = document.getElementById('debugMode');
+                            if (!debugInput) return;
+
+                            const countdownElement = document.getElementById('autoModeButton') || createCountdownElement();
+                            countdownElement.style.display = '';
+                            let countdown = 17;
+                            const countdownInterval = setInterval(() => {
+                                countdown--;
+                                countdownElement.textContent = `in ${-countdown}s`;
+                                
+                                if (countdown <= 0) {
+                                    clearInterval(countdownInterval);
+                                    countdown = 17;
+                                    // do the actual refreshing
+                                    countdownElement.textContent = `Refreshing`;
+                                    fetchMatchList();
+                                    getTodaysMatches(matchRecords);
+                                    highlightTodaysMatches();
+                                    beautifyTournament();
+                                }
+                            }, 1000);
+                        }
+
+                        function createCountdownElement() {
+                            const element = document.createElement('div');
+                            element.id = 'autoRefreshCountdown';
+                            element.style.cssText = 'position: fixed; top: 10px; right: 10px; padding: 10px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 5px; font-size: 12px;';
+                            document.body.appendChild(element);
+                            return element;
+                        }
+
+                        // location.reload(); 
+                    } 
+                    catch (e) { 
+                        /* ignore */ 
+                    }
+                }, 17000);
+            } else if (!isAuto && autoRefreshIntervalId !== null) {
+                // stop auto-refresh
+                clearInterval(autoRefreshIntervalId);
+                autoRefreshIntervalId = null;
+            }
+        }
+
+        // Wire up listeners on the debug input to toggle auto-refresh immediately on change
+        const debugInputElement = document.getElementById('debugMode');
+        if (debugInputElement) {
+            debugInputElement.addEventListener('input', updateAutoRefresh);
+            debugInputElement.addEventListener('change', updateAutoRefresh);
+            // initialize based on current value
+            updateAutoRefresh();
+        }
+
+        // Ensure interval is cleared when navigating away
+        window.addEventListener('beforeunload', () => {
+            if (autoRefreshIntervalId !== null) {
+                clearInterval(autoRefreshIntervalId);
+                autoRefreshIntervalId = null;
+            }
+        });
+
+
         // Add DOM Content Loaded Event Listener
         document.addEventListener("DOMContentLoaded", () => {
             populateClubSelection(); // has to be done first so that the settings can be loaded correctly
@@ -477,7 +554,7 @@
             const debugInput = document.getElementById('debugMode');
             const autoBtn = document.getElementById('autoModeButton');
             if (!debugInput || !autoBtn) return;
-            const update = () => { autoBtn.style.display = debugInput.value === 'Fake' ? '' : 'none'; };
+            const update = () => { autoBtn.style.display = debugInput.value === 'Fake' || debugInput.value === 'Auto' ? '' : 'none'; };
             debugInput.addEventListener('input', update);
             debugInput.addEventListener('change', update);
             update();

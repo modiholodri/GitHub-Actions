@@ -218,5 +218,5 @@ function fetchMatchList() {
     })
     .catch(error => console.error('Error:', error));
 
-    rankingListSelectionChanged();
+    // rankingListSelectionChanged();
 }

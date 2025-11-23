@@ -946,7 +946,7 @@ function autoMode() {
             // observe the button so we can restore its label when auto mode is disabled
             const observer = new MutationObserver(() => {
             if (btn.dataset.autostate === 'off' || !btn.classList.contains('active')) {
-                btn.textContent = 'Auto';
+                btn.textContent = 'Fake';
                 delete btn.dataset.counter;
                 observer.disconnect();
             }
