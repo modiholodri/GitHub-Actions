@@ -468,9 +468,10 @@ function generateEloSortedTable(winCounts, lossCounts, eloPoints) {
     }
 
     // Build markdown table
-    let rankingTable = '|#|Name|W|L|Elo|\n|:---:|:---:|:---:|:---:|:---:|\n';
+    let rankingTable = '|#|Name|W|L|%W|Elo|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
-        rankingTable += `|${row.rank}|${row.name}|${row.wins}|${row.losses}|${Math.round(row.elo * 10) / 10}|\n`;
+        const percentWon = Math.round((row.wins*1000)/(row.wins+row.losses))/10;
+        rankingTable += `|${row.rank}|${row.name}|${row.wins}|${row.losses}|${percentWon}|${Math.round(row.elo * 10) / 10}|\n`;
     });
 
     return rankingTable;
@@ -492,11 +493,6 @@ function replayMatchesXTimes(times, playedMatches, eloPoints) {
 
                 // ignore Byes and update ELO points
                 if (winner !== 'Bye' && loser !== 'Bye') {
-
-                    // if (!Number.isFinite(matchLength) || matchLength <= 0) matchLength = 5;
-
-                    // if (!winner || !loser || winner === 'Bye' || loser === 'Bye') continue;
-
                     elo[winner] = elo[winner] || initialRating;
                     elo[loser] = elo[loser] || initialRating;
 
