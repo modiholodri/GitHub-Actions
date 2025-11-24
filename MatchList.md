@@ -241,3 +241,4 @@
 |2025-11-24|Hell|Sun|5|
 |2025-11-24|Moon|Master|17|
 |2025-11-24|Black|Beginner|17|
+|2025-11-24|Bastard|Hell|13|
