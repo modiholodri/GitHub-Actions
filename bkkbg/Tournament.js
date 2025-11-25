@@ -205,7 +205,7 @@ function generateDoubleElimination(selectedPlayers) {
     tournamentGenerated = true;
 }
 
-function generateSiamRound(roundNumber, startMatch, matchesPerRound, length, matchNumber) {
+function generateSiamRound(startMatch, matchesPerRound, matchNumber) {
     let html = `<p>\n`;
     // Winner bracket matches
     for (let i = startMatch; i <= startMatch + matchesPerRound - 1; i += 2) {
@@ -225,9 +225,6 @@ function generateSiam(selectedPlayers) {
         alert('Invalid number of players for Siam Style!\nMust be at least 3 players.');
         return;
     }
-
-    let matchLengths = getMatchLengths();
-    const length = matchLengths[0] !== undefined ? matchLengths[0] : '5';
 
     let html = tournamentInfo();
     
@@ -251,7 +248,7 @@ function generateSiam(selectedPlayers) {
     const matchesPerRound = Math.round(numPlayersAndByes / 2);
 
     // Round 1 
-    html += `<h5>Siam Rounds 1,2,3 - ${length} points</h5>\n`;
+    html += `<h5>Siam Rounds 1,2,3 - X points</h5>\n`;
     html += `<p>\n`;
     let matchNumber = 1;
     for (let i = 1; i <= matchesPerRound; i++) {
@@ -260,17 +257,17 @@ function generateSiam(selectedPlayers) {
     html += `</p>\n`;
 
     // Generate Round 2
-    const round2 = generateSiamRound(2, 1, matchesPerRound, length, matchNumber);
+    const round2 = generateSiamRound(1, matchesPerRound, matchNumber);
     html += round2.html;
 
     // Generate Round 3
-    const round3 = generateSiamRound(3, matchNumber, matchesPerRound, length, round2.matchNumber);
+    const round3 = generateSiamRound(matchNumber, matchesPerRound, round2.matchNumber);
     html += round3.html;
 
-    html += `<h5>Siam Round 4 - ${length} points</h5>\n`;
+    html += `<h5>Siam Round 4 - X points</h5>\n`;
 
     // Generate Round 4
-    const round4 = generateSiamRound(4, round2.matchNumber, matchesPerRound, length, round3.matchNumber);
+    const round4 = generateSiamRound(round2.matchNumber, matchesPerRound, round3.matchNumber);
     html += round4.html;
 
     // Add the heading for additional matches
