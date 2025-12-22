@@ -41,9 +41,18 @@ function showSubmissionStatus() {
 }
 
 // Submit a match report
+var lastSubmitTime = Date.now();
 document.getElementById('matchReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    // prevent spamming the submit button
+    if (Date.now() - lastSubmitTime < 5000) {
+        alert('Hold your horses you can only submit a match report every 5 seconds! Check the Submission Status section below...');
+        return;
+    }
+    lastSubmitTime = Date.now();
+
+    // check for Fake debug mode
     if (document.getElementById('debugMode').value === 'Fake') {
         submitFakeMatchReport();
         return;
