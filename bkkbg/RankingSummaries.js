@@ -62,7 +62,7 @@ function createPercentMatchesWonRankingList(summaryElement, rankingSummary) {
 
     let rank = 1;
     for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => (b[1].matchesWon/b[1].matchesPlayed)-(a[1].matchesWon/a[1].matchesPlayed))) {
-        const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
+        const winPercentage = Math.round(stats.matchesWon*1000/stats.matchesPlayed)/10;
         rankingList += `|${rank++}|${player}|${winPercentage}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
     document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
