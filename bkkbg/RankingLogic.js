@@ -116,8 +116,8 @@ function summarizeRatingList(matchList) {
     const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
 
     for (const [player, stats] of Object.entries(ratingListSummary)) {
-            stats.percentMatchesWon = Math.round(stats.matchesWon*100/stats.matchesPlayed);
-            stats.expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(playerRating[player].rating - initialRating) * matchLengthRoot / 2000))));
+            stats.percentMatchesWon = Math.round(stats.matchesWon*1000/stats.matchesPlayed)/10;
+            stats.expectedMatchesWon = Math.round(1000 * (1 / (1 + Math.pow(10, -(playerRating[player].rating - initialRating) * matchLengthRoot / 2000))))/10;
             stats.rating = playerRating[player].rating;
             stats.futureRating = stats.rating;
     }   
