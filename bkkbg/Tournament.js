@@ -25,7 +25,7 @@ function generateTournament(selectedPlayers) {
             return;
     }
     resolveByes();
-    if (document.getElementById('debugMode').value === 'Fake') {
+    if (document.getElementById('debugMode').value === 'Fake' || document.getElementById('forfeitSubmittedMatches').checked === true) {
         highlightTodaysMatches(); // only add it again when debugging
         beautifyTournament();
     }

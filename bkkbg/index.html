@@ -75,21 +75,15 @@
             <div class="d-flex justify-content-center gap-4">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="showPastMatches" onchange="beautifyTournament()">
-                    <label class="form-check-label" for="showPastMatches">
-                        Past
-                    </label>
+                    <label class="form-check-label" for="showPastMatches">Past</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="showBeautiful" onchange="beautifyTournament()">
-                    <label class="form-check-label" for="showBeautiful">
-                        Beautiful
-                    </label>
+                    <label class="form-check-label" for="showBeautiful">Beautiful</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="showFutureMatches" onchange="beautifyTournament()">
-                    <label class="form-check-label" for="showFutureMatches">
-                        Future
-                    </label>
+                    <label class="form-check-label" for="showFutureMatches">Future</label>
                 </div>
             </div>
 
@@ -125,6 +119,12 @@
                     <div class="input-group w-100 mt-2">
                         <span class="input-group-text" id="matchLengthsLabel">Match Lengths</span>
                         <input id="matchLengths" type="text" title="Match Lengths" class="form-control centered" aria-label="Match Lengths" aria-describedby="matchLengthsLabel" value="5 5 5 5 5">
+                    </div>
+                    <div class="input-group w-100 mt-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="forfeitSubmittedMatches">
+                            <label class="form-check-label" for="forfeitSubmittedMatches">Forfeit Submitted Matches</label>
+                        </div>
                     </div>
                 </div>
             </div>

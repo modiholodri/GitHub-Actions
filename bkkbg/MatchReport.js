@@ -53,7 +53,7 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
     lastSubmitTime = Date.now();
 
     // check for Fake debug mode
-    if (document.getElementById('debugMode').value === 'Fake') {
+    if (document.getElementById('debugMode').value === 'Fake' || document.getElementById('forfeitSubmittedMatches').checked === true) {
         submitFakeMatchReport();
         return;
     }
@@ -239,7 +239,7 @@ function submitFakeMatchReport() {
         const dateString = datetime.toISOString().split('T')[0];
         const fakeMatch = `|${dateString}|${winnerName}|${loserName}|${matchLength}|`;
 
-        setSubmissionStatus(`Faking match...\n ${fakeMatch}`);
+        setSubmissionStatus(`Forfeiting match...\n ${fakeMatch}`);
         matchRecords.push(fakeMatch);
         getTodaysMatches(matchRecords);
         highlightTodaysMatches();
