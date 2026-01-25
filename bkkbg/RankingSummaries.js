@@ -108,7 +108,7 @@ function createMatchesPlayedRankingList(summaryElement, rankingSummary) {
 
     let rank = 1;
     let totalMatchesPlayed = 0;
-    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].matchesPlayed-a[1].matchesPlayed)) {
+    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].matchesPlayed-a[1].matchesPlayed || b[1].matchesWon-a[1].matchesWon)) {
         totalMatchesPlayed += stats.matchesPlayed;
         rankingList += `|${rank++}|${player}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
