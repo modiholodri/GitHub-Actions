@@ -65,6 +65,8 @@ function updateMatchesPlayedChart(matchListSummary) {
                         players.map(player => 100*matchListSummary[player].matchesLost/matchListSummary[player].matchesPlayed);
 
     const chartTitle = matchesPlayedRankingList ? 'Matches Played' : '% Matches Won';
+    const annotationWidth = matchesPlayedRankingList ? 0 : 2;
+
 
     setRememberedHiddenStates();
     destroyRankingChart('');
@@ -100,6 +102,17 @@ function updateMatchesPlayedChart(matchListSummary) {
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
                 legend: { position: 'bottom' },
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            xMin: 50, // Y-axis value where the line starts
+                            xMax: 50, // Y-axis value where the line ends
+                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderWidth: annotationWidth,
+                        }
+                    }
+                }                    
             },
             scales: {
                 x: {
@@ -265,7 +278,25 @@ function updatePlayerInfoPercentChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
-                legend: { position: 'bottom' },
+                legend: { position: 'bottom' },                
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            xMin: 50, // Y-axis value where the line starts
+                            xMax: 50, // Y-axis value where the line ends
+                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderWidth: 2,
+                        },
+                        line2: {
+                            type: 'line',
+                            xMin: matchesWon[0], // Y-axis value where the line starts
+                            xMax: matchesWon[0], // Y-axis value where the line ends
+                            borderColor: 'rgba(0, 0, 255, 0.7)',
+                            borderWidth: 2,
+                        }
+                    }
+                }                    
             },
             scales: {
                 x: {
