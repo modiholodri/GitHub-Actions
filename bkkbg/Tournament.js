@@ -999,7 +999,16 @@ document.getElementById('finishTournamentButton').addEventListener('click', func
     uploadTournament();
 });
 
+
+var lastUploadTime = Date.now();
 async function uploadTournament() {
+    // prevent spamming GitHub
+    if (Date.now() - lastUploadTime < 5000) {
+        alert('Hold your horses you can only upload a tournament every 5 seconds! Check the Submission Status section above...');
+        return;
+    }
+    lastUploadTime = Date.now();
+
     const repoName = document.getElementById('clubSelection').value;
 
     await refreshRunsStatus();
