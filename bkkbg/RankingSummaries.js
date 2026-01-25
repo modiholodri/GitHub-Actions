@@ -27,8 +27,8 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
 
     for (const [player, stats] of Object.entries(playerSummary).sort()) {
         if (player === vipPlayerName) {
-            const winPercentage = Math.round(stats.matchesWon*100/stats.matchesPlayed);
-            const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - initialRating) * matchLengthRoot / 2000))));
+            const winPercentage = Math.round(stats.matchesWon*1000/stats.matchesPlayed)/10;
+            const winningProbability = Math.round(1000 * (1 / (1 + Math.pow(10, -(vipRating - initialRating) * matchLengthRoot / 2000))))/10;
             vipPlayerMatchesPlayed = stats.matchesPlayed;
             vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;    
         }
@@ -39,8 +39,8 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
 
     let opponentsRating = 0;
     for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].matchesWon/a[1].matchesPlayed)-(b[1].matchesWon/b[1].matchesPlayed))) {
-        const winPercentage = Math.round(stats.matchesLost * 100 / stats.matchesPlayed);
-        const winningProbability = Math.round(100 * (1 / (1 + Math.pow(10, -(vipRating - playerRating[player].rating) * matchLengthRoot / 2000))));
+        const winPercentage = Math.round(stats.matchesLost * 1000 / stats.matchesPlayed)/10;
+        const winningProbability = Math.round(1000 * (1 / (1 + Math.pow(10, -(vipRating - playerRating[player].rating) * matchLengthRoot / 2000))))/10;
         opponentsRating += Number(playerRating[player].rating) * stats.matchesPlayed;
         opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;
     }
