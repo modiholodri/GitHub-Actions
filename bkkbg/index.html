@@ -152,6 +152,7 @@
                     <option class="centered" value="ratingList">Rating List</option>
                     <option class="centered" value="rangliste">Rangliste</option>
                     <option class="centered" value="playerProgress">Player Progress</option>
+                    <option class="centered" value="highScores">High Scores</option>
                     <option class="centered" value="matchesPlayed">Matches Played</option>
                     <option class="centered" value="percentMatchesWon">% Matches Won</option>
                     <option class="centered" value="playerInfoPercent">Player Info %</option>
@@ -375,6 +376,17 @@
                         }
                         updatePlayerProgressChart(playerProgressList);
                         createPlayerProgressList('rankingSummary', playerProgressList);
+                    }
+                    break;
+                case 'highScores':
+                    if (totalMatchList != '') {
+                        if (!playerProgressCalculated) {
+                            playerProgressList = summarizePlayerProgress(totalMatchList);
+                            playerProgressCalculated = true;
+                        }
+                        scoresSummary = summarizeScores(playerProgressList);
+                        updateScoresChart(scoresSummary);
+                        createScoresList('rankingSummary', scoresSummary);
                     }
                     break;
                 case 'matchesPlayed':

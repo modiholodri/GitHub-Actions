@@ -328,3 +328,35 @@ function summarizePlayerProgress(matchList) {
 
     return progressList;
 }
+
+// Summarize High and Low Scores
+function summarizeScores(playerProgressList) {
+    const scoresSummary = {};
+
+    for (const entry of playerProgressList) {
+        const player = entry.player;
+        const rating = entry.rating;
+
+        if (!scoresSummary[player]) {
+            scoresSummary[player] = {
+                highScore: rating,
+                currentScore: rating,
+                lowScore: rating,
+                highScoreDate: entry.date,
+                lowScoreDate: entry.date
+            };
+        } else {
+            scoresSummary[player].currentScore = rating;
+            if (rating > scoresSummary[player].highScore) {
+                scoresSummary[player].highScore = rating;
+                scoresSummary[player].highScoreDate = entry.date;
+            }
+            if (rating < scoresSummary[player].lowScore) {
+                scoresSummary[player].lowScore = rating;
+                scoresSummary[player].lowScoreDate = entry.date;
+            }
+        }
+    }
+
+    return scoresSummary;
+}

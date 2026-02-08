@@ -157,3 +157,14 @@ function createPlayerProgressList(summaryElement, playerProgressList) {
     }
     document.getElementById(summaryElement).innerHTML = marked.parse(progressList);
 }
+
+// Scores List
+function createScoresList(summaryElement, scoresSummary) {
+    let scoresList = '|   |   |High|Score|Low|High|Low|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
+
+    let rank = 1;
+    for (const [player, stats] of Object.entries(scoresSummary).sort((a,b) => b[1].highScore - a[1].highScore)) {
+        scoresList += `|${rank++}|${player}|${Math.round(stats.highScore)}|${Math.round(stats.currentScore)}|${Math.round(stats.lowScore)}|${stats.highScoreDate}|${stats.lowScoreDate}|\n`;
+    }
+    document.getElementById(summaryElement).innerHTML = marked.parse(scoresList);
+}

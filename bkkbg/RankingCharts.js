@@ -7,6 +7,7 @@ let hiddenStates;
 let defaultHiddenStates = {
     'ratingList': [true, false],
     'matchesPlayed': [false, false],
+    'highScores': [false, false, false],
     'percentMatchesWon': [false, false],
     'rangliste': [false, false, true],
     'playerInfoPercent': [false, false],
@@ -648,6 +649,111 @@ function updatePlayerProgressChart(progressList) {
                 y: {
                     beginAtZero: false,
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
+                }
+            }
+        }
+    });
+}
+
+// Function to create or update the Scores chart
+function updateScoresChart(scoresSummary) {
+    const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+
+    // Extract data for the chart
+    // for (const [player, stats] of Object.entries(scoresSummary).sort((a,b) => b[1].highScore - a[1].highScore)) {
+
+    const players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].highScore - scoresSummary[a].highScore);
+
+    if (players.length < 1) return;
+    const highScore = players.map(player => Math.round(scoresSummary[player].highScore));
+    const currentScore = players.map(player => Math.round(scoresSummary[player].currentScore));
+    const lowScore = players.map(player => Math.round(scoresSummary[player].lowScore));
+    
+    // Only destroy and recreate the chart if the number of players changed
+    if (remainingReplayTimes < 1 || manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
+        setRememberedHiddenStates();
+        destroyRankingChart('');
+        optimizeChartCanvasHeight('rankingChartCanvas', players.length);
+    }
+    else if (rankingChart) {
+        // Update data and labels if chart exists
+        rankingChart.data.labels = players;
+        rankingChart.data.datasets[0].data = highScore;
+        rankingChart.data.datasets[1].data = currentScore;
+        rankingChart.data.datasets[2].data = lowScore;
+        rankingChart.update();
+        return;
+    }
+
+
+    // Create the chart
+    rankingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: players, // Player names
+            datasets: [
+                {
+                    label: 'High',
+                    hidden: hiddenStates[0],
+                    data: highScore,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Current',
+                    hidden: hiddenStates[1],
+                    data: currentScore,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Low',
+                    hidden: hiddenStates[2],
+                    data: lowScore,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y', // Set the chart to horizontal
+            responsive: true,
+            maintainAspectRatio: false, // Allow the chart to resize freely
+            plugins: {
+                legend: { position: 'bottom' },
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            xMin: 1800, // Y-axis value where the line starts
+                            xMax: 1800, // Y-axis value where the line ends
+                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderWidth: 2,
+                        }
+                    }
+                }                    
+            },
+            scales: {
+                x: {
+                    beginAtZero: false,
+                    position: 'top',
+                    title: {
+                        display: true,
+                        text: 'ELO Points',
+                    },
+                    ticks: {
+                        callback: function(value) {  // Show only whole numbers
+                            return Number.isInteger(value) ? value : null;
+                        }
+                    },                            
+                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                },
+                y: {
+                    beginAtZero: false,
+                    ticks: { autoSkip: false } // show all the names
                 }
             }
         }
