@@ -51,7 +51,7 @@ function updateMatchesPlayedChart(matchListSummary) {
     let matchesPlayedRankingList =  document.getElementById('rankingListSelection').value === 'matchesPlayed';
     
     const players = matchesPlayedRankingList ?
-                    Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].matchesPlayed - matchListSummary[a].matchesPlayed) :
+                    Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].matchesPlayed - matchListSummary[a].matchesPlayed || matchListSummary[b].matchesWon - matchListSummary[a].matchesWon) :
                     Object.keys(matchListSummary).sort((a, b) => (matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed)-(matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed));
     
     if (players.length < 1) return;
