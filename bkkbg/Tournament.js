@@ -373,8 +373,10 @@ function generateRoundRobinTournament(groupName, selectedPlayers, length) {
 
 function generateWinsSortedTable(winCounts, lossCounts, eloPoints) {
     // Convert to array and sort by wins descending
-    const sorted = Object.entries(winCounts)
-        .sort((a, b) => b[1] - a[1]);
+    const sorted = Object.entries(winCounts).sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1];
+        return (eloPoints[b[0]] || 1800) - (eloPoints[a[0]] || 1800);
+    });
 
     let ranking = [];
     let currentRank = 1;
