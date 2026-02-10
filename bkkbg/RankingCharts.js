@@ -474,7 +474,7 @@ function updateRatingListChart(matchListSummary) {
                     pointStyle: 'star',
                     hidden: hiddenStates[0],
                     data: rating,
-                    borderColor: 'rgba(75, 192, 85, 1)',
+                    borderColor: 'lime',
                     borderWidth: 1
                 },
                 {
@@ -694,27 +694,29 @@ function updateScoresChart(scoresSummary) {
             labels: players, // Player names
             datasets: [
                 {
-                    label: 'High',
-                    hidden: hiddenStates[0],
-                    data: highScore,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    label: 'Low',
+                    type: 'scatter',
+                    pointStyle: 'star',
+                    hidden: hiddenStates[2],
+                    data: lowScore,
+                    borderColor: 'red',
                     borderWidth: 1
                 },
                 {
                     label: 'Current',
                     hidden: hiddenStates[1],
                     data: currentScore,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
                 },
                 {
-                    label: 'Low',
-                    hidden: hiddenStates[2],
-                    data: lowScore,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    label: 'High',
+                    type: 'scatter',
+                    pointStyle: 'star',
+                    hidden: hiddenStates[0],
+                    data: highScore,
+                    borderColor: 'lime',
                     borderWidth: 1
                 },
             ]
