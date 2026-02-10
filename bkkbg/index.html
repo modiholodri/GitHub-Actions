@@ -406,12 +406,15 @@
                     playerSelectionChanged();
                     break;
                 case 'currentStreak':
+                    updateStreakChart(rankingSummary);
                     createCurrentStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'longestWinningStreak':
+                    updateStreakChart(rankingSummary);
                     createLongestWinningStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'longestLosingStreak':
+                    updateStreakChart(rankingSummary);
                     createLongestLosingStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'daysInactive':

@@ -762,3 +762,76 @@ function updateScoresChart(scoresSummary) {
         }
     });
 }
+
+// Function to create or update the Streak chart
+function updateStreakChart(rankingSummary) {
+    const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+
+    // Extract data for the chart
+    const rankingListSelection = document.getElementById('rankingListSelection').value;
+
+    let players, streak;
+    
+    if (rankingListSelection === 'currentStreak') {
+        players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[b].currentStreak - rankingSummary[a].currentStreak || rankingSummary[b].matchesPlayed - rankingSummary[a].matchesPlayed);
+        streak = players.map(player => rankingSummary[player].currentStreak);
+    } else if (rankingListSelection === 'longestWinningStreak') {
+        players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[b].longestWon - rankingSummary[a].longestWon || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
+        streak = players.map(player => rankingSummary[player].longestWon);
+    } else if (rankingListSelection === 'longestLosingStreak') {
+        players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[a].longestLost - rankingSummary[b].longestLost || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
+        streak = players.map(player => rankingSummary[player].longestLost);
+    }
+    else return;
+    
+    if (players.length < 1) return;
+
+    destroyRankingChart('');
+    optimizeChartCanvasHeight('rankingChartCanvas', players.length);
+
+    // Create the chart
+    rankingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: players, // Player names
+            datasets: [
+                {
+                    label: 'Streak',
+                    data: streak,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y', // Set the chart to horizontal
+            responsive: true,
+            maintainAspectRatio: false, // Allow the chart to resize freely
+            plugins: {
+                legend: { position: 'bottom' },
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    position: 'top',
+                    title: {
+                        display: true,
+                        text: 'Matches',
+                    },
+                    ticks: {
+                        callback: function(value) {  // Show only whole numbers
+                            return Number.isInteger(value) ? value : null;
+                        }
+                    },                            
+                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                },
+                y: {
+                    beginAtZero: true,
+                    stacked: true,
+                    ticks: { autoSkip: false } // show all the names
+                }
+            }
+        }
+    });
+}
