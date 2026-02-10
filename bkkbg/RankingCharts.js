@@ -848,3 +848,62 @@ function updateStreakChart(rankingSummary) {
         }
     });
 }
+
+// Function to create or update the Last Active chart
+function updateLastActiveChart(rankingSummary) {
+    const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+
+    // Extract data for the chart
+    const players = Object.keys(rankingSummary).sort((a, b) => new Date(rankingSummary[b].lastDateActive) - new Date(rankingSummary[a].lastDateActive));
+    const lastDatesActive = players.map(player => new Date(rankingSummary[player].lastDateActive));
+    
+    if (players.length < 1) return;
+
+    destroyRankingChart('');
+    optimizeChartCanvasHeight('rankingChartCanvas', players.length);
+
+    // Create the chart
+    rankingChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: players, // Player names
+            datasets: [
+                {
+                    label: 'Last Active Date',
+                    data: lastDatesActive,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y', // Set the chart to horizontal
+            responsive: true,
+            maintainAspectRatio: false, // Allow the chart to resize freely
+            plugins: {
+                legend: { position: 'bottom' },
+            },
+            scales: {
+                x: {
+                    position: 'top',
+                    title: {
+                        display: true,
+                        text: 'Date',
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return new Date(value).toISOString().split('T')[0];
+                        }
+                    },
+                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                },
+                y: {
+                    beginAtZero: false,
+                    ticks: { autoSkip: false } // show all the names
+                }
+            }
+        }
+    });
+}
+

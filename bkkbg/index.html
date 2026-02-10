@@ -418,6 +418,7 @@
                     createLongestLosingStreakRankingList('rankingSummary', rankingSummary);
                     break;
                 case 'daysInactive':
+                    updateLastActiveChart(rankingSummary);
                     createLastTimeActiveRankingList('rankingSummary', rankingSummary);
                     break;
                 default:
