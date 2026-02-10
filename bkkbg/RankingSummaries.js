@@ -85,7 +85,7 @@ function createLongestWinningStreakRankingList(summaryElement, rankingSummary) {
     let rankingList = '|   |   |Winning Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
     let rank = 1;
-    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestWon-a[1].longestWon)) {
+    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestWon-a[1].longestWon || a[1].matchesPlayed-b[1].matchesPlayed)) {
         rankingList += `|${rank++}|${player}|${stats.longestWon}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
     document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
