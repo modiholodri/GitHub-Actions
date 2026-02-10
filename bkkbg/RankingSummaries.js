@@ -73,7 +73,7 @@ function createCurrentStreakRankingList(summaryElement, rankingSummary) {
     let rankingList = '|   |   |Current Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
     let rank = 1;
-    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak)) {
+    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak || b[1].matchesPlayed-a[1].matchesPlayed)) {
         rankingList += `|${rank++}|${player}|${stats.currentStreak}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
     document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
@@ -96,7 +96,7 @@ function createLongestLosingStreakRankingList(summaryElement, rankingSummary) {
     let rankingList = '|   |   |Losing Streak|Result|\n|:---:|:---:|:---:|:---:|\n';
 
     let rank = 1;
-    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestLost-a[1].longestLost || a[1].matchesPlayed-b[1].matchesPlayed)) {
+    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => a[1].longestLost-b[1].longestLost || a[1].matchesPlayed-b[1].matchesPlayed)) {
         rankingList += `|${rank++}|${player}|${stats.longestLost}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
     document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);

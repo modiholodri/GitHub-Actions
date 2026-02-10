@@ -212,9 +212,9 @@ function summarizeMatchList(matchList) {
 
             if (isStreakSelected) {  //calculate only if any of the streaks is selected
                 matchListSummary[loser].currentWon = 0;
-                matchListSummary[loser].currentLost++;
-                matchListSummary[loser].currentStreak = -matchListSummary[loser].currentLost;
-                if (matchListSummary[loser].currentLost > matchListSummary[loser].longestLost) {
+                matchListSummary[loser].currentLost--;
+                matchListSummary[loser].currentStreak = matchListSummary[loser].currentLost;
+                if (matchListSummary[loser].currentLost < matchListSummary[loser].longestLost) {
                     matchListSummary[loser].longestLost = matchListSummary[loser].currentLost;
                 }
             }
