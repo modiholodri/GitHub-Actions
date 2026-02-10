@@ -5,7 +5,7 @@ Chart.defaults.plugins.legend.labels.color = '#61e7ff';
 let rankingChart;
 let hiddenStates;
 let defaultHiddenStates = {
-    'ratingList': [true, false],
+    'ratingList': [false, false],
     'matchesPlayed': [false, false],
     'highScores': [false, false, false],
     'percentMatchesWon': [false, false],
@@ -470,10 +470,11 @@ function updateRatingListChart(matchListSummary) {
             datasets: [
                 {
                     label: 'Current Rating',
+                    type: 'scatter',
+                    pointStyle: 'star',
                     hidden: hiddenStates[0],
                     data: rating,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderColor: 'rgba(75, 192, 85, 1)',
                     borderWidth: 1
                 },
                 {

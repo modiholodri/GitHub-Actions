@@ -47,6 +47,7 @@ function loadSettings() {
 
     // Ranking List Selection
     loadValueSetting('rankingListSelection', 'matchesPlayed');
+    const rankingListSelection = document.getElementById('rankingListSelection').value;
 
     // Player Name Selection
     loadValueSetting('yourName', '');
@@ -88,8 +89,8 @@ function saveToggleSetting(elementName) {
 
 // save the value of a specific element to localStorage
 function saveValueSetting(elementName) {
-    const rankingListSelection = document.getElementById(elementName).value;
-    localStorage.setItem(elementName, rankingListSelection);
+    const elementValue = document.getElementById(elementName).value;
+    localStorage.setItem(elementName, elementValue);
 }
 
 // save the value of a specific element to localStorage
