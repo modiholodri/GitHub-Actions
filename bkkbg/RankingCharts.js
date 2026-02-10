@@ -770,17 +770,20 @@ function updateStreakChart(rankingSummary) {
     // Extract data for the chart
     const rankingListSelection = document.getElementById('rankingListSelection').value;
 
-    let players, streak;
+    let players, streak, title;
     
     if (rankingListSelection === 'currentStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[b].currentStreak - rankingSummary[a].currentStreak || rankingSummary[b].matchesPlayed - rankingSummary[a].matchesPlayed);
         streak = players.map(player => rankingSummary[player].currentStreak);
+        title = "Current Streak";
     } else if (rankingListSelection === 'longestWinningStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[b].longestWon - rankingSummary[a].longestWon || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
         streak = players.map(player => rankingSummary[player].longestWon);
+        title = "Longest Winning Streak";
     } else if (rankingListSelection === 'longestLosingStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[a].longestLost - rankingSummary[b].longestLost || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
         streak = players.map(player => rankingSummary[player].longestLost);
+        title = "Longest Losing Streak";
     }
     else return;
     
@@ -796,7 +799,7 @@ function updateStreakChart(rankingSummary) {
             labels: players, // Player names
             datasets: [
                 {
-                    label: 'Streak',
+                    label: title,
                     data: streak,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
@@ -810,6 +813,17 @@ function updateStreakChart(rankingSummary) {
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
                 legend: { position: 'bottom' },
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            xMin: 0, // Y-axis value where the line starts
+                            xMax: 0, // Y-axis value where the line ends
+                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderWidth: 3,
+                        }
+                    }
+                },
             },
             scales: {
                 x: {
@@ -828,7 +842,6 @@ function updateStreakChart(rankingSummary) {
                 },
                 y: {
                     beginAtZero: true,
-                    stacked: true,
                     ticks: { autoSkip: false } // show all the names
                 }
             }
