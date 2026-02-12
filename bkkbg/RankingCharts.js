@@ -8,6 +8,7 @@ let defaultHiddenStates = {
     'ratingList': [false, false],
     'matchesPlayed': [false, false],
     'highScores': [false, false, false],
+    'lowScores': [false, false, false],
     'percentMatchesWon': [false, false],
     'rangliste': [false, false, true],
     'playerInfoPercent': [false, false],
@@ -511,7 +512,7 @@ function updateRatingListChart(matchListSummary) {
                     position: 'top',
                     title: {
                         display: true,
-                        text: 'ELO Points',
+                        text: 'Elo Points',
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers
@@ -659,13 +660,20 @@ function updatePlayerProgressChart(progressList) {
 // Function to create or update the Scores chart
 function updateScoresChart(scoresSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+    const rankingListSelection = document.getElementById('rankingListSelection').value;
 
     // Extract data for the chart
-    // for (const [player, stats] of Object.entries(scoresSummary).sort((a,b) => b[1].highScore - a[1].highScore)) {
 
-    const players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].highScore - scoresSummary[a].highScore);
-
+    let players;
+    if (rankingListSelection === 'highScores') {
+        players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].highScore - scoresSummary[a].highScore);
+    } else if (rankingListSelection === 'lowScores') {
+        players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[a].lowScore - scoresSummary[b].lowScore);
+    } else {
+        players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].currentScore - scoresSummary[a].currentScore);
+    }
     if (players.length < 1) return;
+    
     const highScore = players.map(player => Math.round(scoresSummary[player].highScore));
     const currentScore = players.map(player => Math.round(scoresSummary[player].currentScore));
     const lowScore = players.map(player => Math.round(scoresSummary[player].lowScore));
@@ -745,7 +753,7 @@ function updateScoresChart(scoresSummary) {
                     position: 'top',
                     title: {
                         display: true,
-                        text: 'ELO Points',
+                        text: 'Elo Points',
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers

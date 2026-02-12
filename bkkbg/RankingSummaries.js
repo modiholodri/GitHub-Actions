@@ -160,11 +160,24 @@ function createPlayerProgressList(summaryElement, playerProgressList) {
 
 // Scores List
 function createScoresList(summaryElement, scoresSummary) {
-    let scoresList = '|   |   |High|Score|Low|High|Low|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
+    const rankingListSelection = document.getElementById('rankingListSelection').value;
 
     let rank = 1;
-    for (const [player, stats] of Object.entries(scoresSummary).sort((a,b) => b[1].highScore - a[1].highScore)) {
-        scoresList += `|${rank++}|${player}|${Math.round(stats.highScore)}|${Math.round(stats.currentScore)}|${Math.round(stats.lowScore)}|${stats.highScoreDate}|${stats.lowScoreDate}|\n`;
+    let scoresList;
+
+    if (rankingListSelection === 'highScores') {
+        scoresList = '|   |   |High|Date|\n|:---:|:---:|:---:|:---:|\n';
+
+        for (const [player, stats] of Object.entries(scoresSummary).sort((a,b) => b[1].highScore - a[1].highScore)) {
+            scoresList += `|${rank++}|${player}|${Math.round(stats.highScore)}|${stats.highScoreDate}|\n`;
+        }
+    } else {
+        scoresList = '|   |   |Low|Date|\n|:---:|:---:|:---:|:---:|\n';
+
+        for (const [player, stats] of Object.entries(scoresSummary).sort((a,b) => a[1].lowScore - b[1].lowScore)) {
+            scoresList += `|${rank++}|${player}|${Math.round(stats.lowScore)}|${stats.lowScoreDate}|\n`;
+        }
     }
+
     document.getElementById(summaryElement).innerHTML = marked.parse(scoresList);
 }

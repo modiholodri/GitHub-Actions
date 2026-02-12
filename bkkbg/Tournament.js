@@ -449,7 +449,7 @@ function generateEloSortedTable(winCounts, lossCounts, eloPoints) {
         losses: lossCounts[name] || 0,
         elo: eloPoints[name] || initialRating
     })).sort((a, b) => {
-        if (b.elo !== a.elo) return b.elo - a.elo;             // higher ELO first
+        if (b.elo !== a.elo) return b.elo - a.elo;             // higher Elo first
         if (b.wins !== a.wins) return b.wins - a.wins;          // more wins first
         if (a.losses !== b.losses) return a.losses - b.losses;  // fewer losses first 
         return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
@@ -490,7 +490,7 @@ function replayMatchesXTimes(times, playedMatches, eloPoints) {
                 const winner = match[1].trim();
                 const loser = match[3].trim();
 
-                // ignore Byes and update ELO points
+                // ignore Byes and update Elo points
                 if (winner !== 'Bye' && loser !== 'Bye') {
                     elo[winner] = elo[winner] || initialRating;
                     elo[loser] = elo[loser] || initialRating;
@@ -584,7 +584,7 @@ function generateTournamentSummary() {
             const winner = match[1].trim();
             const loser = match[3].trim();
 
-            // ignore Byes and update ELO points
+            // ignore Byes and update Elo points
             if (winner !== 'Bye' && loser !== 'Bye') {
                 // Initialize win/loss counts if not exist
                 winCounts[winner] = winCounts[winner] || 0;
@@ -596,17 +596,17 @@ function generateTournamentSummary() {
                 winCounts[winner] = winCounts[winner] + 1;
                 lossCounts[loser] = lossCounts[loser] + 1;
 
-                // Initialize ELO points if not exists
+                // Initialize Elo points if not exists
                 eloPoints[winner] = eloPoints[winner] || initialRating;
                 eloPoints[loser] = eloPoints[loser] || initialRating;
 
-                // Calculate ELO changes
+                // Calculate Elo changes
                 const matchLengthRoot = Math.sqrt(matchLength);
                 const ratingPointsAtStake = 4 * matchLengthRoot;
                 const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(eloPoints[winner] - eloPoints[loser] ) * matchLengthRoot / 2000.0));
                 const ratingDifference = (1.0 - winningProbability) * ratingPointsAtStake;
 
-                // Update ELO ratings
+                // Update Elo ratings
                 eloPoints[winner] += ratingDifference;
                 eloPoints[loser] -= ratingDifference;
             }
@@ -713,7 +713,7 @@ function highlightTodaysMatches() {
                     const winner = match[1].trim();
                     const loser = match[3].trim();
 
-                    // ignore Byes and update ELO points
+                    // ignore Byes and update Elo points
                     if (winner !== 'Bye' && loser !== 'Bye') {
                         playedMatches.push(`|${today}|${winner}|${loser}|${matchLength}|`);
                     }

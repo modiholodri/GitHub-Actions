@@ -153,6 +153,7 @@
                     <option class="centered" value="rangliste">Rangliste</option>
                     <option class="centered" value="playerProgress">Player Progress</option>
                     <option class="centered" value="highScores">High Scores</option>
+                    <option class="centered" value="lowScores">Low Scores</option>
                     <option class="centered" value="matchesPlayed">Matches Played</option>
                     <option class="centered" value="percentMatchesWon">% Matches Won</option>
                     <option class="centered" value="playerInfoPercent">Player Info %</option>
@@ -379,6 +380,7 @@
                     }
                     break;
                 case 'highScores':
+                case 'lowScores':
                     if (totalMatchList != '') {
                         if (!playerProgressCalculated) {
                             playerProgressList = summarizePlayerProgress(totalMatchList);
