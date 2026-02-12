@@ -226,7 +226,13 @@ function updatePlayerInfoPercentChart(matchListSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
     // Extract data for the chart
-    const players = Object.keys(matchListSummary).sort((a, b) => (matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed)-(matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed));
+    const players = Object.keys(matchListSummary).sort((a, b) => {
+        const diff = matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed - matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed;
+        if (diff !== 0 ) return diff;
+        return matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed > 0.5 ? 
+               matchListSummary[a].matchesWon - matchListSummary[b].matchesWon :
+               matchListSummary[b].matchesLost - matchListSummary[a].matchesLost;
+    });
     if (players.length < 1) return;
     const matchesWon = players.map(player => 100*matchListSummary[player].matchesLost/matchListSummary[player].matchesPlayed);
     const matchesLost = players.map(player => 100*matchListSummary[player].matchesWon/matchListSummary[player].matchesPlayed);
@@ -331,7 +337,13 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
     // Extract data for the chart
-    const players = Object.keys(matchListSummary).sort((a, b) => (matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed)-(matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed));
+    const players = Object.keys(matchListSummary).sort((a, b) => {
+        const diff = matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed - matchListSummary[b].matchesWon/matchListSummary[b].matchesPlayed;
+        if (diff !== 0 ) return diff;
+        return matchListSummary[a].matchesWon/matchListSummary[a].matchesPlayed > 0.5 ? 
+               matchListSummary[a].matchesWon - matchListSummary[b].matchesWon :
+               matchListSummary[b].matchesLost - matchListSummary[a].matchesLost;
+    });
     if (players.length < 1) return;
 
     // Calculate the percentage of matches won/lost for each player, note that it is seem from the opponents perspective
@@ -673,7 +685,7 @@ function updateScoresChart(scoresSummary) {
         players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].currentScore - scoresSummary[a].currentScore);
     }
     if (players.length < 1) return;
-    
+
     const highScore = players.map(player => Math.round(scoresSummary[player].highScore));
     const currentScore = players.map(player => Math.round(scoresSummary[player].currentScore));
     const lowScore = players.map(player => Math.round(scoresSummary[player].lowScore));

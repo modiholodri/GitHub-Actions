@@ -38,7 +38,11 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
     }   
 
     let opponentsRating = 0;
-    for (const [player, stats] of Object.entries(opponents).sort((a,b) => (a[1].matchesWon/a[1].matchesPlayed)-(b[1].matchesWon/b[1].matchesPlayed))) {
+    for (const [player, stats] of Object.entries(opponents).sort((a,b) => {
+        const diff = ((a[1].matchesWon/a[1].matchesPlayed)-(b[1].matchesWon/b[1].matchesPlayed));
+        if (diff !== 0) return diff;
+        return a[1].matchesWon/a[1].matchesPlayed > 0.5 ? a[1].matchesWon - b[1].matchesWon : b[1].matchesLost - a[1].matchesLost;
+    })) {
         const winPercentage = Math.round(stats.matchesLost * 1000 / stats.matchesPlayed)/10;
         const winningProbability = Math.round(1000 * (1 / (1 + Math.pow(10, -(vipRating - playerRating[player].rating) * matchLengthRoot / 2000))))/10;
         opponentsRating += Number(playerRating[player].rating) * stats.matchesPlayed;
