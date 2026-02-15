@@ -462,6 +462,7 @@ function playRatingList() {
 // Function to create or update the Ranglisten chart
 function updateRatingListChart(matchListSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+    const yourName = document.getElementById('yourName').value.trim();
 
     // Extract data for the chart
     const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].futureRating - matchListSummary[a].futureRating);
@@ -480,10 +481,15 @@ function updateRatingListChart(matchListSummary) {
         rankingChart.data.labels = players;
         rankingChart.data.datasets[0].data = rating;
         rankingChart.data.datasets[1].data = futureRating;
+
+        const playerValue = Math.round(matchListSummary[yourName]?.futureRating);
+        rankingChart.options.plugins.annotation.annotations.playerValueLine.xMin = playerValue;
+        rankingChart.options.plugins.annotation.annotations.playerValueLine.xMax = playerValue;
         rankingChart.update();
         return;
     }
 
+    const playerValue = Math.round(matchListSummary[yourName]?.futureRating);
 
     // Create the chart
     rankingChart = new Chart(ctx, {
@@ -524,6 +530,14 @@ function updateRatingListChart(matchListSummary) {
                             xMax: 1800, // Y-axis value where the line ends
                             borderColor: 'rgba(255, 0, 0, 0.7)',
                             borderWidth: 2,
+                        },
+                        playerValueLine: {
+                            type: 'line',
+                            display: playerValue,
+                            xMin: playerValue, // Y-axis value where the line starts
+                            xMax: playerValue, // Y-axis value where the line ends
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 3,
                         }
                     }
                 }                    
@@ -683,6 +697,7 @@ function updatePlayerProgressChart(progressList) {
 function updateScoresChart(scoresSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
     const rankingListSelection = document.getElementById('rankingListSelection').value;
+    const yourName = document.getElementById('yourName').value.trim();
 
     // Extract data for the chart
 
@@ -699,6 +714,7 @@ function updateScoresChart(scoresSummary) {
     const highScore = players.map(player => Math.round(scoresSummary[player].highScore));
     const currentScore = players.map(player => Math.round(scoresSummary[player].currentScore));
     const lowScore = players.map(player => Math.round(scoresSummary[player].lowScore));
+    const playerValue = Math.round(scoresSummary[yourName].currentScore);
     
     // Only destroy and recreate the chart if the number of players changed
     if (remainingReplayTimes < 1 || manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
@@ -765,6 +781,14 @@ function updateScoresChart(scoresSummary) {
                             xMax: 1800, // Y-axis value where the line ends
                             borderColor: 'rgba(255, 0, 0, 0.7)',
                             borderWidth: 2,
+                        },
+                        playerValueLine: {
+                            type: 'line',
+                            display: playerValue,
+                            xMin: playerValue, // Y-axis value where the line starts
+                            xMax: playerValue, // Y-axis value where the line ends
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 3,
                         }
                     }
                 }                    
