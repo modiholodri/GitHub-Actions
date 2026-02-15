@@ -68,6 +68,9 @@ function updateMatchesPlayedChart(matchListSummary) {
 
     const chartTitle = matchesPlayedRankingList ? 'Matches Played' : '% Matches Won';
 
+    const yourName = document.getElementById('yourName').value.trim();
+    const playerValue = matchesPlayedRankingList ? 0 : 100*matchListSummary[yourName]?.matchesWon/matchListSummary[yourName]?.matchesPlayed;
+
     setRememberedHiddenStates();
     destroyRankingChart('');
     optimizeChartCanvasHeight('rankingChartCanvas', players.length);
@@ -105,11 +108,18 @@ function updateMatchesPlayedChart(matchListSummary) {
                 ...(matchesPlayedRankingList ? {} : {
                     annotation: {
                         annotations: {
-                            line1: {
+                            lineFiftyPercent: {
                                 type: 'line',
                                 xMin: 50, // Y-axis value where the line starts
                                 xMax: 50, // Y-axis value where the line ends
-                                borderColor: 'rgba(255, 0, 0, 0.7)',
+                                borderColor: 'rgba(255, 0, 0, 1)',
+                                borderWidth: 2,
+                            },
+                            linePlayerValue: {
+                                type: 'line',
+                                xMin: playerValue, // Y-axis value where the line starts
+                                xMax: playerValue, // Y-axis value where the line ends
+                                borderColor: 'rgba(75, 192, 192, 1)',
                                 borderWidth: 2,
                             }
                         }
@@ -289,14 +299,14 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                 legend: { position: 'bottom' },                
                 annotation: {
                     annotations: {
-                        line1: {
+                        lineFiftyPercent: {
                             type: 'line',
                             xMin: 50, // Y-axis value where the line starts
                             xMax: 50, // Y-axis value where the line ends
                             borderColor: 'rgba(255, 0, 0, 0.7)',
                             borderWidth: 2,
                         },
-                        line2: {
+                        linePlayerValue: {
                             type: 'line',
                             xMin: matchesWon[0], // Y-axis value where the line starts
                             xMax: matchesWon[0], // Y-axis value where the line ends
@@ -508,7 +518,7 @@ function updateRatingListChart(matchListSummary) {
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
-                        line1: {
+                        lineStartingElo: {
                             type: 'line',
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
@@ -749,7 +759,7 @@ function updateScoresChart(scoresSummary) {
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
-                        line1: {
+                        lineStartingElo: {
                             type: 'line',
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
@@ -826,7 +836,7 @@ function updateStreakChart(rankingSummary) {
             legend: { position: 'bottom' },
             annotation: {
                 annotations: {
-                    line1: {
+                    lineZero: {
                         type: 'line',
                         xMin: 0, // Y-axis value where the line starts
                         xMax: 0, // Y-axis value where the line ends
@@ -862,14 +872,14 @@ function updateStreakChart(rankingSummary) {
     if (rankingSummary[yourName]) {
         chartOptions.plugins.annotation = {
             annotations: {
-                line1: {
+                lineZero: {
                     type: 'line',
                     xMin: 0, // Y-axis value where the line starts
                     xMax: 0, // Y-axis value where the line ends
                     borderColor: 'rgba(255, 0, 0, 1)',
                     borderWidth: 3,
                 },
-                line2: {
+                linePlayerValue: {
                     type: 'line',
                     xMin: playerValue, // Y-axis value where the line starts
                     xMax: playerValue, // Y-axis value where the line ends
