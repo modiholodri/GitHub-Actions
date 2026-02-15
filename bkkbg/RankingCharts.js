@@ -786,23 +786,28 @@ function updateScoresChart(scoresSummary) {
 // Function to create or update the Streak chart
 function updateStreakChart(rankingSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+    const yourName = document.getElementById('yourName').value.trim();
 
     // Extract data for the chart
     const rankingListSelection = document.getElementById('rankingListSelection').value;
 
-    let players, streak, title;
+    let players, streak, title, playerValue;
     
     if (rankingListSelection === 'currentStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[b].currentStreak - rankingSummary[a].currentStreak || rankingSummary[b].matchesPlayed - rankingSummary[a].matchesPlayed);
         streak = players.map(player => rankingSummary[player].currentStreak);
+        playerValue = rankingSummary[yourName]?.currentStreak;
         title = "Current Streak";
     } else if (rankingListSelection === 'longestWinningStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[b].longestWon - rankingSummary[a].longestWon || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
         streak = players.map(player => rankingSummary[player].longestWon);
+        playerValue = rankingSummary[yourName]?.longestWon;
         title = "Longest Winning Streak";
     } else if (rankingListSelection === 'longestLosingStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[a].longestLost - rankingSummary[b].longestLost || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
         streak = players.map(player => rankingSummary[player].longestLost);
+        playerValue = rankingSummary[yourName]?.longestLost;
+        setRememberedHiddenStates();
         title = "Longest Losing Streak";
     }
     else return;
@@ -813,6 +818,68 @@ function updateStreakChart(rankingSummary) {
     optimizeChartCanvasHeight('rankingChartCanvas', players.length);
 
     // Create the chart
+    const chartOptions = {
+        indexAxis: 'y', // Set the chart to horizontal
+        responsive: true,
+        maintainAspectRatio: false, // Allow the chart to resize freely
+        plugins: {
+            legend: { position: 'bottom' },
+            annotation: {
+                annotations: {
+                    line1: {
+                        type: 'line',
+                        xMin: 0, // Y-axis value where the line starts
+                        xMax: 0, // Y-axis value where the line ends
+                        borderColor: 'rgba(255, 0, 0, 1)',
+                        borderWidth: 3,
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                position: 'top',
+                title: {
+                    display: true,
+                    text: 'Matches',
+                },
+                ticks: {
+                    callback: function(value) {  // Show only whole numbers
+                        return Number.isInteger(value) ? value : null;
+                    }
+                },                            
+                grid: { color: 'rgba(255, 255, 0, 0.3)' },
+            },
+            y: {
+                beginAtZero: true,
+                ticks: { autoSkip: false } // show all the names
+            }
+        }
+    };
+
+    // Only add annotations if yourName is found in rankingSummary
+    if (rankingSummary[yourName]) {
+        chartOptions.plugins.annotation = {
+            annotations: {
+                line1: {
+                    type: 'line',
+                    xMin: 0, // Y-axis value where the line starts
+                    xMax: 0, // Y-axis value where the line ends
+                    borderColor: 'rgba(255, 0, 0, 1)',
+                    borderWidth: 3,
+                },
+                line2: {
+                    type: 'line',
+                    xMin: playerValue, // Y-axis value where the line starts
+                    xMax: playerValue, // Y-axis value where the line ends
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 3,
+                }
+            }
+        };
+    }
+
     rankingChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -827,45 +894,7 @@ function updateStreakChart(rankingSummary) {
                 },
             ]
         },
-        options: {
-            indexAxis: 'y', // Set the chart to horizontal
-            responsive: true,
-            maintainAspectRatio: false, // Allow the chart to resize freely
-            plugins: {
-                legend: { position: 'bottom' },
-                annotation: {
-                    annotations: {
-                        line1: {
-                            type: 'line',
-                            xMin: 0, // Y-axis value where the line starts
-                            xMax: 0, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
-                            borderWidth: 3,
-                        }
-                    }
-                },
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    position: 'top',
-                    title: {
-                        display: true,
-                        text: 'Matches',
-                    },
-                    ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
-                        }
-                    },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: { autoSkip: false } // show all the names
-                }
-            }
-        }
+        options: chartOptions
     });
 }
 

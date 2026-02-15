@@ -34,7 +34,6 @@ function loadSettings() {
 
     // Tournament Management
     loadCheckedSetting('showPastMatches', 'true');
-    loadCheckedSetting('showBeautiful', 'true');
     loadCheckedSetting('showFutureMatches', 'true');
 
     loadValueSetting('debugMode', '');
@@ -106,7 +105,6 @@ function saveSettings() {
     saveToggleSetting('tournamentManagement');
     
     saveCheckedSetting('showPastMatches');
-    saveCheckedSetting('showBeautiful');
     saveCheckedSetting('showFutureMatches');
 
     saveValueSetting('debugMode');
