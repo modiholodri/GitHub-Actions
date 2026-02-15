@@ -108,14 +108,14 @@ function updateMatchesPlayedChart(matchListSummary) {
                 ...(matchesPlayedRankingList ? {} : {
                     annotation: {
                         annotations: {
-                            lineFiftyPercent: {
+                            fiftyPercentLine: {
                                 type: 'line',
                                 xMin: 50, // Y-axis value where the line starts
                                 xMax: 50, // Y-axis value where the line ends
                                 borderColor: 'rgba(255, 0, 0, 1)',
                                 borderWidth: 2,
                             },
-                            linePlayerValue: {
+                            playerValueLine: {
                                 type: 'line',
                                 xMin: playerValue, // Y-axis value where the line starts
                                 xMax: playerValue, // Y-axis value where the line ends
@@ -299,14 +299,14 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                 legend: { position: 'bottom' },                
                 annotation: {
                     annotations: {
-                        lineFiftyPercent: {
+                        fiftyPercentLine: {
                             type: 'line',
                             xMin: 50, // Y-axis value where the line starts
                             xMax: 50, // Y-axis value where the line ends
                             borderColor: 'rgba(255, 0, 0, 0.7)',
                             borderWidth: 2,
                         },
-                        linePlayerValue: {
+                        playerValueLine: {
                             type: 'line',
                             xMin: matchesWon[0], // Y-axis value where the line starts
                             xMax: matchesWon[0], // Y-axis value where the line ends
@@ -518,7 +518,7 @@ function updateRatingListChart(matchListSummary) {
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
-                        lineStartingElo: {
+                        startingEloLine: {
                             type: 'line',
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
@@ -759,7 +759,7 @@ function updateScoresChart(scoresSummary) {
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
-                        lineStartingElo: {
+                        startingEloLine: {
                             type: 'line',
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
@@ -836,7 +836,7 @@ function updateStreakChart(rankingSummary) {
             legend: { position: 'bottom' },
             annotation: {
                 annotations: {
-                    lineZero: {
+                    zeroLine: {
                         type: 'line',
                         xMin: 0, // Y-axis value where the line starts
                         xMax: 0, // Y-axis value where the line ends
@@ -872,14 +872,14 @@ function updateStreakChart(rankingSummary) {
     if (rankingSummary[yourName]) {
         chartOptions.plugins.annotation = {
             annotations: {
-                lineZero: {
+                zeroLine: {
                     type: 'line',
                     xMin: 0, // Y-axis value where the line starts
                     xMax: 0, // Y-axis value where the line ends
                     borderColor: 'rgba(255, 0, 0, 1)',
                     borderWidth: 3,
                 },
-                linePlayerValue: {
+                playerValueLine: {
                     type: 'line',
                     xMin: playerValue, // Y-axis value where the line starts
                     xMax: playerValue, // Y-axis value where the line ends
