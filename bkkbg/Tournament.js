@@ -104,7 +104,6 @@ function generateSingleElimination(selectedPlayers, lastChance = '') {
 
 function beautifyTournament() {
     const showPastMatches = document.getElementById('showPastMatches').checked;
-    const showBeautiful = document.getElementById('showBeautiful').checked;
     const showFutureMatches = document.getElementById('showFutureMatches').checked;
 
     let tournamentHTML = '';
@@ -121,7 +120,7 @@ function beautifyTournament() {
     }
 
     // beautify the tournament
-    if (showBeautiful && tournamentHTML) {
+    if (tournamentHTML) {
         tournamentHTML = tournamentHTML.replace(/(&lt;)|(&gt;)/g, '🖤');
         tournamentHTML = tournamentHTML.replace(/_/g, '💤');
         tournamentHTML = tournamentHTML.replace(/#/g, '🎲');
