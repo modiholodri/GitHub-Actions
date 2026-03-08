@@ -18,12 +18,11 @@ function loadToggleSetting(elementName) {
 
 function loadCheckedSetting(elementName, defaultValue) {
     const checked = localStorage.getItem(elementName) || defaultValue;
-    document.getElementById(elementName).checked = checked == 'true';
+    document.getElementById(elementName).checked = checked === 'true';
 }
 
 function loadValueSetting(elementName, defaultValue) {
-    const value = localStorage.getItem(elementName) || defaultValue;
-    document.getElementById(elementName).value = value;
+    document.getElementById(elementName).value = localStorage.getItem(elementName) || defaultValue;
 }
 
 // Load settings from localStorage
