@@ -2,6 +2,15 @@ let tournamentGenerated = false;
 
 let tournamentData = '';
 
+function scrollToElement(element) {
+    const targetElement = document.getElementById(element);
+
+    targetElement.scrollIntoView({
+        behavior: 'smooth', // Optional: for smooth scrolling animation
+        block: 'start'      // Optional: aligns the element to the top of the viewport
+    });
+}
+
 function generateTournament(selectedPlayers) {
     let tournamentType = document.getElementById('tournamentType').value;
     switch (tournamentType) {
@@ -32,6 +41,7 @@ function generateTournament(selectedPlayers) {
     else {
         beautifyTournament();
     }
+    scrollToElement('tournamentManagementToggle');
 }
 
 function tournamentInfo() {
