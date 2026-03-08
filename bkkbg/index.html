@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="expires" max-age="86400">
+    <meta http-equiv="refresh" max-age="86400">
     <title>Bangkok Backgammon</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="club.css">
@@ -241,7 +241,7 @@
         <div class="container">
             <h3 id="settingsToggle" type="button" data-toggle="collapse" data-target="#settings" aria-expanded="false" aria-controls="settings">
                 ⚙ Settings ⇅
-            </button></h3>
+            </h3>
             <!-- You Name -->
             <div id="settings" class="collapse">
                 <div class="input-group">
@@ -261,7 +261,7 @@
 
 
         <footer class="text-center mt-4 mb-2" style="color: gray;">
-            <small>&copy; 2025 Reinhold Lauer. All rights reserved.</small>
+            <small>&copy; 2026 Reinhold Lauer. All rights reserved.</small>
         </footer>
     </div>
 
@@ -277,19 +277,19 @@
 
     
     <script>
-        var playerRating = {};  // the player ratings from the rating list on GitHub
+        const playerRating = {};  // the player ratings from the rating list on GitHub
 
-        var matchRecords = '';  // all the matches ever played split in single lines, still in markdown format
-        var totalMatchList = '';  // all the matches ever played in markdown format
+        let matchRecords = '';  // all the matches ever played split in single lines, still in Markdown format
+        let totalMatchList = '';  // all the matches ever played in Markdown format
 
-        var matchList = '';  // only the applicable matches
-        var ranglistenMatchList = '';  // only the matches applicable for the Rangliste
+        let matchList = '';  // only the applicable matches
+        let ranglistenMatchList = '';  // only the matches applicable for the Rangliste
 
-        var ratingSummary = {};  // summary for the Rating list
-        var rankingSummary = {};  // summary for ranking lists
-        var ranglistenSummary = {};  // summary for the Rangliste
-        var playerSummary = {};  // summary for a player
-        var playerProgressList = {};  // summary for the progression over time
+        let ratingSummary = {};  // summary for the Rating list
+        let rankingSummary = {};  // summary for ranking lists
+        let ranglistenSummary = {};  // summary for the Rangliste
+        let playerSummary = {};  // summary for a player
+        let playerProgressList = {};  // summary for the progression over time
 
         document.getElementById('generateTournamentButton').addEventListener('click', function() {
             const playersList = document.getElementById('playersList');
@@ -366,7 +366,7 @@
                     }
                     break;
                 case 'playerProgress':
-                    if (totalMatchList != '') {
+                    if (totalMatchList !== '') {
                         if (!playerProgressCalculated) {
                             playerProgressList = summarizePlayerProgress(totalMatchList);
                             playerProgressCalculated = true;
@@ -377,12 +377,12 @@
                     break;
                 case 'highScores':
                 case 'lowScores':
-                    if (totalMatchList != '') {
+                    if (totalMatchList !== '') {
                         if (!playerProgressCalculated) {
                             playerProgressList = summarizePlayerProgress(totalMatchList);
                             playerProgressCalculated = true;
                         }
-                        scoresSummary = summarizeScores(playerProgressList);
+                        let scoresSummary = summarizeScores(playerProgressList);
                         updateScoresChart(scoresSummary);
                         createScoresList('rankingSummary', scoresSummary);
                     }
@@ -449,7 +449,7 @@
 
         // Handle blur event to remove active class
         document.querySelectorAll('.multiple_select').forEach(function(select) {
-            select.addEventListener('blur', function(e) {
+            select.addEventListener('blur', function() {
                 this.classList.remove('multiple_select_active');
             });
         });
@@ -461,18 +461,18 @@
                     e.preventDefault();
                     this.selected = !this.selected;
                     // Trigger change event manually
-                    var event = new Event('change', { bubbles: true });
+                    const event = new Event('change', {bubbles: true});
                     select.dispatchEvent(event);
                 });
             });
         });
 
         // Handle #playersList change
-        var playersList = document.getElementById("playersList");
+        const playersList = document.getElementById("playersList");
         if (playersList) {
             playersList.addEventListener('change', function() {
-                var selected = Array.from(playersList.selectedOptions).map(opt => opt.value).join(', ');
-                var document_style = document.documentElement.style;
+                const selected = Array.from(playersList.selectedOptions).map(opt => opt.value).join(', ');
+                const document_style = document.documentElement.style;
                 if (selected !== "")
                     document_style.setProperty('--text', "'" + selected + "'");
                 else
