@@ -274,7 +274,6 @@ function generateSiam(selectedPlayers) {
 
     // fill in the players
     let i = 1;
-    const playerOffset = Math.ceil(numPlayers / 2);
     while (i <= matchesPerRound) {
         html = html.replace(`~P${i}~`, sortedPlayers[i - 1] || 'Bye');
         html = html.replace(`~P${matchesPerRound + i}~`, sortedPlayers[matchesPerRound + i - 1] || 'Bye');
@@ -359,7 +358,7 @@ function generateRoundRobinTournament(groupName, selectedPlayers, length) {
 
     // generate the HTML for the tournament
     let html = `<h5>Round Robin ${groupName} - ${length} points</h5>\n`;
-    rounds.forEach((matches, i) => {
+    rounds.forEach((matches) => {
         html += `<p>\n`;
         matches.forEach(match => {
             html += `${match}<br>\n`;
@@ -465,7 +464,7 @@ function generateEloSortedTable(winCounts, lossCounts, eloPoints) {
         ranking.push({ rank: currentRank, ...r });
     }
 
-    // Build markdown table
+    // Build Markdown table
     let rankingTable = '|#|Name|W|L|%W|Elo|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
     ranking.forEach(row => {
         const percentWon = Math.round((row.wins*1000)/(row.wins+row.losses))/10;
@@ -626,17 +625,16 @@ function generateTournamentSummary() {
         tournamentSummary += generateLossesSortedTable(winCounts, lossCounts, eloPoints) + `\n</div>\n`;
     }
 
-    const tournamentSummaryHTML = marked.parse(tournamentSummary);
-    
-    return tournamentSummaryHTML;
+    return marked.parse(tournamentSummary);
 }
 
-var todaysMatches = [];
-// Get todays matches
+let todaysMatches = [];
+
+// Get today's matches
 function highlightTodaysMatches() {
     const tournamentLines = tournamentData.split('\n');
-    var siamAdditionalLine = -1;
-    for (var i = 0; i < todaysMatches.length; i++) {
+    let siamAdditionalLine = -1;
+    for (let i = 0; i < todaysMatches.length; i++) {
         if (todaysMatches[i].length > 0) {
             const matchInfo = todaysMatches[i].split('|');
             const winner = matchInfo[2];
@@ -647,10 +645,10 @@ function highlightTodaysMatches() {
             const doubleEliminationMatchRegex = new RegExp(`^(${winner}|${loser}) # (\\d+) # (${winner}|${loser})\\b`, 'i');
 
             // var foundAdditionalMatch = true;
-            for (var j = 0; j < tournamentLines.length; j++) {
+            for (let j = 0; j < tournamentLines.length; j++) {
                 if (tournamentLines[j][0] === '<') {
                     // check if the line matches Siam Additional
-                    if (siamAdditionalLine == -1 && tournamentLines[j].match(/Siam Additional/)) {
+                    if (siamAdditionalLine === -1 && tournamentLines[j].match(/Siam Additional/)) {
                         siamAdditionalLine = j;
                     }
                     continue; // skip HTML tags - info and completed matches
@@ -699,7 +697,7 @@ function highlightTodaysMatches() {
 
         const today = new Date().toISOString().slice(0, 10);
 
-        var playedMatches = [];
+        const playedMatches = [];
         for (let i = 0; i < tournamentLines.length; i++) {
             if (tournamentLines[i].startsWith('<span')) {
                 let tempDIV = document.createElement('div');
@@ -720,7 +718,7 @@ function highlightTodaysMatches() {
             }
         }
 
-        var additionalMatches = todaysMatches;
+        const additionalMatches = todaysMatches;
         for(let i = 0; i < playedMatches.length; i++) {
             const index = additionalMatches.indexOf(playedMatches[i]); // Find the index of the value
             if (index !== -1) {
@@ -736,15 +734,14 @@ function highlightTodaysMatches() {
         }
     }
 
-    html = tournamentLines.join('\n');
-    tournamentData = html;
+    tournamentData = tournamentLines.join('\n');
 }
 
 function resolveByes() {
     const tournamentLines = tournamentData.split('\n');
     // fix the Byes
     const doubleEliminationMatchRegex = new RegExp(`^(.+) [#_] (\\d+) [#_] (.+)\\b`, 'i');
-    for (var j = 0; j < tournamentLines.length; j++) {
+    for (let j = 0; j < tournamentLines.length; j++) {
         if (tournamentLines[j].includes('Bye')) {
             if (tournamentLines[j].match(doubleEliminationMatchRegex)) {
                 const playerA = tournamentLines[j].match(doubleEliminationMatchRegex)[1]; // Get player A
@@ -915,15 +912,15 @@ function autoMode() {
 
         if (activeMatch && activeMatch.player1 && activeMatch.player2) {
             const matchLength = document.getElementById('matchLengths').value.split(/\s+/)[0] || '5';
-            
+
             // swap players randomly and let the luckiest bastard win
             if (generator.random() > 0.5) {
                 const _tmp = activeMatch.player1;
                 activeMatch.player1 = activeMatch.player2;
                 activeMatch.player2 = _tmp;
             }
-            winnerName = activeMatch.player1;
-            loserName = activeMatch.player2;
+            const winnerName = activeMatch.player1;
+            const loserName = activeMatch.player2;
 
             const datetime = new Date();
             const dateString = datetime.toISOString().split('T')[0];
@@ -936,20 +933,20 @@ function autoMode() {
             highlightTodaysMatches();
             beautifyTournament();
         }
-        
+
         // initialize counter on first run
         if (!btn.dataset.counter) {
             btn.dataset.counter = '0';
 
             // observe the button so we can restore its label when auto mode is disabled
             const observer = new MutationObserver(() => {
-            if (btn.dataset.autostate === 'off' || !btn.classList.contains('active')) {
-                btn.textContent = 'Fake';
-                delete btn.dataset.counter;
-                observer.disconnect();
-            }
+                if (btn.dataset.autostate === 'off' || !btn.classList.contains('active')) {
+                    btn.textContent = 'Fake';
+                    delete btn.dataset.counter;
+                    observer.disconnect();
+                }
             });
-            observer.observe(btn, { attributes: true, attributeFilter: ['data-autostate', 'class'] });
+            observer.observe(btn, {attributes: true, attributeFilter: ['data-autostate', 'class']});
         }
 
         // increment simple counter and update the button text
@@ -1001,7 +998,8 @@ document.getElementById('finishTournamentButton').addEventListener('click', func
 });
 
 
-var lastUploadTime = Date.now();
+let lastUploadTime = Date.now();
+
 async function uploadTournament() {
     // prevent spamming GitHub
     if (Date.now() - lastUploadTime < 5000) {
@@ -1024,7 +1022,7 @@ async function uploadTournament() {
         document.getElementById("finishTournamentButton").disabled = true;
     }
     else try {
-        const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
+        await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
             method: 'POST',
             headers: {
                 'Authorization': `token ${githubToken}`,
@@ -1081,7 +1079,7 @@ function fetchLastTournament() {
 
 function highlightYourNameInTournament(tournamentHTML) {
     const yourName = document.getElementById('yourName').value.trim();
-    if (!yourName || yourName == '') {
+    if (!yourName || yourName === '') {
         return tournamentHTML;
     }
 
@@ -1094,11 +1092,11 @@ function highlightYourNameInTournament(tournamentHTML) {
     return tournamentHTML;
 }
 
-// Get todays matches
+// Get today's matches
 function getTodaysMatches(matchRecords) {
     const today = new Date().toISOString().slice(0, 10);
     todaysMatches = [];
-    for (var i = matchRecords.length-1; i > 1; i--) {
+    for (let i = matchRecords.length-1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
             const matchInfo = matchRecords[i].split('|');
             const matchDate = matchInfo[1];
