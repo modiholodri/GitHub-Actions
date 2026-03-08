@@ -2,27 +2,28 @@
 function populatePlayedTimeSpanMatchList() {
     if (matchRecords.length === 0) return false;
 
-    var timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
+    const timeSpanRegex = new RegExp(document.getElementById("timeSpanSelection").value);
     let gotMatches = false;
     let gotRanglistenMatches = false;
 
+    // global variable, do not add let
     matchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
     ranglistenMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
-    for (var i = matchRecords.length-1; i > 1; i--) {
+    
+    for (let i = matchRecords.length - 1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
-            var matchInfo = matchRecords[i].split('|');
+            const matchInfo = matchRecords[i].split('|');
             const matchDate = matchInfo[1];
             if (timeSpanRegex.test(matchDate)) {
                 matchList += `${matchRecords[i]}\n`;
                 gotMatches = true
                 const datetime = new Date(matchDate);
-                const isTournamentDay = datetime.getDay() == tournamentDay;
+                const isTournamentDay = datetime.getDay() === tournamentDay;
                 if (isTournamentDay) {
                     ranglistenMatchList += `${matchRecords[i]}\n`;
                     gotRanglistenMatches = true;
                 }
-            }
-            else if (gotMatches) break;
+            } else if (gotMatches) break;
         }
     }
 
@@ -41,18 +42,18 @@ function populatePlayedTimeSpanMatchList() {
 function populatePlayerMatchList() {
     if (matchRecords.length === 0) return;
 
-    playerName = document.getElementById('playerName').value;
+    let playerName = document.getElementById('playerName').value;
     if (playerName === 'Select or Edit') {
         document.getElementById('rankingSummary').innerHTML = '';
         document.getElementById('matchList').innerHTML = '';
         return;
     }
 
-    var timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
+    const timeSpanRegex = new RegExp(document.getElementById("timeSpanSelection").value);
 
     let matchesPlayed = 0;
-    var playerMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
-    for (var i = matchRecords.length-1; i > 1; i--) {
+    let playerMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
+    for (let i = matchRecords.length-1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
             const matchInfo = matchRecords[i].split('|');
             const matchDate = matchInfo[1];
@@ -81,15 +82,13 @@ function populatePlayerMatchList() {
 // Summarize the Match List
 function summarizeRatingList(matchList) {
     const ratingListSummary = {};
-    var matchRecords = matchList.split("\n");
+    const matchRecords = matchList.split("\n");
 
-    for (var i = matchRecords.length-1; i > 1; i--) {
+    for (let i = matchRecords.length-1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
             const matchInfo = matchRecords[i].split('|');
-            const matchDate = matchInfo[1];
             const winner = matchInfo[2];
             const loser = matchInfo[3];
-            const matchLength = matchInfo[4];
 
             // Initialize player ratingListSummary if not already present
             if (!ratingListSummary[winner]) {
@@ -116,11 +115,16 @@ function summarizeRatingList(matchList) {
     const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
 
     for (const [player, stats] of Object.entries(ratingListSummary)) {
+        if (typeof playerRating[player] !== 'undefined') {
             stats.percentMatchesWon = Math.round(stats.matchesWon*1000/stats.matchesPlayed)/10;
             stats.expectedMatchesWon = Math.round(1000 * (1 / (1 + Math.pow(10, -(playerRating[player].rating - initialRating) * matchLengthRoot / 2000))))/10;
             stats.rating = playerRating[player].rating;
             stats.futureRating = stats.rating;
-    }   
+        }
+        else {
+            alert ( player + ' rating not found!');
+        }
+    }
 
     return ratingListSummary;
 }
@@ -128,13 +132,13 @@ function summarizeRatingList(matchList) {
 // Summarize the Match List
 function summarizeMatchList(matchList) {
     const matchListSummary = {};
-    var matchRecords = matchList.split("\n");
+    const matchRecords = matchList.split("\n");
 
     const rankingListSelection = document.getElementById('rankingListSelection').value;
     const isStreakSelected = rankingListSelection.includes('Streak');
     const isRanglisteSelected = /rangliste|daysInactive/.test(rankingListSelection);
 
-    for (var i = matchRecords.length-1; i > 1; i--) {
+    for (let i = matchRecords.length-1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
             const matchInfo = matchRecords[i].split('|');
             const matchDate = matchInfo[1];
@@ -165,7 +169,7 @@ function summarizeMatchList(matchList) {
             
             // Increment played/won/lost counts
             const datetime = new Date(matchDate);
-            const isTournamentDay = datetime.getDay() == tournamentDay;
+            const isTournamentDay = datetime.getDay() === tournamentDay;
             let bonusPunkte = isTournamentDay ? 5 : 0;  // for playing on Saturday
 
             // winner
@@ -225,9 +229,9 @@ function summarizeMatchList(matchList) {
 
 // Adjust the Expected Rating based on the Match List
 function adjustExpectedRatingList(matchList) {
-    var matchRecords = matchList.split("\n");
+    const matchRecords = matchList.split("\n");
 
-    for (var i = matchRecords.length-1; i > 1; i--) {
+    for (let i = matchRecords.length-1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
             const matchInfo = matchRecords[i].split('|');
             const winner = matchInfo[2];
@@ -254,17 +258,16 @@ function adjustExpectedRatingList(matchList) {
 
     const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
 
-    for (const [player, stats] of Object.entries(ratingSummary)) {
+    for (const [player] of Object.entries(ratingSummary)) {
             ratingSummary[player].expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(ratingSummary[player].futureRating - initialRating) * matchLengthRoot / 2000))));
     }   
 }
 
 
 function populatePlayerRating(ratingList) {
-    const matchListSummary = {};
-    var ratingEntries = ratingList.split("\n");
+    const ratingEntries = ratingList.split("\n");
 
-    for (var i = 0; i < ratingEntries.length; i++) {
+    for (let i = 0; i < ratingEntries.length; i++) {
         if (ratingEntries[i].length > 0) {
             const ratingEntry = ratingEntries[i].split('|');
             const name = ratingEntry[2];
@@ -332,7 +335,7 @@ function summarizePlayerProgress(matchList) {
 // Summarize High and Low Scores
 function summarizeScores(playerProgressList) {
     const scoresSummary = {};
-    var timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
+    const timeSpanRegex = new RegExp(document.getElementById("timeSpanSelection").value);
 
     for (const entry of playerProgressList) {
         if (timeSpanRegex.test(entry.date)) {
