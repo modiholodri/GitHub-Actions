@@ -1,4 +1,4 @@
-let oneSecondInterval = setInterval(showSubmissionStatus, 1000);
+setInterval(showSubmissionStatus, 1000);
 
 let newSubmission = false;
 let anotherSubmissionActive = false;
@@ -40,8 +40,14 @@ function showSubmissionStatus() {
     }
 }
 
+function getElementValue (emptyValue, elementId, elementFallbackId) {
+    let value = document.getElementById(elementId).value;
+    if (value === emptyValue) value = document.getElementById(elementFallbackId).value;
+    return value;
+}
+
 // Submit a match report
-var lastSubmitTime = Date.now();
+let lastSubmitTime = Date.now();
 document.getElementById('matchReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -58,17 +64,9 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
         return;
     }
 
-    // get the winner name
-    let winnerName = document.getElementById('winnerName').value;
-    if (winnerName === 'Select') winnerName = document.getElementById('winnerNameTyped').value;
-    
-    // get the loser name
-    let loserName = document.getElementById('loserName').value;
-    if (loserName === 'Select') loserName = document.getElementById('loserNameTyped').value;
-    
-    // get the match length
-    let matchLength = document.getElementById('matchLengthTyped').value;
-    if (matchLength === '') matchLength = document.getElementById('matchLength').value;
+    let winnerName = getElementValue('Select','winnerName','winnerNameTyped');
+    let loserName = getElementValue('Select','loserName','loserNameTyped');
+    let matchLength = getElementValue('', 'matchLengthTyped','matchLength');
 
     const repoName = document.getElementById('clubSelection').value;
 
@@ -94,7 +92,7 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
             document.getElementById("finishTournamentButton").disabled = true;
         }
         else try {
-            const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
+            await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/dispatches`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `token ${githubToken}`,
@@ -143,26 +141,23 @@ async function  refreshRunsStatus() {
             },
         });
 
-        if (!response.ok) {
+        if (response.ok) {
+            const data = await response.json();
+            const workflowRuns = data.workflow_runs;
+            if (!workflowRuns || workflowRuns.length === 0) {
+                latestRunID = 'xxx';
+                latestRunStatus = 'No Runs';
+                latestRunConclusion = 'N/A';
+                latestRunUpdatedAt = formatTimestamp(new Date());
+                return;
+            }
+            latestRunID = workflowRuns[0].id;
+            latestRunStatus = toTitleCase(workflowRuns[0].status.replaceAll('_', ' '));
+            latestRunUpdatedAt = formatTimestamp(workflowRuns[0].updated_at);
+            latestRunConclusion = workflowRuns[0].conclusion ? toTitleCase(workflowRuns[0].conclusion.toUpperCase()) : 'Wait...';
+        } else {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const data = await response.json();
-        const workflowRuns = data.workflow_runs;
-
-        // ${run.id} ${run.name} ${run.status} ${run.conclusion} ${run.created_at} ${run.updated_at} ${run.jobs_url}`
-        if (!workflowRuns || workflowRuns.length === 0) {
-            latestRunID = 'xxx';
-            latestRunStatus = 'No Runs';
-            latestRunConclusion = 'N/A';
-            latestRunUpdatedAt = formatTimestamp(new Date());
-            return;
-        }
-        
-        latestRunID = workflowRuns[0].id;
-        latestRunStatus = toTitleCase(workflowRuns[0].status.replaceAll('_', ' '));
-        latestRunUpdatedAt = formatTimestamp(workflowRuns[0].updated_at);
-        latestRunConclusion = workflowRuns[0].conclusion ? toTitleCase(workflowRuns[0].conclusion.toUpperCase()) : 'Wait...';;
     } 
     catch (error) { 
         alert('Error triggering GitHub Action: ' + error.message); // Handle error (e.g., notify user, retry, etc.)
@@ -214,19 +209,11 @@ document.getElementById("updateSubmissionStatus").addEventListener("click", asyn
 
 
 function submitFakeMatchReport() {
-    // get the winner name
-    let winnerName = document.getElementById('winnerName').value;
-    if (winnerName === 'Select') winnerName = document.getElementById('winnerNameTyped').value;
-    
-    // get the loser name
-    let loserName = document.getElementById('loserName').value;
-    if (loserName === 'Select') loserName = document.getElementById('loserNameTyped').value;
-    
-    // get the match length
-    let matchLength = document.getElementById('matchLengthTyped').value;
-    if (matchLength === '') matchLength = document.getElementById('matchLength').value;
+    let winnerName = getElementValue('Select','winnerName','winnerNameTyped');
+    let loserName = getElementValue('Select','loserName','loserNameTyped');
+    let matchLength = getElementValue('', 'matchLengthTyped','matchLength');
 
-    const repoName = document.getElementById('clubSelection').value;
+    // const repoName = document.getElementById('clubSelection').value;
 
     if (!winnerName) {
         alert('Select or edit the Winner name!');
