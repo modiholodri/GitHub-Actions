@@ -111,6 +111,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                                 xMin: 50, // Y-axis value where the line starts
                                 xMax: 50, // Y-axis value where the line ends
                                 borderColor: 'rgba(255, 0, 0, 1)',
+                                borderDash: [5, 5],
                                 borderWidth: 2,
                             },
                             playerValueLine: {
@@ -119,6 +120,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                                 xMin: playerValue, // Y-axis value where the line starts
                                 xMax: playerValue, // Y-axis value where the line ends
                                 borderColor: 'rgba(75, 192, 192, 1)',
+                                borderDash: [5, 5],
                                 borderWidth: 2,
                             }
                         }
@@ -303,13 +305,15 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                             xMin: 50, // Y-axis value where the line starts
                             xMax: 50, // Y-axis value where the line ends
                             borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderDash: [5, 5],
                             borderWidth: 2,
                         },
                         playerValueLine: {
                             type: 'line',
                             xMin: matchesWon[0], // Y-axis value where the line starts
                             xMax: matchesWon[0], // Y-axis value where the line ends
-                            borderColor: 'rgba(0, 0, 255, 0.7)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderDash: [5, 5],
                             borderWidth: 2,
                         }
                     }
@@ -528,6 +532,7 @@ function updateRatingListChart(matchListSummary) {
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
                             borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderDash: [5, 5],
                             borderWidth: 2,
                         },
                         playerValueLine: {
@@ -536,7 +541,8 @@ function updateRatingListChart(matchListSummary) {
                             xMin: playerValue, // Y-axis value where the line starts
                             xMax: playerValue, // Y-axis value where the line ends
                             borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
                         }
                     }
                 }                    
@@ -604,6 +610,10 @@ function updatePlayerProgressChart(progressList) {
         return bLast - aLast;
     });
 
+    // get your current player value
+    const yourName = document.getElementById('yourName').value.trim();
+    const playerValue = Math.round(playerProgress[yourName]?.[playerProgress[yourName].length-1].rating);
+
     // Only include datasets for players active in the selected time span
     const datasets = sortedPlayers
         .filter(player => activePlayers.has(player))
@@ -665,7 +675,28 @@ function updatePlayerProgressChart(progressList) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { position: 'bottom' }
+                legend: { position: 'bottom' },
+                annotation: {
+                    annotations: {
+                        startingEloLine: {
+                            type: 'line',
+                            yMin: 1800, // Y-axis value where the line starts
+                            yMax: 1800, // Y-axis value where the line ends
+                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        },
+                        playerValueLine: {
+                            type: 'line',
+                            display: playerValue,
+                            yMin: playerValue, // Y-axis value where the line starts
+                            yMax: playerValue, // Y-axis value where the line ends
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        }
+                    }
+                }
             },
             scales: {
                 x: {
@@ -779,6 +810,7 @@ function updateScoresChart(scoresSummary) {
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
                             borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderDash: [5, 5],
                             borderWidth: 2,
                         },
                         playerValueLine: {
@@ -787,7 +819,8 @@ function updateScoresChart(scoresSummary) {
                             xMin: playerValue, // Y-axis value where the line starts
                             xMax: playerValue, // Y-axis value where the line ends
                             borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
                         }
                     }
                 }                    
@@ -864,7 +897,8 @@ function updateStreakChart(rankingSummary) {
                         xMin: 0, // Y-axis value where the line starts
                         xMax: 0, // Y-axis value where the line ends
                         borderColor: 'rgba(255, 0, 0, 1)',
-                        borderWidth: 3,
+                        borderDash: [5, 5],
+                        borderWidth: 2,
                     }
                 }
             }
@@ -900,14 +934,16 @@ function updateStreakChart(rankingSummary) {
                     xMin: 0, // Y-axis value where the line starts
                     xMax: 0, // Y-axis value where the line ends
                     borderColor: 'rgba(255, 0, 0, 1)',
-                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    borderWidth: 2,
                 },
                 playerValueLine: {
                     type: 'line',
                     xMin: playerValue, // Y-axis value where the line starts
                     xMax: playerValue, // Y-axis value where the line ends
                     borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 3,
+                    borderDash: [5, 5],
+                    borderWidth: 2,
                 }
             }
         };
