@@ -13,30 +13,32 @@ let latestRunUpdatedAt = '';
 function showSubmissionStatus() {
     // show the status of a new submission until the status is Completed
     if (newSubmission) {
-        refreshRunsStatus();
-        if (latestRunID !== previousRunID) {
-            setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
-            if (latestRunStatus === 'Completed') {
-                fetchRatingList();
-                fetchMatchList();
-                newSubmission = false;
-                document.getElementById("submit").disabled = false;
-                document.getElementById("startTournamentButton").disabled = false;
-                document.getElementById("finishTournamentButton").disabled = false;
+        refreshRunsStatus().then(() => {
+            if (latestRunID !== previousRunID) {
+                setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
+                if (latestRunStatus === 'Completed') {
+                    fetchRatingList();
+                    fetchMatchList();
+                    newSubmission = false;
+                    document.getElementById("submit").disabled = false;
+                    document.getElementById("startTournamentButton").disabled = false;
+                    document.getElementById("finishTournamentButton").disabled = false;
+                }
             }
-        }
+        });
     }
 
     // show the status of other submissions until the submission is Completed
     if (anotherSubmissionActive) {
-        refreshRunsStatus();
-        setRunsInfo(`${latestRunID}: ${latestRunStatus} -> ${latestRunConclusion}`);
-        if (latestRunStatus === 'Completed') {
-            anotherSubmissionActive = false;
-            document.getElementById("submit").disabled = false;
-            document.getElementById("startTournamentButton").disabled = false;
-            document.getElementById("finishTournamentButton").disabled = false;
-        }
+        refreshRunsStatus().then(() => {
+            setRunsInfo(`${latestRunID}: ${latestRunStatus} -> ${latestRunConclusion}`);
+            if (latestRunStatus === 'Completed') {
+                anotherSubmissionActive = false;
+                document.getElementById("submit").disabled = false;
+                document.getElementById("startTournamentButton").disabled = false;
+                document.getElementById("finishTournamentButton").disabled = false;
+            }
+        });
     }
 }
 
@@ -156,7 +158,7 @@ async function  refreshRunsStatus() {
             latestRunUpdatedAt = formatTimestamp(workflowRuns[0].updated_at);
             latestRunConclusion = workflowRuns[0].conclusion ? toTitleCase(workflowRuns[0].conclusion.toUpperCase()) : 'Wait...';
         } else {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            alert(`HTTP error! status: ` + response.status);
         }
     } 
     catch (error) { 
