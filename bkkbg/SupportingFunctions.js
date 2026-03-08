@@ -6,20 +6,20 @@ function populateTimeSpanSelectionList(matchRecords) {
     const intervalLengths = {"Daily":10, "Monthly":7, "Quarterly":7, "Yearly":4, "ET":0};
     const selectedIntervalLength = intervalLengths[interval];
 
-    var matchDays = 0;
-    var matchTimeSpanOptions = '';
+    let matchDays = 0;
+    let matchTimeSpanOptions = '';
 
     let lastMatchID = -1;
     let lastQuarter = -1;
     let timeSpanSuffix = '';
     let matchIdRegex = '';
     let timeSpanPrefix = '';
-    for (var i = matchRecords.length-1; i > 1; i--) {
+    for (let i = matchRecords.length-1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
-            var matchInfo = matchRecords[i].split('|');
+            const matchInfo = matchRecords[i].split('|');
             const matchDate = matchInfo[1];
             const matchID = matchDate.substring(0,selectedIntervalLength);
-            if (matchID != lastMatchID) {
+            if (matchID !== lastMatchID) {
                 matchDays++;
                 const datetime = new Date(matchDate);
 
@@ -97,17 +97,17 @@ function fetchFrequentPlayers() {
     .then(response => response.json())
     .then(data => {
         if (data.content) {
-            const fileContent = decodeURIComponent(escape(window.atob( data.content )));
+            const fileContent = decodeURIComponent(encodeURI(window.atob( data.content )));
 
-            var frequentPlayers = fileContent.split("\n");
-            var playersList = '';
+            const frequentPlayers = fileContent.split("\n");
+            let playersList = '';
 
-            for (var i = 0; i < frequentPlayers.length; i++) {
+            for (let i = 0; i < frequentPlayers.length; i++) {
                 if (frequentPlayers[i].length > 0) {
                     playersList += `<option class="centered" value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
                 }
             }
-            var playerOptions = '<option class="centered" value="Select">Select</option>\n' + playersList;
+            const playerOptions = '<option class="centered" value="Select">Select</option>\n' + playersList;
 
             document.getElementById("winnerName").innerHTML = playerOptions;
             document.getElementById("loserName").innerHTML = playerOptions;
@@ -131,7 +131,7 @@ function fetchFrequentPlayers() {
     .catch(error => console.error('Error:', error));
 }
 
-// Synchronously fetch the RatingList markdown file and return its content
+// Synchronously fetch the RatingList Markdown file and return its content
 function fetchMarkDownFromRepoSync(fileName, elementName) {
     const repoName = document.getElementById('clubSelection').value;
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}.md?timestamp=${Date.now()}`;
@@ -144,7 +144,7 @@ function fetchMarkDownFromRepoSync(fileName, elementName) {
     if (xhr.status === 200) {
         const data = JSON.parse(xhr.responseText);
         if (data.content) {
-            const fileContent = decodeURIComponent(escape(window.atob(data.content)));
+            const fileContent = decodeURIComponent(encodeURI(window.atob(data.content)));
             document.getElementById(elementName).innerHTML = marked.parse(fileContent);
             return fileContent;
         }
@@ -153,7 +153,7 @@ function fetchMarkDownFromRepoSync(fileName, elementName) {
     return '';
 }
 
-// Fetch a markdown file from the repository
+// Fetch a Markdown file from the repository
 function fetchMarkDownFromRepo(fileName, elementName) {
     const repoName = document.getElementById('clubSelection').value;
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}.md?timestamp=${Date.now()}`;
@@ -169,7 +169,7 @@ function fetchMarkDownFromRepo(fileName, elementName) {
     .then(response => response.json())
     .then(data => {
         if (data.content) {
-            const fileContent = decodeURIComponent(escape(window.atob( data.content )));
+            const fileContent = decodeURIComponent(encodeURI(window.atob( data.content )));
             document.getElementById(elementName).innerHTML = marked.parse(fileContent);
             return fileContent;
         } else {
@@ -181,7 +181,7 @@ function fetchMarkDownFromRepo(fileName, elementName) {
 
 // Refresh the Backgammon Club Title
 function refreshWebPageTitle () {
-    var sel = document.getElementById('clubSelection');
+    const sel = document.getElementById('clubSelection');
     document.getElementById('webPageTitle').innerText = sel.options[sel.selectedIndex].text;
     document.title = sel.options[sel.selectedIndex].text;
 }
@@ -202,7 +202,7 @@ function fetchMatchList() {
     .then(response => response.json())
     .then(data => {
         if (data.content) {
-            totalMatchList = decodeURIComponent(escape(window.atob( data.content )));
+            totalMatchList = decodeURIComponent(encodeURI(window.atob( data.content )));
 
             matchRecords = totalMatchList.split("\n");
             
