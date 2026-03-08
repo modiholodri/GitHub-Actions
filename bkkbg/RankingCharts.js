@@ -30,9 +30,7 @@ function optimizeChartCanvasHeight(rankingChartCanvas, numberOfPlayers) {
     const heightPerPlayer = 20; // Height per player in pixels
     const additionalHeight = 100;
     const minHeight = additionalHeight + heightPerPlayer; // Minimum height for the canvas
-    const calculatedHeight = Math.max(numberOfPlayers * heightPerPlayer + additionalHeight, minHeight);
-
-    document.getElementById(rankingChartCanvas).height = calculatedHeight;
+    document.getElementById(rankingChartCanvas).height = Math.max(numberOfPlayers * heightPerPlayer + additionalHeight, minHeight);
 }
 
 // Remember the hidden state of the datasets and set them again
@@ -434,7 +432,7 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
     });
 }
 
-let ratingListPlayInterval = setInterval(playRatingList, 200);
+setInterval(playRatingList, 200);
 
 let remainingReplayTimes = 0;
 function startPlayingRatingList() {
@@ -576,7 +574,7 @@ function updatePlayerProgressChart(progressList) {
     let lastMatchInTimeSpan = 1000;
     let firstMatchInTimeSpan = 0;
     let activePlayers = new Set(); 
-    for (var i = progressList.length-1; i > 1; i--) {
+    for (let i = progressList.length-1; i > 1; i--) {
         if (timeSpanRegex.test(progressList[i].date)) {
             if (!foundTimeSpan) {
                 lastMatchInTimeSpan = progressList[i].match;
