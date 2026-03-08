@@ -115,6 +115,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                             },
                             playerValueLine: {
                                 type: 'line',
+                                display: playerValue,
                                 xMin: playerValue, // Y-axis value where the line starts
                                 xMax: playerValue, // Y-axis value where the line ends
                                 borderColor: 'rgba(75, 192, 192, 1)',
