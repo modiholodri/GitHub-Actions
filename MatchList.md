@@ -184,7 +184,6 @@
 |2025-10-20|Comet|Happy|5|
 |2025-10-20|Black|Moron|5|
 |2025-10-20|Moron|Black|5|
-
 |2025-10-21|Bastard|Beginner|5|
 |2025-10-21|Expert|Black|5|
 |2025-10-21|Awful|Bastard|5|
