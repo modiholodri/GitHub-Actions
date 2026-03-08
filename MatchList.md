@@ -46,7 +46,6 @@
 |2025-02-22|Awful|Loser|5|
 |2025-02-22|Expert|Master|11|
 |2025-02-22|Loser|Winner|5|
-|2025-02-22|Ostavius gurka|Manfalang|5|
 |2025-02-22|Ostavius Gurkka|Manfalang|17|
 |2025-02-22|Ostavius Gurka|Expert|11|
 |2025-02-22|Ostavius Gurka|Expert|5|
@@ -57,7 +56,6 @@
 |2025-02-23|Awful|Seppy|9|
 |2025-02-23|Loser|Runni|7|
 |2025-03-02|Awful|Expert|5|
-|2025-03-02|alibaba|lazada|8|
 |2025-03-02|Ostavius Gurka|Awful|17|
 |2025-03-02|Aladdin|Bumba|11|
 |2025-03-02|Master|Beginner|13|
@@ -73,7 +71,6 @@
 |2025-04-08|Winner|Loser|5|
 |2025-04-27|Loser|Awful|17|
 |2025-05-11|Awful|Loser|17|
-|2025-06-03|Select|Select|5|
 |2025-06-03|Awful|Loser|5|
 |2025-06-11|Jemina|Nutcase|5|
 |2025-06-16|Awful|Expert|5|
