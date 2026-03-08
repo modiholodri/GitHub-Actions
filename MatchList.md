@@ -281,3 +281,4 @@
 |2026-03-08|Awful|Bastard|5|
 |2026-03-08|Awful|Bastard|5|
 |2026-03-08|Awful|Bastard|5|
+|2026-03-08|Awful|Beginner|5|
