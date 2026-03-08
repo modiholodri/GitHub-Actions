@@ -9,7 +9,7 @@ function populatePlayedTimeSpanMatchList() {
     // global variable, do not add let
     matchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
     ranglistenMatchList = matchRecords[0] + '\n' + matchRecords[1] + '\n'; // add the table header
-    
+
     for (let i = matchRecords.length - 1; i > 1; i--) {
         if (matchRecords[i].length > 0) {
             const matchInfo = matchRecords[i].split('|');

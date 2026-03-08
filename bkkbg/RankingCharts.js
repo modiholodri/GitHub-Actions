@@ -712,8 +712,8 @@ function updateScoresChart(scoresSummary) {
     const highScore = players.map(player => Math.round(scoresSummary[player].highScore));
     const currentScore = players.map(player => Math.round(scoresSummary[player].currentScore));
     const lowScore = players.map(player => Math.round(scoresSummary[player].lowScore));
-    const playerValue = Math.round(scoresSummary[yourName].currentScore);
-    
+    const playerValue = Math.round(scoresSummary[yourName]?.currentScore);
+
     // Only destroy and recreate the chart if the number of players changed
     if (remainingReplayTimes < 1 || manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
         setRememberedHiddenStates();
