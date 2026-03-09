@@ -247,7 +247,7 @@
             <div id="settings" class="collapse">
                 <div class="input-group">
                     <span class="input-group-text">Your Name</span>
-                    <input id="yourName" type="text" class="form-control centered" placeholder="Enter your name">
+                    <label for="yourName"></label><input id="yourName" type="text" class="form-control centered" placeholder="Enter your name">
                 </div>
                 <!-- Club Selection -->
                 <div class="input-group">
@@ -577,7 +577,7 @@
             // wait for settings to load, then continue initialization
             (async function() {
                 try {
-                    await loadSettings();
+                    loadSettings();
                 } catch (err) {
                     console.error('Failed to load settings:', err);
                 }
