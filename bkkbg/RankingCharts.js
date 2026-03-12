@@ -659,7 +659,8 @@ function updatePlayerProgressChart(progressList) {
                 pointRadius: 0,
                 pointBorderWidth: 0,
                 pointHoverRadius: 18,
-                pointHitRadius: 24
+                pointHitRadius: 24,
+                borderWidth: 2,
             };
         });
 
@@ -669,7 +670,7 @@ function updatePlayerProgressChart(progressList) {
     rankingChart = new Chart(ctx, {
         type: 'line',
         data: {
-            datasets: datasets
+            datasets: datasets,
         },
         options: {
             responsive: true,
