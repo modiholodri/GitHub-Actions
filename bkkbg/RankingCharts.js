@@ -716,6 +716,7 @@ function updatePlayerProgressChart(progressList) {
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
                 },
                 y: {
+                    position: 'right',
                     beginAtZero: false,
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
                 }
