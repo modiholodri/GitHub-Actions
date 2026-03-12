@@ -1,11 +1,6 @@
 // load the settings once the DOM is ready
 document.addEventListener('DOMContentLoaded', loadSettings);
 
-// Save the settings when the button is clicked
-document.getElementById('saveSettingsButton').addEventListener('click', () => {
-    saveSettings();
-});
-
 // Save settings to localStorage before the page is unloaded
 window.addEventListener('beforeunload', saveSettings);
 
