@@ -8,6 +8,7 @@ Happy
 Hell
 Lucky
 Master
+Meé
 Moon
 Moron
 Star
