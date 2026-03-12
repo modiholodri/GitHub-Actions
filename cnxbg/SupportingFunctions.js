@@ -97,7 +97,7 @@ function fetchFrequentPlayers() {
     .then(response => response.json())
     .then(data => {
         if (data.content) {
-            const fileContent = decodeURIComponent(escape(window.atob( data.content )));
+            const fileContent = decodeURIComponent(encodeURI(window.atob( data.content )));
 
             const frequentPlayers = fileContent.split("\n");
             let playersList = '';
@@ -144,7 +144,7 @@ function fetchMarkDownFromRepoSync(fileName, elementName) {
     if (xhr.status === 200) {
         const data = JSON.parse(xhr.responseText);
         if (data.content) {
-            const fileContent = decodeURIComponent(escape(window.atob(data.content)));
+            const fileContent = decodeURIComponent(encodeURI(window.atob(data.content)));
             document.getElementById(elementName).innerHTML = marked.parse(fileContent);
             return fileContent;
         }
@@ -169,7 +169,7 @@ function fetchMarkDownFromRepo(fileName, elementName) {
     .then(response => response.json())
     .then(data => {
         if (data.content) {
-            const fileContent = decodeURIComponent(escape(window.atob( data.content )));
+            const fileContent = decodeURIComponent(encodeURI(window.atob( data.content )));
             document.getElementById(elementName).innerHTML = marked.parse(fileContent);
             return fileContent;
         } else {
@@ -202,7 +202,7 @@ function fetchMatchList() {
     .then(response => response.json())
     .then(data => {
         if (data.content) {
-            totalMatchList = decodeURIComponent(escape(window.atob( data.content )));
+            totalMatchList = decodeURIComponent(encodeURI(window.atob( data.content )));
 
             matchRecords = totalMatchList.split("\n");
             

@@ -1,0 +1,157 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #0d0064;
+    color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color:#61e7ff;
+    text-align: center;
+    margin-top: 15px;
+}
+
+table {
+    margin: 15px auto auto;
+    width: fit-content;
+}
+
+th {
+    padding: 3px;
+    text-align: center;
+    background-color: #0d0064;
+    color: #61e7ff;
+    white-space: nowrap;
+}
+
+td {
+    padding: 3px;
+    white-space: nowrap;
+}
+
+tr:nth-child(odd) {
+    background-color: #1600a8;
+}
+
+canvas {
+    display: block; /* Prevent inline-block spacing issues */
+    padding: 0;
+    height: auto; /* Adjust height automatically based on content */
+}
+.container-fluid {
+    position: relative; 
+    width: 100%; 
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin-top: 15px;
+}
+
+.btn-primary {
+    background-color: #0004fd;
+    border-color: #1eff29;
+    margin-top: 15px;
+}
+
+.btn-secondary {
+    background-color: #0d0064;
+    border-color: #1eff29;
+    margin-top: 15px;
+}
+
+.input-group-text, .form-select, .form-control {
+    margin-top: 15px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+.input-group-text {
+    flex: 0 0 auto;
+}
+.form-control {
+    flex: 1 1 auto;
+    flex-shrink: 1; /* Allow the input to shrink */
+    min-width: 0; /* Ensure it can shrink to 0 */
+}
+.form-select {
+    flex: 0 0 auto;
+    white-space: nowrap; /* Prevent the select from shrinking */
+}
+
+hr.rounded {
+    border-top: 8px solid #000;
+    border-radius: 5px;
+}
+
+.centered {
+    text-align: center;
+}
+
+
+:root
+{
+	--text: "Select Players...";
+}
+.multiple_select {
+    height: 34px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 12px;
+    position: relative;
+    border: none;
+    z-index: 10;
+
+    /* Black theme */
+    background-color: #000 !important;
+    color: #fff !important;
+    padding: 6px 10px;
+    outline: none;
+    box-shadow: none;
+    caret-color: #fff;
+
+    /* Center text vertically */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Added to center text horizontally */
+}
+
+/* Ensure options match the black theme where possible */
+.multiple_select option {
+    background-color: #000;
+    color: #fff;
+}
+.multiple_select::before
+{
+	content: var(--text);
+	display: block;
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-bottom: 2px;
+}
+.multiple_select_active
+{
+	overflow: visible !important;
+}
+.multiple_select option
+{
+	display: none;
+    height: 32px;
+}
+.multiple_select_active option
+{
+	display: block;
+}
+
+.multiple_select option::before {
+    content: "\2610";
+}
+.multiple_select option:checked::before {
+    content: "\2611";
+}
