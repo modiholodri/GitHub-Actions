@@ -1,11 +1,6 @@
 // load the settings once the DOM is ready
 document.addEventListener('DOMContentLoaded', loadSettings);
 
-// Save the settings when the button is clicked
-document.getElementById('saveSettingsButton').addEventListener('click', () => {
-    saveSettings();
-});
-
 // Save settings to localStorage before the page is unloaded
 window.addEventListener('beforeunload', saveSettings);
 
@@ -66,7 +61,7 @@ function loadSettings() {
     loadToggleSetting('rankingChart');
     loadToggleSetting('rankingSummary');
     loadToggleSetting('matchList');
-    loadToggleSetting('importantInfo');
+    loadToggleSetting('readMe');
 
     // Club Selection
     const clubSelectionElement = document.getElementById('clubSelection');
@@ -127,7 +122,7 @@ function saveSettings() {
     saveToggleSetting('rankingChart');
     saveToggleSetting('rankingSummary');
     saveToggleSetting('matchList');
-    saveToggleSetting('importantInfo');
+    saveToggleSetting('readMe');
 
     saveValueSetting('clubSelection');
 }

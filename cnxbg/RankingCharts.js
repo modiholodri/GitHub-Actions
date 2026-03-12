@@ -659,7 +659,8 @@ function updatePlayerProgressChart(progressList) {
                 pointRadius: 0,
                 pointBorderWidth: 0,
                 pointHoverRadius: 18,
-                pointHitRadius: 24
+                pointHitRadius: 24,
+                borderWidth: 2,
             };
         });
 
@@ -669,7 +670,7 @@ function updatePlayerProgressChart(progressList) {
     rankingChart = new Chart(ctx, {
         type: 'line',
         data: {
-            datasets: datasets
+            datasets: datasets,
         },
         options: {
             responsive: true,
@@ -715,6 +716,7 @@ function updatePlayerProgressChart(progressList) {
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
                 },
                 y: {
+                    position: 'right',
                     beginAtZero: false,
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
                 }
