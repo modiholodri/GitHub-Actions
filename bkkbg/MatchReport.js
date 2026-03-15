@@ -228,7 +228,7 @@ function submitFakeMatchReport() {
         const dateString = datetime.toISOString().split('T')[0];
         const fakeMatch = `|${dateString}|${winnerName}|${loserName}|${matchLength}|`;
 
-        setSubmissionStatus(`Forfeiting match...\n ${fakeMatch}`);
+        setSubmissionStatus(`Forfeiting match...\n ${winnerName} > ${loserName} -> ${matchLength}`);
         matchRecords.push(fakeMatch);
         getTodaysMatches(matchRecords);
         highlightTodaysMatches();
