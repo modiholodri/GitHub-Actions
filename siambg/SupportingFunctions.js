@@ -85,6 +85,8 @@ function selectDefaultPlayer() {
 // Fetch the Frequent Players
 function fetchFrequentPlayers() {
     const repoName = document.getElementById('clubSelection').value;
+    if (repoName === 'siambg-ranking-list') return; // Not needed for the Siam Backgammon Merger
+
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/FrequentPlayers.md?timestamp=${Date.now()}`;
 
     const options = {

@@ -72,6 +72,10 @@ function loadSettings() {
             : '';
     }
     clubSelectionElement.value = clubSelection;
+    if (clubSelection === 'siambg-ranking-list') {
+        document.getElementById('matchReportSection').style.display = 'none';
+        document.getElementById('tournamentManagementSection').style.display = 'none';
+    }
 }
 
 // save the settings of a toggle element to localStorage
