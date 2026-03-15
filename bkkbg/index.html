@@ -322,6 +322,7 @@
 
         function playerSelectionChanged() {
             populatePlayerMatchList();
+            // noinspection JSUnresolvedReference
             if (document.getElementById('rankingListSelection').value === 'playerInfoPercent') {
                 updatePlayerInfoPercentChart(playerSummary);
             } else if (document.getElementById('rankingListSelection').value === 'playerInfoMatches') {
@@ -470,12 +471,13 @@
         const playersList = document.getElementById("playersList");
         if (playersList) {
             playersList.addEventListener('change', function() {
-                const selected = Array.from(playersList.selectedOptions).map(opt => opt.value).join(', ');
+                // const selected = Array.from(playersList.selectedOptions).map(opt => opt.value).join(', ');
+                const selected = playersList.selectedOptions.length;
                 const document_style = document.documentElement.style;
-                if (selected !== "")
-                    document_style.setProperty('--text', "'" + selected + "'");
+                if (selected > 0)
+                    document_style.setProperty('--text', "'" + selected + " Players Selected...'");
                 else
-                    document_style.setProperty('--text', "'Select Players...'");
+                    document_style.setProperty('--text', "'Select Tournament Players...'");
             });
         }
     </script>

@@ -122,6 +122,13 @@ function fetchFrequentPlayers() {
                 for (let option of playersListEl.options) {
                     option.selected = playersListSelection.includes(option.value);
                 }
+                const selected = playersListEl.selectedOptions.length;
+                const document_style = document.documentElement.style;
+                if (selected > 0)
+                    document_style.setProperty('--text', "'" + selected + " Players Selected...'");
+                else
+                    document_style.setProperty('--text', "'Select Tournament Players...'");
+
             }
 
         } else {
