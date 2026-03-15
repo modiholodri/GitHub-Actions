@@ -660,7 +660,7 @@ function updatePlayerProgressChart(progressList) {
                 pointBorderWidth: 0,
                 pointHoverRadius: 18,
                 pointHitRadius: 24,
-                borderWidth: 2,
+                borderWidth: 1,
             };
         });
 
