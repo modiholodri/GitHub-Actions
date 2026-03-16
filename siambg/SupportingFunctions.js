@@ -198,6 +198,13 @@ function refreshWebPageTitle () {
 // Fetch the Match List
 function fetchMatchList() {
     const repoName = document.getElementById('clubSelection').value;
+    if (repoName === 'siambg-ranking-list') {
+        if (confirm("Do you want to fetch all match lists?")) {
+            fetchAllMatchLists();
+            return; 
+        }
+    }
+
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
 
     const options = {
@@ -226,6 +233,55 @@ function fetchMatchList() {
         }
     })
     .catch(error => console.error('Error:', error));
+}
 
-    // rankingListSelectionChanged();
+// Fetch the All Match List
+function fetchAllMatchLists() {
+    const repoNames = clubRepos.map(club => club.repo);
+    matchRecords = [];
+
+    Promise.all(repoNames.map(repoName => {
+        // ToDo: Ignore Siam Backgammon repo
+        
+        const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
+        return fetch(url, {
+            headers: {
+                'Authorization': `token ${githubToken}`,
+                'Content-Type': 'text/markdown',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.content) {
+                const matchList = decodeURIComponent(escape(window.atob(data.content)));
+                return matchList.split("\n").slice(2);  // Remove the first two lines before splitting
+            }
+            return [];
+        })
+        .catch(() => []);
+    })).then(results => {
+        // add the header for the match list
+        matchRecords = ["|Date|Winner|Loser|Points|"];
+        matchRecords.push("|---|---|---|---|");
+
+        // Flatten the results, sort descending by date, then push them
+        const flatResults = results.flat();
+        flatResults.sort((a, b) => {
+            const dateA = a.split('|')[1] || '';
+            const dateB = b.split('|')[1] || '';
+            return dateA.localeCompare(dateB);
+        });
+        matchRecords.push(...flatResults);
+
+        totalMatchList = matchRecords.join("\n");
+
+        // ToDo: generate the rating list based on the match records and populatePlayerRating
+        
+        // You can now use allMatchRecords as needed
+        if (populateTimeSpanSelectionList(matchRecords) > 0) {
+            if(populatePlayedTimeSpanMatchList()) {
+                rankingListSelectionChanged();
+            }
+        }
+    });
 }
