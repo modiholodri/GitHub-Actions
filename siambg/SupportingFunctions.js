@@ -294,8 +294,8 @@ function generateRatingListFromplaayerRating() {
 
     for (let i = 0; i < players.length; i++) {
         if (players[i].length > 0) {
-            let difference = playerRating[players[i]].difference.toFixed(1);
-            if (difference > 0) difference = '+' + difference;
+            let difference = playerRating[players[i]].difference;
+            if (difference > 0) difference = '+' + difference; // add a plus sign for positive differences
             ratingList += `|${i + 1}|${players[i]}|${Math.round(playerRating[players[i]].rating)}|${difference}|${playerRating[players[i]].experience}|\n`;
         }
     }
@@ -346,6 +346,11 @@ function calculatePlayerRating(matchRecords) {
             playerRating[loser].difference = -ratingDifference;
             playerRating[loser].experience += matchLength;
         }
+    }
+    // Round ratings and differences
+    for (let player in playerRating) {
+        playerRating[player].rating = Math.round(playerRating[player].rating);
+        playerRating[player].difference = Math.round(playerRating[player].difference * 10) / 10;
     }
 }
 
