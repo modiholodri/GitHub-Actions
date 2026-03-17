@@ -240,9 +240,8 @@ function fetchAllMatchLists() {
     const repoNames = clubRepos.map(club => club.repo);
     matchRecords = [];
 
-    Promise.all(repoNames.map(repoName => {
-        // ToDo: Ignore Siam Backgammon repo
-        
+    Promise.all(repoNames.filter(repoName => repoName !== 'siambg-ranking-list').map(repoName => {
+        // filter out the Siam Backgammon repo
         const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
         return fetch(url, {
             headers: {
@@ -276,6 +275,7 @@ function fetchAllMatchLists() {
         totalMatchList = matchRecords.join("\n");
 
         // ToDo: generate the rating list based on the match records and populatePlayerRating
+        calculatePlayerRating(matchRecords);
         
         // You can now use allMatchRecords as needed
         if (populateTimeSpanSelectionList(matchRecords) > 0) {
@@ -285,3 +285,34 @@ function fetchAllMatchLists() {
         }
     });
 }
+
+// Calculate the Player Rating
+function calculatePlayerRating(matchRecords) {
+    // Start from the third line (skip headers), process in chronological order
+    for (let i = 2; i < matchRecords.length; i++) {
+        if (matchRecords[i].length > 0) {
+            const matchInfo = matchRecords[i].split('|');
+            const winner = matchInfo[2];
+            const loser = matchInfo[3];
+            const matchLength = Number(matchInfo[4]);
+
+            // Initialize ratings if not present
+            if (!playerRating[winner]) playerRating[winner] = { rating: initialRating, difference: 0, experience: 0 };
+            if (!playerRating[loser]) playerRating[loser] = { rating: initialRating, difference: 0, experience: 0 };
+
+            const matchLengthRoot = Math.sqrt(matchLength);
+            const ratingPointsAtStake = 4 * matchLengthRoot;
+            const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(playerRating[winner].rating - playerRating[loser].rating) * matchLengthRoot / 2000.0));
+            const ratingDifference = (1.0 - winningProbability) * ratingPointsAtStake;
+
+            // Update ratings
+            playerRating[winner].rating += ratingDifference;
+            playerRating[winner].difference += ratingDifference;
+            playerRating[winner].experience += matchLength;
+            playerRating[loser].rating -= ratingDifference;
+            playerRating[loser].difference -= ratingDifference;
+            playerRating[loser].experience += matchLength;
+        }
+    }
+}
+
