@@ -274,8 +274,8 @@ function fetchAllMatchLists() {
 
         totalMatchList = matchRecords.join("\n");
 
-        // ToDo: generate the rating list based on the match records and populatePlayerRating
-        calculatePlayerRating(matchRecords);
+        calculatePlayerRating(matchRecords); // calculate the current player ratings based on the match records
+        setPlayerListFromPlayerRating();
         
         // You can now use allMatchRecords as needed
         if (populateTimeSpanSelectionList(matchRecords) > 0) {
@@ -284,6 +284,22 @@ function fetchAllMatchLists() {
             }
         }
     });
+}
+
+// Set the Player Name Selection List based on the players in the player ranking list, sorted alphabetically
+function setPlayerListFromPlayerRating() {
+            const frequentPlayers = Object.keys(playerRating).sort((a, b) => a.localeCompare(b));
+            let playersList = '';
+
+            for (let i = 0; i < frequentPlayers.length; i++) {
+                if (frequentPlayers[i].length > 0) {
+                    playersList += `<option class="centered" value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
+                }
+            }
+            const playerOptions = '<option class="centered" value="Select">Select</option>\n' + playersList;
+
+            document.getElementById("playerName").innerHTML = playerOptions;
+            selectDefaultPlayer();
 }
 
 // Calculate the Player Rating
