@@ -276,6 +276,7 @@ function fetchAllMatchLists() {
 
         calculatePlayerRating(matchRecords); // calculate the current player ratings based on the match records
         setPlayerListFromPlayerRating();
+        generateRatingListFromplaayerRating();
         
         // You can now use allMatchRecords as needed
         if (populateTimeSpanSelectionList(matchRecords) > 0) {
@@ -286,20 +287,36 @@ function fetchAllMatchLists() {
     });
 }
 
+function generateRatingListFromplaayerRating() {
+    let ratingList = '| |Name|Rating|+/-|Exp|\n|-|:---|:----:|:-:|--:|\n';
+
+    const players = Object.keys(playerRating).sort((a, b) => playerRating[b].rating - playerRating[a].rating);
+
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].length > 0) {
+            let difference = playerRating[players[i]].difference.toFixed(1);
+            if (difference > 0) difference = '+' + difference;
+            ratingList += `|${i + 1}|${players[i]}|${Math.round(playerRating[players[i]].rating)}|${difference}|${playerRating[players[i]].experience}|\n`;
+        }
+    }
+    document.getElementById("ratingList").innerHTML = marked.parse(ratingList);
+}
+
+
 // Set the Player Name Selection List based on the players in the player ranking list, sorted alphabetically
 function setPlayerListFromPlayerRating() {
-            const frequentPlayers = Object.keys(playerRating).sort((a, b) => a.localeCompare(b));
-            let playersList = '';
+    const frequentPlayers = Object.keys(playerRating).sort((a, b) => a.localeCompare(b));
+    let playersList = '';
 
-            for (let i = 0; i < frequentPlayers.length; i++) {
-                if (frequentPlayers[i].length > 0) {
-                    playersList += `<option class="centered" value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
-                }
-            }
-            const playerOptions = '<option class="centered" value="Select">Select</option>\n' + playersList;
+    for (let i = 0; i < frequentPlayers.length; i++) {
+        if (frequentPlayers[i].length > 0) {
+            playersList += `<option class="centered" value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
+        }
+    }
+    const playerOptions = '<option class="centered" value="Select">Select</option>\n' + playersList;
 
-            document.getElementById("playerName").innerHTML = playerOptions;
-            selectDefaultPlayer();
+    document.getElementById("playerName").innerHTML = playerOptions;
+    selectDefaultPlayer();
 }
 
 // Calculate the Player Rating
@@ -323,10 +340,10 @@ function calculatePlayerRating(matchRecords) {
 
             // Update ratings
             playerRating[winner].rating += ratingDifference;
-            playerRating[winner].difference += ratingDifference;
+            playerRating[winner].difference = ratingDifference;
             playerRating[winner].experience += matchLength;
             playerRating[loser].rating -= ratingDifference;
-            playerRating[loser].difference -= ratingDifference;
+            playerRating[loser].difference = -ratingDifference;
             playerRating[loser].experience += matchLength;
         }
     }
