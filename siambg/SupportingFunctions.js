@@ -199,10 +199,8 @@ function refreshWebPageTitle () {
 function fetchMatchList() {
     const repoName = document.getElementById('clubSelection').value;
     if (repoName === 'siambg-ranking-list') {
-        if (confirm("Do you want to fetch all match lists?")) {
-            fetchAllMatchLists();
-            return; 
-        }
+        fetchAllMatchLists();
+        return; 
     }
 
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
