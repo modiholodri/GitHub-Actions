@@ -82,6 +82,21 @@ function selectDefaultPlayer() {
     }
 }
 
+function highlightYourNameInTable(tableHTML) {
+    const yourName = document.getElementById('yourName').value.trim();
+    if (!yourName || yourName === '') {
+        return tableHTML;
+    }
+
+    // Use regex to match yourName as a whole word, case-insensitive
+    const regex = new RegExp(`\\b(${yourName})\\b`, 'gi');
+    tableHTML = tableHTML.replace(
+        regex,
+        `<span style="background-color: green;">${yourName}</span>`
+    );
+    return tableHTML;
+}
+
 // Fetch the Frequent Players
 function fetchFrequentPlayers() {
     const repoName = document.getElementById('clubSelection').value;
@@ -154,7 +169,8 @@ function fetchMarkDownFromRepoSync(fileName, elementName) {
         const data = JSON.parse(xhr.responseText);
         if (data.content) {
             const fileContent = decodeURIComponent(escape(window.atob(data.content)));
-            document.getElementById(elementName).innerHTML = marked.parse(fileContent);
+            const highlightedContent = highlightYourNameInTable(fileContent);
+            document.getElementById(elementName).innerHTML = marked.parse(highlightedContent);
             return fileContent;
         }
     }

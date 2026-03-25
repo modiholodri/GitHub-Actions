@@ -1,3 +1,9 @@
+// Display list and highlight your name in the list
+function displayListWithHighlighting(elementName, listContent) {
+    const highlightedContent = highlightYourNameInTable(listContent);
+    document.getElementById(elementName).innerHTML = marked.parse(highlightedContent);
+}
+
 // Rating List
 function createRatingListRankingList(summaryElement, rankingSummary) {
     let ratingListList = '|   |   |% Won|% Fut|Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
@@ -11,7 +17,7 @@ function createRatingListRankingList(summaryElement, rankingSummary) {
     }   
     ratingListList += `||∑|||||${totalMatchesPlayed/2}||\n`;    
 
-    document.getElementById(summaryElement).innerHTML = marked.parse(ratingListList);
+    displayListWithHighlighting(summaryElement, ratingListList);
 }
 
 // Player Info
@@ -57,7 +63,7 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
     const opponentsMeanRating = Math.round(opponentsRating / vipPlayerMatchesPlayed);
     playerInfoList += `||x̄|||${opponentsMeanRating}||\n`;
 
-    document.getElementById(summaryElement).innerHTML = marked.parse(playerInfoList);
+    displayListWithHighlighting(summaryElement, playerInfoList);
 }
 
 // Percent Matches Won
@@ -69,7 +75,8 @@ function createPercentMatchesWonRankingList(summaryElement, rankingSummary) {
         const winPercentage = Math.round(stats.matchesWon*1000/stats.matchesPlayed)/10;
         rankingList += `|${rank++}|${player}|${winPercentage}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
-    document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+    
+    displayListWithHighlighting(summaryElement, rankingList);
 }
 
 // Current Streak
@@ -80,7 +87,8 @@ function createCurrentStreakRankingList(summaryElement, rankingSummary) {
     for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].currentStreak-a[1].currentStreak || b[1].matchesPlayed-a[1].matchesPlayed)) {
         rankingList += `|${rank++}|${player}|${stats.currentStreak}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
-    document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+    
+    displayListWithHighlighting(summaryElement, rankingList);
 }
 
 
@@ -91,8 +99,9 @@ function createLongestWinningStreakRankingList(summaryElement, rankingSummary) {
     let rank = 1;
     for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].longestWon-a[1].longestWon || a[1].matchesPlayed-b[1].matchesPlayed)) {
         rankingList += `|${rank++}|${player}|${stats.longestWon}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
-    }   
-    document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+    }
+
+    displayListWithHighlighting(summaryElement, rankingList);
 }
 
 // Longest Losing Streak
@@ -102,8 +111,9 @@ function createLongestLosingStreakRankingList(summaryElement, rankingSummary) {
     let rank = 1;
     for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => a[1].longestLost-b[1].longestLost || a[1].matchesPlayed-b[1].matchesPlayed)) {
         rankingList += `|${rank++}|${player}|${stats.longestLost}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
-    }   
-    document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+    }
+    
+    displayListWithHighlighting(summaryElement, rankingList);
 }
 
 // Matches Played
@@ -117,7 +127,8 @@ function createMatchesPlayedRankingList(summaryElement, rankingSummary) {
         rankingList += `|${rank++}|${player}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
     rankingList += `||∑|${totalMatchesPlayed/2}||\n`;    
-    document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+
+    displayListWithHighlighting(summaryElement, rankingList);
 }
 
 // Last Time Active Ranking List
@@ -133,7 +144,8 @@ function createLastTimeActiveRankingList(summaryElement, rankingSummary) {
 
         rankingList += `|${rank++}|${player}|${inactiveDays}|${stats.lastDateActive}|\n`;
     }   
-    document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+
+    displayListWithHighlighting(summaryElement, rankingList);
 }
 
 // Rangliste Ranking List
@@ -147,7 +159,8 @@ function createRanglisteRankingList(summaryElement, rankingSummary) {
         rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.punkteMatchesWon} - ${stats.punkteMatchesLost}|\n`;
     }   
     rankingList += `||∑|${totalPunkte}||\n`;
-    document.getElementById(summaryElement).innerHTML = marked.parse(rankingList);
+
+    displayListWithHighlighting(summaryElement, rankingList);
 }
 
 // Rangliste Ranking List
@@ -159,7 +172,8 @@ function createPlayerProgressList(summaryElement, playerProgressList) {
         progressList += `|${Math.floor(counter/2)} ${counter%2?'L':'w'}|${entry.date}|${entry.player}|${Math.round(entry.rating)}|\n`;
         counter++;
     }
-    document.getElementById(summaryElement).innerHTML = marked.parse(progressList);
+
+    displayListWithHighlighting(summaryElement, progressList);
 }
 
 // Scores List
@@ -183,5 +197,5 @@ function createScoresList(summaryElement, scoresSummary) {
         }
     }
 
-    document.getElementById(summaryElement).innerHTML = marked.parse(scoresList);
+    displayListWithHighlighting(summaryElement, scoresList);
 }
