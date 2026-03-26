@@ -82,9 +82,26 @@ function selectDefaultPlayer() {
     }
 }
 
+function highlightYourNameInTable(tableHTML) {
+    const yourName = document.getElementById('yourName').value.trim();
+    if (!yourName || yourName === '') {
+        return tableHTML;
+    }
+
+    // Use regex to match yourName as a whole word, case-insensitive
+    const regex = new RegExp(`\\b(${yourName})\\b`, 'gi');
+    tableHTML = tableHTML.replace(
+        regex,
+        `<span style="background-color: green;"><b>${yourName}</b></span>`
+    );
+    return tableHTML;
+}
+
 // Fetch the Frequent Players
 function fetchFrequentPlayers() {
     const repoName = document.getElementById('clubSelection').value;
+    if (repoName === 'siambg-ranking-list') return; // Not needed for the Siam Backgammon Merger
+
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/FrequentPlayers.md?timestamp=${Date.now()}`;
 
     const options = {
@@ -122,6 +139,13 @@ function fetchFrequentPlayers() {
                 for (let option of playersListEl.options) {
                     option.selected = playersListSelection.includes(option.value);
                 }
+                const selected = playersListEl.selectedOptions.length;
+                const document_style = document.documentElement.style;
+                if (selected > 0)
+                    document_style.setProperty('--text', "'" + selected + " Players Selected...'");
+                else
+                    document_style.setProperty('--text', "'Select Tournament Players...'");
+
             }
 
         } else {
@@ -145,7 +169,8 @@ function fetchMarkDownFromRepoSync(fileName, elementName) {
         const data = JSON.parse(xhr.responseText);
         if (data.content) {
             const fileContent = decodeURIComponent(escape(window.atob(data.content)));
-            document.getElementById(elementName).innerHTML = marked.parse(fileContent);
+            const highlightedContent = highlightYourNameInTable(fileContent);
+            document.getElementById(elementName).innerHTML = marked.parse(highlightedContent);
             return fileContent;
         }
     }
@@ -189,6 +214,11 @@ function refreshWebPageTitle () {
 // Fetch the Match List
 function fetchMatchList() {
     const repoName = document.getElementById('clubSelection').value;
+    if (repoName === 'siambg-ranking-list') {
+        fetchAllMatchLists();
+        return; 
+    }
+
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
 
     const options = {
@@ -217,6 +247,125 @@ function fetchMatchList() {
         }
     })
     .catch(error => console.error('Error:', error));
-
-    // rankingListSelectionChanged();
 }
+
+// Fetch the All Match List
+function fetchAllMatchLists() {
+    const repoNames = clubRepos.map(club => club.repo);
+    matchRecords = [];
+
+    Promise.all(repoNames.filter(repoName => repoName !== 'siambg-ranking-list').map(repoName => {
+        // filter out the Siam Backgammon repo
+        const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/MatchList.md?timestamp=${Date.now()}`;
+        return fetch(url, {
+            headers: {
+                'Authorization': `token ${githubToken}`,
+                'Content-Type': 'text/markdown',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.content) {
+                const matchList = decodeURIComponent(escape(window.atob(data.content)));
+                return matchList.split("\n").slice(2);  // Remove the first two lines before splitting
+            }
+            return [];
+        })
+        .catch(() => []);
+    })).then(results => {
+        // add the header for the match list
+        matchRecords = ["|Date|Winner|Loser|Points|"];
+        matchRecords.push("|---|---|---|---|");
+
+        // Flatten the results, sort descending by date, then push them
+        const flatResults = results.flat();
+        flatResults.sort((a, b) => {
+            const dateA = a.split('|')[1] || '';
+            const dateB = b.split('|')[1] || '';
+            return dateA.localeCompare(dateB);
+        });
+        matchRecords.push(...flatResults);
+
+        totalMatchList = matchRecords.join("\n");
+
+        calculatePlayerRating(matchRecords); // calculate the current player ratings based on the match records
+        setPlayerListFromPlayerRating();
+        generateRatingListFromPlayerRating();
+        
+        // You can now use allMatchRecords as needed
+        if (populateTimeSpanSelectionList(matchRecords) > 0) {
+            if(populatePlayedTimeSpanMatchList()) {
+                rankingListSelectionChanged();
+            }
+        }
+    });
+}
+
+function generateRatingListFromPlayerRating() {
+    let ratingList = '| |Name|Rating|+/-|Exp|\n|-|:---|:----:|:-:|--:|\n';
+
+    const players = Object.keys(playerRating).sort((a, b) => playerRating[b].rating - playerRating[a].rating);
+
+    for (let i = 0; i < players.length; i++) {
+        if (players[i].length > 0) {
+            let difference = playerRating[players[i]].difference;
+            if (difference > 0) difference = '+' + difference; // add a plus sign for positive differences
+            ratingList += `|${i + 1}|${players[i]}|${Math.round(playerRating[players[i]].rating)}|${difference}|${playerRating[players[i]].experience}|\n`;
+        }
+    }
+ 
+    displayListWithHighlighting('ratingList', ratingList);
+}
+
+
+// Set the Player Name Selection List based on the players in the player ranking list, sorted alphabetically
+function setPlayerListFromPlayerRating() {
+    const frequentPlayers = Object.keys(playerRating).sort((a, b) => a.localeCompare(b));
+    let playersList = '';
+
+    for (let i = 0; i < frequentPlayers.length; i++) {
+        if (frequentPlayers[i].length > 0) {
+            playersList += `<option class="centered" value="${frequentPlayers[i]}">${frequentPlayers[i]}</option>\n`;
+        }
+    }
+    const playerOptions = '<option class="centered" value="Select">Select</option>\n' + playersList;
+
+    document.getElementById("playerName").innerHTML = playerOptions;
+    selectDefaultPlayer();
+}
+
+// Calculate the Player Rating
+function calculatePlayerRating(matchRecords) {
+    // Start from the third line (skip headers), process in chronological order
+    for (let i = 2; i < matchRecords.length; i++) {
+        if (matchRecords[i].length > 0) {
+            const matchInfo = matchRecords[i].split('|');
+            const winner = matchInfo[2];
+            const loser = matchInfo[3];
+            const matchLength = Number(matchInfo[4]);
+
+            // Initialize ratings if not present
+            if (!playerRating[winner]) playerRating[winner] = { rating: initialRating, difference: 0, experience: 0 };
+            if (!playerRating[loser]) playerRating[loser] = { rating: initialRating, difference: 0, experience: 0 };
+
+            const matchLengthRoot = Math.sqrt(matchLength);
+            const ratingPointsAtStake = 4 * matchLengthRoot;
+            const winningProbability = 1.0 / (1.0 + Math.pow(10.0, -(playerRating[winner].rating - playerRating[loser].rating) * matchLengthRoot / 2000.0));
+            const ratingDifference = (1.0 - winningProbability) * ratingPointsAtStake;
+
+            // Update ratings
+            playerRating[winner].rating += ratingDifference;
+            playerRating[winner].difference = ratingDifference;
+            playerRating[winner].experience += matchLength;
+            playerRating[loser].rating -= ratingDifference;
+            playerRating[loser].difference = -ratingDifference;
+            playerRating[loser].experience += matchLength;
+        }
+    }
+    // Round ratings and differences
+    for (let player in playerRating) {
+        playerRating[player].rating = Math.round(playerRating[player].rating);
+        playerRating[player].difference = Math.round(playerRating[player].difference * 10) / 10;
+    }
+}
+

@@ -267,7 +267,7 @@ function adjustExpectedRatingList(matchList) {
 function populatePlayerRating(ratingList) {
     const ratingEntries = ratingList.split("\n");
 
-    for (let i = 0; i < ratingEntries.length; i++) {
+    for (let i = 0; i < ratingEntries.length; i++) {  // ? Should it start from 2?
         if (ratingEntries[i].length > 0) {
             const ratingEntry = ratingEntries[i].split('|');
             const name = ratingEntry[2];

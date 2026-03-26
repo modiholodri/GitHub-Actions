@@ -86,7 +86,7 @@ canvas {
 }
 
 hr.rounded {
-    border-top: 8px solid #000;
+    border-top: 8px solid #000000;
     border-radius: 5px;
 }
 
@@ -97,24 +97,22 @@ hr.rounded {
 
 :root
 {
-	--text: "Select Players...";
+	--text: "Select Tournament Players...";
 }
 .multiple_select {
-    height: 34px;
+    height: 36px;
     width: 100%;
     overflow: hidden;
-    margin-top: 12px;
+    margin-top: 14px;
     position: relative;
     border: none;
     z-index: 10;
 
     /* Black theme */
-    background-color: #000 !important;
-    color: #fff !important;
-    padding: 6px 10px;
     outline: none;
-    box-shadow: none;
-    caret-color: #fff;
+    padding: 6px 10px;
+    background-color: #121212;
+    color: #ffffff;
 
     /* Center text vertically */
     display: flex;
@@ -124,34 +122,30 @@ hr.rounded {
 
 /* Ensure options match the black theme where possible */
 .multiple_select option {
-    background-color: #000;
-    color: #fff;
+    display: none;
+    background-color: #121212;
+    height: 36px;
+    padding: 6px 10px;
 }
 .multiple_select::before
 {
 	content: var(--text);
 	display: block;
-    margin-top: 5px;
+    margin-top: 7px;
     margin-left: 5px;
     margin-bottom: 2px;
+    text-align: center;
 }
 .multiple_select_active
 {
 	overflow: visible !important;
 }
-.multiple_select option
-{
-	display: none;
-    height: 32px;
-}
 .multiple_select_active option
 {
+    background-color: #121212 !important;
 	display: block;
 }
-
-.multiple_select option::before {
-    content: "\2610";
-}
-.multiple_select option:checked::before {
-    content: "\2611";
+.multiple_select_active option:checked {
+    background-color: #ffffff;
+    color: #121212 !important;
 }
