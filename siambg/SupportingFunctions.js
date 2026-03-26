@@ -290,7 +290,7 @@ function fetchAllMatchLists() {
 
         calculatePlayerRating(matchRecords); // calculate the current player ratings based on the match records
         setPlayerListFromPlayerRating();
-        generateRatingListFromplaayerRating();
+        generateRatingListFromPlayerRating();
         
         // You can now use allMatchRecords as needed
         if (populateTimeSpanSelectionList(matchRecords) > 0) {
@@ -301,7 +301,7 @@ function fetchAllMatchLists() {
     });
 }
 
-function generateRatingListFromplaayerRating() {
+function generateRatingListFromPlayerRating() {
     let ratingList = '| |Name|Rating|+/-|Exp|\n|-|:---|:----:|:-:|--:|\n';
 
     const players = Object.keys(playerRating).sort((a, b) => playerRating[b].rating - playerRating[a].rating);
@@ -313,7 +313,8 @@ function generateRatingListFromplaayerRating() {
             ratingList += `|${i + 1}|${players[i]}|${Math.round(playerRating[players[i]].rating)}|${difference}|${playerRating[players[i]].experience}|\n`;
         }
     }
-    document.getElementById("ratingList").innerHTML = marked.parse(ratingList);
+ 
+    displayListWithHighlighting('ratingList', ratingList);
 }
 
 
