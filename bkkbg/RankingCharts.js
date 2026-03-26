@@ -598,8 +598,21 @@ function updatePlayerProgressChart(progressList) {
     // Group progress by player
     const playerProgress = {};
     progressList.forEach(entry => {
-        if (!playerProgress[entry.player]) playerProgress[entry.player] = [];
-        playerProgress[entry.player].push({ matchNumber: entry.match, rating: entry.rating });
+        if (!playerProgress[entry.player]) {
+            playerProgress[entry.player] = [];
+        }
+        else {
+            // add a NaN entry if the player didn't play for more than xxx days to create a gap in the chart
+            const currentDate = new Date(entry.date);
+            const previousEntry = playerProgress[entry.player][playerProgress[entry.player].length - 1];
+            const previousDate = new Date(previousEntry.date);
+            const differentDays = Math.abs(currentDate.getTime() - previousDate.getTime()) / 86400000;
+            if (differentDays > 181) {
+                playerProgress[entry.player].push({ matchNumber: entry.match, date: entry.date, rating: NaN });
+            }
+        }
+
+        playerProgress[entry.player].push({ matchNumber: entry.match, date: entry.date, rating: entry.rating });
     });
 
     // Prepare datasets for Chart.js
@@ -654,7 +667,7 @@ function updatePlayerProgressChart(progressList) {
                 borderColor: color,
                 backgroundColor: color.replace('1)', '0.2)'),
                 fill: false,
-                spanGaps: true,
+                spanGaps: false,
                 tension: 0.2,
                 pointRadius: 0,
                 pointBorderWidth: 0,

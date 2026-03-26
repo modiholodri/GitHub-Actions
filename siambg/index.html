@@ -432,11 +432,15 @@
 
         // Backgammon Club Selection Changed
         function clubSelectionChanged() {
+            destroyRankingChart("Not loaded yet...");
             refreshWebPageTitle();
             fetchRatingList();
             fetchMatchList();
             clearSubmissionStatus();
             fetchFrequentPlayers();
+
+            fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
+            fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
         }
 
     </script>
