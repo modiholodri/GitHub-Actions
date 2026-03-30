@@ -21,7 +21,7 @@
             <form id="matchReportForm" class="collapse">
                 <!-- Winner -->
                 <div class="input-group">
-                    <span id="winnerLabel" class="input-group-text">Winner</span>
+                    <span id="winnerLabel" class="input-group-text" style="color: green;">Winner</span>
                     <select id="winnerName" title="Winner Name" class="form-select" style="flex: 0 0 60%;">
                         <option value="Select or edit">Select</option>
                         <option value="Winner">Winner</option>
@@ -30,7 +30,7 @@
                 </div>
                 <!-- Loser -->
                 <div class="input-group">
-                    <span class="input-group-text">Loser</span>
+                    <span class="input-group-text" style="color: red;">Loser</span>
                     <select id="loserName" title="Loser Name" class="form-select" style="flex: 0 0 64%;">
                         <option value="Select or edit">Select</option>
                         <option value="Loser">Loser</option>
@@ -39,7 +39,7 @@
                 </div>
                 <!-- Match Length -->
                 <div class="input-group">
-                    <span class="input-group-text">Match Length</span>
+                    <span class="input-group-text" style="color: gray;">Match Length</span>
                     <select id="matchLength" title="Match Length" class="form-select">
                         <option class="centered" value="1">1</option>
                         <option class="centered" value="3">3</option>
@@ -99,6 +99,7 @@
                             <option class="centered" value="Round Robin">Round Robin</option>
                             <option class="centered" value="Siam Style">Siam Style</option>
                             <option class="centered" value="Single Elimination">Single Elimination</option>
+                            <option class="centered" value="Consulting Double">Consulting Double</option>
                         </select>
                         <button id="autoModeButton" type="button" class="btn btn-secondary" style="display:none;" title="Auto/Fake Button">Fake</button>
                     </div>
