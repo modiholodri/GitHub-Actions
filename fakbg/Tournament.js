@@ -405,7 +405,7 @@ function generateWinsSortedTable(winCounts, lossCounts, eloPoints) {
         rankingTable += `|${row.rank}|${row.name}|${row.wins}|${lossCounts[row.name]}|${Math.round(eloPoints[row.name] * 10) / 10}|\n`;
     });
 
-    return rankingTable;
+    return highlightYourNameInTable(rankingTable);
 }
 
 function generateLossesSortedTable(winCounts, lossCounts, eloPoints) {
