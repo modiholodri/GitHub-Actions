@@ -507,7 +507,9 @@ function updateRatingListChart(matchListSummary) {
                     hidden: hiddenStates[0],
                     data: rating,
                     borderColor: 'lime',
-                    borderWidth: 1
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
                 },
                 {
                     label: 'Future Rating',
@@ -515,7 +517,7 @@ function updateRatingListChart(matchListSummary) {
                     data: futureRating,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
+                    borderWidth: 1,
                 },
             ]
         },
@@ -791,7 +793,9 @@ function updateScoresChart(scoresSummary) {
                     hidden: hiddenStates[2],
                     data: lowScore,
                     borderColor: 'red',
-                    borderWidth: 1
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
                 },
                 {
                     label: 'Current',
@@ -808,7 +812,9 @@ function updateScoresChart(scoresSummary) {
                     hidden: hiddenStates[0],
                     data: highScore,
                     borderColor: 'lime',
-                    borderWidth: 1
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
                 },
             ]
         },
@@ -1016,7 +1022,9 @@ function updateLastActiveChart(rankingSummary) {
                     data: lastDatesActive,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
                 },
             ]
         },
