@@ -879,12 +879,14 @@ function updateStreakChart(rankingSummary) {
         streak = players.map(player => rankingSummary[player].currentStreak);
         playerValue = rankingSummary[yourName]?.currentStreak;
         title = "Current Streak";
-    } else if (rankingListSelection === 'longestWinningStreak') {
+    } 
+    else if (rankingListSelection === 'longestWinningStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[b].longestWon - rankingSummary[a].longestWon || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
         streak = players.map(player => rankingSummary[player].longestWon);
         playerValue = rankingSummary[yourName]?.longestWon;
         title = "Longest Winning Streak";
-    } else if (rankingListSelection === 'longestLosingStreak') {
+    } 
+    else if (rankingListSelection === 'longestLosingStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[a].longestLost - rankingSummary[b].longestLost || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
         streak = players.map(player => rankingSummary[player].longestLost);
         playerValue = rankingSummary[yourName]?.longestLost;
@@ -972,8 +974,16 @@ function updateStreakChart(rankingSummary) {
                 {
                     label: title,
                     data: streak,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: function(context) {
+                                        const value = context.raw; // Get the raw data value
+                                        if (value > 0) return 'rgba(75, 192, 192, 0.2)';
+                                        else           return 'rgba(255, 99, 132, 0.2)';
+                                    },
+                    borderColor: function(context) {
+                                    const value = context.raw; // Get the raw data value
+                                    if (value > 0) return 'rgba(75, 192, 192, 1)';
+                                    else           return 'rgba(255, 99, 132, 1)';
+                                },
                     borderWidth: 1
                 },
             ]
