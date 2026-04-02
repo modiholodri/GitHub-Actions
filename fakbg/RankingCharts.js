@@ -143,6 +143,16 @@ function updateMatchesPlayedChart(matchListSummary) {
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
+                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                    position: 'bottom',
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     stacked: true,
@@ -222,6 +232,16 @@ function updateRanglistenChart(matchListSummary) {
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                },
+                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                    position: 'bottom',
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: true,
@@ -335,6 +355,16 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
+                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                    position: 'bottom',
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     stacked: true,
@@ -426,6 +456,16 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                },
+                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                    position: 'bottom',
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: true,
@@ -563,6 +603,16 @@ function updateRatingListChart(matchListSummary) {
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                },
+                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                    position: 'bottom',
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: false,
@@ -861,6 +911,16 @@ function updateScoresChart(scoresSummary) {
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
+                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                    position: 'bottom',
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
+                },
                 y: {
                     beginAtZero: false,
                     ticks: { autoSkip: false } // show all the names
@@ -940,6 +1000,16 @@ function updateStreakChart(rankingSummary) {
                     }
                 },                            
                 grid: { color: 'rgba(255, 255, 0, 0.3)' },
+            },
+            x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                position: 'bottom',
+                afterDataLimits(scale) {
+                    const xScale = scale.chart.scales.x;
+                    if (xScale) {
+                        scale.min = xScale.min;
+                        scale.max = xScale.max;
+                    }
+                }
             },
             y: {
                 beginAtZero: true,
@@ -1048,6 +1118,21 @@ function updateLastActiveChart(rankingSummary) {
                         }
                     },
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                },
+                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                    position: 'bottom',
+                    ticks: {
+                        callback: function(value) {
+                            return new Date(value).toISOString().split('T')[0];
+                        }
+                    },
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: false,
