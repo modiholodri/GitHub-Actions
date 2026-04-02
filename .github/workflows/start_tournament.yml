@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Get Tournament Info
         id: get_tournament
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const tournament = `${{ github.event.client_payload.tournament_html }}`;
