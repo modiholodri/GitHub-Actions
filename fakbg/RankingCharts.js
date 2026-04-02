@@ -102,6 +102,17 @@ function updateMatchesPlayedChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const rank = context.dataIndex + 1;
+                            if (matchesPlayedRankingList) { // show the real matches won/lost   
+                                return ` #${rank} ${context.dataset.label}: ${context.raw} matches`;
+                            }
+                            return ` #${rank} ${context.dataset.label}: ${context.raw.toFixed(1)}%`;
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
                 ...(matchesPlayedRankingList ? {} : {
                     annotation: {
@@ -215,6 +226,14 @@ function updateRanglistenChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const rank = context.dataIndex + 1;
+                            return ` #${rank} ${context.dataset.label}: ${context.raw} Punkte`;
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
             },
             scales: {
@@ -317,6 +336,14 @@ function updatePlayerInfoPercentChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const rank = context.dataIndex;
+                            return ` Opponent #${rank} ${selectedPlayer} ${context.dataset.label}: ${context.raw.toFixed(1)}% of matches`;
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },                
                 annotation: {
                     annotations: {
@@ -439,6 +466,14 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const rank = context.dataIndex + 1;
+                            return ` Opponent #${rank}  ${selectedPlayer} ${context.dataset.label}: ${context.raw} matches`;
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
             },
             scales: {
@@ -566,6 +601,14 @@ function updateRatingListChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const rank = context.dataIndex + 1;
+                            return ` #${rank} ${context.dataset.label}: ${context.raw} Elo`;
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
@@ -741,6 +784,20 @@ function updatePlayerProgressChart(progressList) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return ` Current #${context[0].dataset.label}`;
+                        },
+                        label: function(context) {
+                            const elo = context.parsed.y.toFixed(1);
+                            const matchNumber = context.parsed.x;
+                            const date = progressList.find(entry => entry.match === matchNumber)?.date || '';
+                            return `${elo} Elo on ${date}`;
+                        }
+
+                    }
+                },
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
@@ -873,6 +930,14 @@ function updateScoresChart(scoresSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const rank = context.dataIndex + 1;
+                            return ` #${rank} ${context.dataset.label}: ${context.raw} Elo`;
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
@@ -972,6 +1037,14 @@ function updateStreakChart(rankingSummary) {
         responsive: true,
         maintainAspectRatio: false, // Allow the chart to resize freely
         plugins: {
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const rank = context.dataIndex + 1;
+                        return ` #${rank} ${context.dataset.label}: ${context.raw}`;
+                    }
+                }
+            },
             legend: { position: 'bottom' },
             annotation: {
                 annotations: {
@@ -1104,14 +1177,22 @@ function updateLastActiveChart(rankingSummary) {
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
                 legend: { position: 'bottom' },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return ` #${rank} ${context.dataset.label}: ${context.raw}`;
+                    }
+                }
+            },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
+                            const rank = context.dataIndex + 1;
                             const date = new Date(context.raw);
                             const today = new Date();
                             const diffTime = Math.abs(today - date);
                             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                            return `${diffDays} days ago ` + date.toISOString().split('T')[0];
+                            return ` #${rank}  ${diffDays} days ago  ` + date.toISOString().split('T')[0];
                         }
                     }
                 }
