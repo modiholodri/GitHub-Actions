@@ -267,7 +267,26 @@ function fetchAllMatchLists() {
         .then(data => {
             if (data.content) {
                 const matchList = decodeURIComponent(escape(window.atob(data.content)));
-                return matchList.split("\n").slice(2);  // Remove the first two lines before splitting
+
+                // prepare the replacement map and regex for the player names
+                const suffix = repoName.substring(0, 3);
+                const nameMap = {
+                    'John': `John ${suffix}`,
+                    'Tom': `Tom ${suffix}`,
+                    'Brian': `Brian ${suffix}`
+                };
+                const regex = new RegExp(`^(${Object.keys(nameMap).join('|')})$`);
+
+                const modifiedLines = matchList.split("\n").slice(2).map(line => {
+                    if (line.length > 0) {
+                        const parts = line.split('|');
+                        parts[2] = parts[2].replace(regex, match => nameMap[match]);
+                        parts[3] = parts[3].replace(regex, match => nameMap[match]);
+                        return parts.join('|');
+                    }
+                    return line;
+                });
+                return modifiedLines;  // Remove the first two lines before splitting
             }
             return [];
         })

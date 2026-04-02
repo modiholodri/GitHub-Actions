@@ -507,7 +507,9 @@ function updateRatingListChart(matchListSummary) {
                     hidden: hiddenStates[0],
                     data: rating,
                     borderColor: 'lime',
-                    borderWidth: 1
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
                 },
                 {
                     label: 'Future Rating',
@@ -515,7 +517,7 @@ function updateRatingListChart(matchListSummary) {
                     data: futureRating,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
+                    borderWidth: 1,
                 },
             ]
         },
@@ -791,7 +793,9 @@ function updateScoresChart(scoresSummary) {
                     hidden: hiddenStates[2],
                     data: lowScore,
                     borderColor: 'red',
-                    borderWidth: 1
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
                 },
                 {
                     label: 'Current',
@@ -808,7 +812,9 @@ function updateScoresChart(scoresSummary) {
                     hidden: hiddenStates[0],
                     data: highScore,
                     borderColor: 'lime',
-                    borderWidth: 1
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
                 },
             ]
         },
@@ -879,12 +885,14 @@ function updateStreakChart(rankingSummary) {
         streak = players.map(player => rankingSummary[player].currentStreak);
         playerValue = rankingSummary[yourName]?.currentStreak;
         title = "Current Streak";
-    } else if (rankingListSelection === 'longestWinningStreak') {
+    } 
+    else if (rankingListSelection === 'longestWinningStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[b].longestWon - rankingSummary[a].longestWon || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
         streak = players.map(player => rankingSummary[player].longestWon);
         playerValue = rankingSummary[yourName]?.longestWon;
         title = "Longest Winning Streak";
-    } else if (rankingListSelection === 'longestLosingStreak') {
+    } 
+    else if (rankingListSelection === 'longestLosingStreak') {
         players = Object.keys(rankingSummary).sort((a, b) => rankingSummary[a].longestLost - rankingSummary[b].longestLost || rankingSummary[a].matchesPlayed - rankingSummary[b].matchesPlayed);
         streak = players.map(player => rankingSummary[player].longestLost);
         playerValue = rankingSummary[yourName]?.longestLost;
@@ -972,8 +980,16 @@ function updateStreakChart(rankingSummary) {
                 {
                     label: title,
                     data: streak,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: function(context) {
+                                        const value = context.raw; // Get the raw data value
+                                        if (value > 0) return 'rgba(75, 192, 192, 0.2)';
+                                        else           return 'rgba(255, 99, 132, 0.2)';
+                                    },
+                    borderColor: function(context) {
+                                    const value = context.raw; // Get the raw data value
+                                    if (value > 0) return 'rgba(75, 192, 192, 1)';
+                                    else           return 'rgba(255, 99, 132, 1)';
+                                },
                     borderWidth: 1
                 },
             ]
@@ -1006,7 +1022,9 @@ function updateLastActiveChart(rankingSummary) {
                     data: lastDatesActive,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
                 },
             ]
         },

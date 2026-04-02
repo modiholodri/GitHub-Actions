@@ -29,6 +29,9 @@ function generateTournament(selectedPlayers) {
         case 'Siam Style':
             generateSiam(selectedPlayers);
             break;
+        case 'Consulting Double':
+            generateConsultingDouble(selectedPlayers);
+            break;
         default:
             alert(tournamentType + ' tournament type is currently not supported!');
             return;
@@ -49,6 +52,66 @@ function tournamentInfo() {
     const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
     return `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
 }
+
+function generateConsultingDouble(selectedPlayers) {
+    const rounds = [];
+    const players = fisherYatesShuffle(selectedPlayers);
+    const length = document.getElementById('matchLengths').value.split(/\s+/)[0] || '5';
+    if (players.length % 2 !== 0) {
+        players.push('Bye');
+    }
+
+    const numTeams = players.length / 2;
+    const teams = [];
+    for (let i = 0; i < numTeams; i++) {
+        teams.push(String.fromCharCode(65 + i)); // 65 is 'A' in ASCII
+    }
+
+    const numRounds = teams.length - 1;
+    const half = teams.length / 2;
+
+    for (let round = 0; round < numRounds; round++) {
+        const matches = [];
+        for (let i = 0; i < half; i++) {
+            // get the team names
+            const homeTeam = teams[i];
+            const awayTeam = teams[teams.length - 1 - i];
+            const homeTeamNumber = homeTeam.charCodeAt(0) - 65;
+            const awayTeamNumber = awayTeam.charCodeAt(0) - 65;
+
+            // get the player names
+            const homeTeamPlayer1 = selectedPlayers[homeTeamNumber * 2];
+            const homeTeamPlayer2 = selectedPlayers[homeTeamNumber * 2 + 1];
+            const awayTeamPlayer1 = selectedPlayers[awayTeamNumber * 2];
+            const awayTeamPlayer2 = selectedPlayers[awayTeamNumber * 2 + 1];
+            
+            // push the matches
+            if (homeTeam !== 'Bye' && awayTeam !== 'Bye') {
+                matches.push(`${homeTeamPlayer1} #${homeTeam}-${awayTeam}# ${awayTeamPlayer1}`);
+                matches.push(`${homeTeamPlayer1} #${homeTeam}-${awayTeam}# ${awayTeamPlayer2}`);
+                matches.push(`${homeTeamPlayer2} #${homeTeam}-${awayTeam}# ${awayTeamPlayer1}`);
+                matches.push(`${homeTeamPlayer2} #${homeTeam}-${awayTeam}# ${awayTeamPlayer2}`);
+            }
+        }
+        rounds.push(matches);
+        // Rotate teams except the first one
+        teams.splice(1, 0, teams.pop());
+    }
+
+    // generate the HTML for the tournament
+    let html = `<h5>Consulting Double - ${length} points</h5>\n`;
+    rounds.forEach((matches) => {
+        html += `<p>\n`;
+        matches.forEach(match => {
+            html += `${match}<br>\n`;
+        });
+        html += `</p>\n`;
+    });
+
+    setTournamentData(html);
+    tournamentGenerated = true;
+}
+
 
 function generateSingleElimination(selectedPlayers, lastChance = '') {
     const numPlayers = selectedPlayers.length;
@@ -405,7 +468,7 @@ function generateWinsSortedTable(winCounts, lossCounts, eloPoints) {
         rankingTable += `|${row.rank}|${row.name}|${row.wins}|${lossCounts[row.name]}|${Math.round(eloPoints[row.name] * 10) / 10}|\n`;
     });
 
-    return rankingTable;
+    return highlightYourNameInTable(rankingTable);
 }
 
 function generateLossesSortedTable(winCounts, lossCounts, eloPoints) {
@@ -546,7 +609,7 @@ function generateTournamentSummary() {
             tournamentSummary += `\n\n##### ${siamTournament[0]} Summary\n`;
         }
 
-        const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Last Chance)/);
+        const winsTournament = line.match(/(Single Elimination)|(Round Robin \d+)|(Consulting Double)|(Last Chance)/);
         if(winsTournament) {
             if (showWinsNext && Object.keys(winCounts).length > 0) {
                 eloPoints = replayMatchesXTimes(13, playedMatches, eloPoints);
@@ -651,7 +714,7 @@ function highlightTodaysMatches() {
             const loser = matchInfo[3];
             const matchLength = matchInfo[4];
 
-            const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) # - # (${winner}|${loser})\\b`, 'i');
+            const roundRobinMatchRegex = new RegExp(`\\b(${winner}|${loser}) #.-.# (${winner}|${loser})\\b`, 'i');
             const doubleEliminationMatchRegex = new RegExp(`^(${winner}|${loser}) # (\\d+) # (${winner}|${loser})\\b`, 'i');
 
             // var foundAdditionalMatch = true;
@@ -891,7 +954,8 @@ function make16PlayersDoubleElimination() {
 
 function extractFirstActiveMatchPlayers() {
     const tournamentLines = tournamentData.split('\n');
-    const combinedMatchRegex = /(\w+)\s*#\s*(?:-|\d+)\s*#\s*(\w+)/i;
+//    const combinedMatchRegex = /(\w+)\s*#\s*(?:-|\d+)\s*#\s*(\w+)/i;
+    const combinedMatchRegex = /(\w+)\s*#[ A-Z]*(?:-|\d+)[ A-Z]*#\s*(\w+)/i;
 
     for (let line of tournamentLines) {
         if (line.match(combinedMatchRegex)) {
@@ -1076,7 +1140,7 @@ function fetchLastTournament() {
     .then(response => response.json())
     .then(data => {
         if (data.content) {
-            const fileContent = decodeURIComponent(window.atob( data.content ));
+            const fileContent = decodeURIComponent(escape(window.atob( data.content )));
             setTournamentData(fileContent.replace(/\\n/g, '\n'));
 
             getTodaysMatches(matchRecords);
