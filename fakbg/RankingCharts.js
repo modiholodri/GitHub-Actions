@@ -1104,6 +1104,17 @@ function updateLastActiveChart(rankingSummary) {
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
                 legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const date = new Date(context.raw);
+                            const today = new Date();
+                            const diffTime = Math.abs(today - date);
+                            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                            return `${diffDays} days ago ` + date.toISOString().split('T')[0];
+                        }
+                    }
+                }
             },
             scales: {
                 x: {
