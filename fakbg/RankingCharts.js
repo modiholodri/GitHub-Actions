@@ -107,7 +107,9 @@ function updateMatchesPlayedChart(matchListSummary) {
                         label: function(context) {
                             const rank = context.dataIndex + 1;
                             if (matchesPlayedRankingList) { // show the real matches won/lost   
-                                return ` #${rank} ${context.dataset.label}: ${context.raw} matches`;
+                                const totalMatches = context.chart.data.datasets
+                                    .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
+                                return ` #${rank} ${context.dataset.label}: ${context.raw} of ${totalMatches} matches`;
                             }
                             return ` #${rank} ${context.dataset.label}: ${context.raw.toFixed(1)}%`;
                         }
@@ -470,7 +472,9 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                     callbacks: {
                         label: function(context) {
                             const rank = context.dataIndex + 1;
-                            return ` Opponent #${rank}  ${selectedPlayer} ${context.dataset.label}: ${context.raw} matches`;
+                                const totalMatches = context.chart.data.datasets
+                                    .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
+                            return ` Opponent #${rank}  ${selectedPlayer} ${context.dataset.label}: ${context.raw} of ${totalMatches} matches`;
                         }
                     }
                 },
