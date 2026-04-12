@@ -13,9 +13,9 @@ function createRatingListRankingList(summaryElement, rankingSummary) {
     for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].futureRating - a[1].futureRating)) {
         const futureRating = Math.round(stats.futureRating);
         totalMatchesPlayed += stats.matchesPlayed;
-        ratingListList += `|${rank++}|${player}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.rating}|${futureRating}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;    
+        ratingListList += `|${rank++}|${player}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.rating.toLocaleString()}|${futureRating.toLocaleString()}|${stats.matchesPlayed.toLocaleString()}|${stats.matchesWon.toLocaleString()} - ${stats.matchesLost.toLocaleString()}|\n`;    
     }   
-    ratingListList += `||∑|||||${totalMatchesPlayed/2}||\n`;    
+    ratingListList += `||∑|||||${(totalMatchesPlayed/2).toLocaleString()}||\n`;    
 
     displayListWithHighlighting(summaryElement, ratingListList);
 }
@@ -36,7 +36,7 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
             const winPercentage = Math.round(stats.matchesWon*1000/stats.matchesPlayed)/10;
             const winningProbability = Math.round(1000 * (1 / (1 + Math.pow(10, -(vipRating - initialRating) * matchLengthRoot / 2000))))/10;
             vipPlayerMatchesPlayed = stats.matchesPlayed;
-            vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;    
+            vipPlayer += `|${player}|${stats.matchesWon} - ${stats.matchesLost}|${winPercentage}|${winningProbability}|${playerRating[player].rating.toLocaleString()}|${stats.matchesPlayed.toLocaleString()}|\n`;    
         }
         else {
             opponents[player] = stats;
@@ -52,7 +52,7 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
         const winPercentage = Math.round(stats.matchesLost * 1000 / stats.matchesPlayed)/10;
         const winningProbability = Math.round(1000 * (1 / (1 + Math.pow(10, -(vipRating - playerRating[player].rating) * matchLengthRoot / 2000))))/10;
         opponentsRating += Number(playerRating[player].rating) * stats.matchesPlayed;
-        opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${winningProbability}|${playerRating[player].rating}|${stats.matchesPlayed}|\n`;
+        opponentsList += `|${stats.matchesLost} - ${stats.matchesWon}|${player}|${winPercentage}|${winningProbability}|${playerRating[player].rating.toLocaleString()}|${stats.matchesPlayed}|\n`;
     }
 
     let playerInfoList = '|   |    |% Won|% Exp|Rat|Matches|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
@@ -61,7 +61,7 @@ function createPlayerInfoList(summaryElement, playerSummary, vipPlayerName) {
     playerInfoList += opponentsList;
 
     const opponentsMeanRating = Math.round(opponentsRating / vipPlayerMatchesPlayed);
-    playerInfoList += `||x̄|||${opponentsMeanRating}||\n`;
+    playerInfoList += `||x̄|||${opponentsMeanRating.toLocaleString()}||\n`;
 
     displayListWithHighlighting(summaryElement, playerInfoList);
 }
@@ -126,7 +126,7 @@ function createMatchesPlayedRankingList(summaryElement, rankingSummary) {
         totalMatchesPlayed += stats.matchesPlayed;
         rankingList += `|${rank++}|${player}|${stats.matchesPlayed}|${stats.matchesWon} - ${stats.matchesLost}|\n`;
     }   
-    rankingList += `||∑|${totalMatchesPlayed/2}||\n`;    
+    rankingList += `||∑|${parseFloat(totalMatchesPlayed/2).toLocaleString()}||\n`;    
 
     displayListWithHighlighting(summaryElement, rankingList);
 }
@@ -156,9 +156,9 @@ function createRanglisteRankingList(summaryElement, rankingSummary) {
     let totalPunkte = 0;
     for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].punkte-a[1].punkte)) {
         totalPunkte += stats.punkte;
-        rankingList += `|${rank++}|${player}|${stats.punkte}|${stats.punkteMatchesWon} - ${stats.punkteMatchesLost}|\n`;
+        rankingList += `|${rank++}|${player}|${stats.punkte.toLocaleString()}|${stats.punkteMatchesWon} - ${stats.punkteMatchesLost}|\n`;
     }   
-    rankingList += `||∑|${totalPunkte}||\n`;
+    rankingList += `||∑|${totalPunkte.toLocaleString()}||\n`;
 
     displayListWithHighlighting(summaryElement, rankingList);
 }
@@ -187,13 +187,13 @@ function createScoresList(summaryElement, scoresSummary) {
         scoresList = '|   |   |High|Date|\n|:---:|:---:|:---:|:---:|\n';
 
         for (const [player, stats] of Object.entries(scoresSummary).sort((a,b) => b[1].highScore - a[1].highScore)) {
-            scoresList += `|${rank++}|${player}|${Math.round(stats.highScore)}|${stats.highScoreDate}|\n`;
+            scoresList += `|${rank++}|${player}|${Math.round(stats.highScore).toLocaleString()}|${stats.highScoreDate}|\n`;
         }
     } else {
         scoresList = '|   |   |Low|Date|\n|:---:|:---:|:---:|:---:|\n';
 
         for (const [player, stats] of Object.entries(scoresSummary).sort((a,b) => a[1].lowScore - b[1].lowScore)) {
-            scoresList += `|${rank++}|${player}|${Math.round(stats.lowScore)}|${stats.lowScoreDate}|\n`;
+            scoresList += `|${rank++}|${player}|${Math.round(stats.lowScore).toLocaleString()}|${stats.lowScoreDate}|\n`;
         }
     }
 

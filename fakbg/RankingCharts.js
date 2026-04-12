@@ -154,7 +154,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
+                            return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
@@ -257,7 +257,7 @@ function updateRanglistenChart(matchListSummary) {
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
+                            return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
@@ -666,7 +666,7 @@ function updateRatingListChart(matchListSummary) {
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
+                            return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
@@ -841,7 +841,7 @@ function updatePlayerProgressChart(progressList) {
                             const elo = context.parsed.y.toFixed(1);
                             const matchNumber = context.parsed.x;
                             const date = progressList.find(entry => entry.match === matchNumber)?.date || '';
-                            return [` ${elo} Elo`, ` ${date}`];
+                            return [` ${parseFloat(elo).toLocaleString()} Elo`, ` ${date}`];
                         }
 
                     }
@@ -882,7 +882,7 @@ function updatePlayerProgressChart(progressList) {
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
+                            return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
@@ -987,7 +987,7 @@ function updateScoresChart(scoresSummary) {
                             return ` #${rank} ${context[0].label}`;
                         },
                         label: function(context) {
-                            return ` ${context.dataset.label}: ${context.raw} Elo`;
+                            return ` ${context.dataset.label}: ${parseFloat(context.raw).toLocaleString()} Elo`;
                         }
                     }
                 },
@@ -1024,7 +1024,7 @@ function updateScoresChart(scoresSummary) {
                     },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
+                            return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
