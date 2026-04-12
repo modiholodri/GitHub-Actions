@@ -109,7 +109,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                             if (matchesPlayedRankingList) { // show the real matches won/lost   
                                 const totalMatches = context.chart.data.datasets
                                     .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
-                                return ` #${rank} ${context.dataset.label}: ${context.raw} of ${totalMatches} matches`;
+                                return [` #${rank} ${context.dataset.label}: ${context.raw}`, ` of ${totalMatches} matches`];
                             }
                             return ` #${rank} ${context.dataset.label}: ${context.raw.toFixed(1)}%`;
                         }
@@ -344,7 +344,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                     callbacks: {
                         label: function(context) {
                             const rank = context.dataIndex;
-                            return ` Opponent #${rank} ${selectedPlayer} ${context.dataset.label}: ${context.raw.toFixed(1)}% of matches`;
+                            return [` Opponent #${rank}`, ` ${selectedPlayer} ${context.dataset.label}: ${context.raw.toFixed(1)}% of matches`];
                         }
                     }
                 },
@@ -476,7 +476,7 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                             const rank = context.dataIndex + 1;
                             const totalMatches = context.chart.data.datasets
                                 .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
-                            return ` Opponent #${rank}  ${selectedPlayer} ${context.dataset.label}: ${context.raw} of ${totalMatches} matches`;
+                            return [` Opponent #${rank}`, ` ${selectedPlayer} ${context.dataset.label}: ${context.raw} of ${totalMatches} matches`];
                         }
                     }
                 },
@@ -823,7 +823,7 @@ function updatePlayerProgressChart(progressList) {
                             const elo = context.parsed.y.toFixed(1);
                             const matchNumber = context.parsed.x;
                             const date = progressList.find(entry => entry.match === matchNumber)?.date || '';
-                            return `${elo} Elo on ${date}`;
+                            return [` ${elo} Elo`, ` ${date}`];
                         }
 
                     }
@@ -1224,7 +1224,8 @@ function updateLastActiveChart(rankingSummary) {
                             const today = new Date();
                             const diffTime = Math.abs(today - date);
                             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                            return ` #${rank}  ${diffDays} days ago  ` + date.toISOString().split('T')[0];
+                            const unit = diffDays === 0 ? 'today' : (diffDays === 1 ? '1 day ago' : `${diffDays} days ago`);
+                            return [` #${rank}  ${unit}`, ` ${date.toISOString().split('T')[0]}`];
                         }
                     }
                 }
