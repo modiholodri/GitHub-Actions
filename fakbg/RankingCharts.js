@@ -240,7 +240,7 @@ function updateRanglistenChart(matchListSummary) {
                         label: function(context) {
                             const totalPunkte = context.chart.data.datasets
                                 .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
-                            return [` ${context.dataset.label}: ${context.raw} Punkte`, ` Total: ${totalPunkte} Punkte`];
+                            return [` ${context.dataset.label}: ${context.raw.toLocaleString()} Punkte`, ` Total: ${totalPunkte.toLocaleString()} Punkte`];
                         }
                     }
                 },
@@ -629,7 +629,7 @@ function updateRatingListChart(matchListSummary) {
                             return ` #${rank} ${context[0].label}`;
                         },
                         label: function(context) {
-                            return ` ${context.dataset.label}: ${context.raw} Elo`;
+                            return ` ${context.dataset.label}: ${context.raw.toLocaleString()} Elo`;
                         }
                     }
                 },
