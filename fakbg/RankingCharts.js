@@ -776,6 +776,30 @@ function updatePlayerProgressChart(progressList) {
             };
         });
 
+    const playerAnnotations = {};
+    const activeSortedPlayers = sortedPlayers.filter(player => activePlayers.has(player));
+
+    // create the aannotations for the players who played in the last 14 days
+    activeSortedPlayers.forEach((player, idx) => {
+        const lastPlayedDate = playerProgress[player][playerProgress[player].length - 1].date;
+        const daysSinceLastPlayed = Math.floor((new Date() - new Date(lastPlayedDate)) / (1000 * 60 * 60 * 24));
+        if (daysSinceLastPlayed > 14) return;
+
+        const lastRating = playerProgress[player][playerProgress[player].length - 1].rating;
+        
+        playerAnnotations[`player_${idx}`] = {
+            type: 'label',
+            xValue: lastMatchInTimeSpan + 2,
+            yValue: lastRating + 5,
+            position: 'start',
+            content: [player],
+            color: datasets[idx].borderColor,
+            font: { size: 12 },
+            padding: 2,
+            borderRadius: 4
+        };
+    });
+
     destroyRankingChart('');
     document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.6 + sortedPlayers.length * 10; // Adjust height based on number of players
 
@@ -804,6 +828,7 @@ function updatePlayerProgressChart(progressList) {
                 },
                 legend: { position: 'bottom' },
                 annotation: {
+                    clip: false,
                     annotations: {
                         startingEloLine: {
                             type: 'line',
@@ -821,7 +846,8 @@ function updatePlayerProgressChart(progressList) {
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderDash: [5, 5],
                             borderWidth: 2,
-                        }
+                        },
+                        ...playerAnnotations,
                     }
                 }
             },
@@ -845,7 +871,7 @@ function updatePlayerProgressChart(progressList) {
                     position: 'right',
                     beginAtZero: false,
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
-                }
+                },
             }
         }
     });
