@@ -232,7 +232,9 @@ function updateRanglistenChart(matchListSummary) {
                     callbacks: {
                         label: function(context) {
                             const rank = context.dataIndex + 1;
-                            return ` #${rank} ${context.dataset.label}: ${context.raw} Punkte`;
+                            const totalPunkte = context.chart.data.datasets
+                                .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
+                            return [` #${rank} ${context.dataset.label}: ${context.raw} Punkte`, ` Total: ${totalPunkte} Punkte`];
                         }
                     }
                 },
@@ -472,8 +474,8 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                     callbacks: {
                         label: function(context) {
                             const rank = context.dataIndex + 1;
-                                const totalMatches = context.chart.data.datasets
-                                    .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
+                            const totalMatches = context.chart.data.datasets
+                                .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
                             return ` Opponent #${rank}  ${selectedPlayer} ${context.dataset.label}: ${context.raw} of ${totalMatches} matches`;
                         }
                     }
