@@ -104,14 +104,17 @@ function updateMatchesPlayedChart(matchListSummary) {
             plugins: {
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
                         label: function(context) {
-                            const rank = context.dataIndex + 1;
                             if (matchesPlayedRankingList) { // show the real matches won/lost   
                                 const totalMatches = context.chart.data.datasets
                                     .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
-                                return [` #${rank} ${context.dataset.label}: ${context.raw}`, ` of ${totalMatches} matches`];
+                                return [` ${context.dataset.label}: ${context.raw}`, ` of ${totalMatches} matches`];
                             }
-                            return ` #${rank} ${context.dataset.label}: ${context.raw.toFixed(1)}%`;
+                            return [` ${context.dataset.label}: ${context.raw.toFixed(1)}%`, ` of matches`];
                         }
                     }
                 },
@@ -230,11 +233,14 @@ function updateRanglistenChart(matchListSummary) {
             plugins: {
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
                         label: function(context) {
-                            const rank = context.dataIndex + 1;
                             const totalPunkte = context.chart.data.datasets
                                 .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
-                            return [` #${rank} ${context.dataset.label}: ${context.raw} Punkte`, ` Total: ${totalPunkte} Punkte`];
+                            return [` ${context.dataset.label}: ${context.raw} Punkte`, ` Total: ${totalPunkte} Punkte`];
                         }
                     }
                 },
@@ -342,9 +348,15 @@ function updatePlayerInfoPercentChart(matchListSummary) {
             plugins: {
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex;
+                            if (rank === 0) {
+                                return `${context[0].label}`;
+                            }
+                            return ` #${rank} Opponent ${context[0].label}`;
+                        },
                         label: function(context) {
-                            const rank = context.dataIndex;
-                            return [` Opponent #${rank}`, ` ${selectedPlayer} ${context.dataset.label}: ${context.raw.toFixed(1)}% of matches`];
+                            return [` ${selectedPlayer} ${context.dataset.label}: ${context.raw.toFixed(1)}%`, ` of matches`];
                         }
                     }
                 },
@@ -472,11 +484,14 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
             plugins: {
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} Opponent ${context[0].label}`;
+                        },
                         label: function(context) {
-                            const rank = context.dataIndex + 1;
                             const totalMatches = context.chart.data.datasets
                                 .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
-                            return [` Opponent #${rank}`, ` ${selectedPlayer} ${context.dataset.label}: ${context.raw} of ${totalMatches} matches`];
+                            return [` ${selectedPlayer} ${context.dataset.label}: ${context.raw}`, ` of ${totalMatches} matches`];
                         }
                     }
                 },
@@ -609,9 +624,12 @@ function updateRatingListChart(matchListSummary) {
             plugins: {
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
                         label: function(context) {
-                            const rank = context.dataIndex + 1;
-                            return ` #${rank} ${context.dataset.label}: ${context.raw} Elo`;
+                            return ` ${context.dataset.label}: ${context.raw} Elo`;
                         }
                     }
                 },
@@ -964,9 +982,12 @@ function updateScoresChart(scoresSummary) {
             plugins: {
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
                         label: function(context) {
-                            const rank = context.dataIndex + 1;
-                            return ` #${rank} ${context.dataset.label}: ${context.raw} Elo`;
+                            return ` ${context.dataset.label}: ${context.raw} Elo`;
                         }
                     }
                 },
@@ -1071,9 +1092,12 @@ function updateStreakChart(rankingSummary) {
         plugins: {
             tooltip: {
                 callbacks: {
+                    title: function(context) {
+                        const rank = context[0].dataIndex + 1;
+                        return ` #${rank} ${context[0].label}`;
+                    },
                     label: function(context) {
-                        const rank = context.dataIndex + 1;
-                        return ` #${rank} ${context.dataset.label}: ${context.raw}`;
+                        return `${context.dataset.label}: ${context.raw}`;
                     }
                 }
             },
@@ -1218,14 +1242,17 @@ function updateLastActiveChart(rankingSummary) {
             },
                 tooltip: {
                     callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
                         label: function(context) {
-                            const rank = context.dataIndex + 1;
                             const date = new Date(context.raw);
                             const today = new Date();
                             const diffTime = Math.abs(today - date);
                             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                            const unit = diffDays === 0 ? 'today' : (diffDays === 1 ? '1 day ago' : `${diffDays} days ago`);
-                            return [` #${rank}  ${unit}`, ` ${date.toISOString().split('T')[0]}`];
+                            const diffDaysString = diffDays === 0 ? 'today' : (diffDays === 1 ? '1 day ago' : `${diffDays} days ago`);
+                            return [` ${diffDaysString}`, ` ${date.toISOString().split('T')[0]}`];
                         }
                     }
                 }
