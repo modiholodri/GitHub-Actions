@@ -112,7 +112,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                             if (matchesPlayedRankingList) { // show the real matches won/lost   
                                 const totalMatches = context.chart.data.datasets
                                     .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
-                                return [` ${context.dataset.label}: ${context.raw}`, ` of ${totalMatches} matches`];
+                                return [` ${totalMatches} matches`, ` ${context.dataset.label}: ${context.raw}`];
                             }
                             return [` ${context.dataset.label}: ${context.raw.toFixed(1)}%`, ` of matches`];
                         }
