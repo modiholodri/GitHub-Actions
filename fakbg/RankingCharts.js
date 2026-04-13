@@ -153,18 +153,14 @@ function updateMatchesPlayedChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value.toLocaleString() : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value.toLocaleString() : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
@@ -261,9 +257,7 @@ function updateRanglistenChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        callback: function(value) { 
-                            return Number.isInteger(value) ? value.toLocaleString() : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
@@ -397,9 +391,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
@@ -512,18 +504,14 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
@@ -679,9 +667,7 @@ function updateRatingListChart(matchListSummary) {
                     beginAtZero: false,
                     position: 'top',
                     ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value.toLocaleString() : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
@@ -896,9 +882,7 @@ function updatePlayerProgressChart(progressList) {
                     min: firstMatchInTimeSpan,
                     max: lastMatchInTimeSpan,
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value.toLocaleString() : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' }
                 },
@@ -1038,9 +1022,7 @@ function updateScoresChart(scoresSummary) {
                     beginAtZero: false,
                     position: 'top',
                     ticks: {
-                        callback: function(value) {
-                            return Number.isInteger(value) ? value.toLocaleString() : null;
-                        }
+                        callback: wholeNumbersOnly
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
@@ -1139,18 +1121,14 @@ function updateStreakChart(rankingSummary) {
                 beginAtZero: true,
                 position: 'top',
                 ticks: {
-                    callback: function(value) {
-                        return Number.isInteger(value) ? value : null;
-                    }
+                    callback: wholeNumbersOnly
                 },
                 grid: { color: 'rgba(255, 255, 0, 0.3)' },
             },
             x2: {
                 position: 'bottom',
                 ticks: {
-                    callback: function(value) {
-                        return Number.isInteger(value) ? value : null;
-                    }
+                    callback: wholeNumbersOnly
                 },
                 afterDataLimits(scale) {
                     const xScale = scale.chart.scales.x;
