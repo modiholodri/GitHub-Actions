@@ -15,6 +15,18 @@ let defaultHiddenStates = {
     'playerInfoMatches': [false, false],
 };
 
+// default colors
+const wonForeColor = 'rgba(75, 192, 192, 1)';
+const wonBackColor = 'rgba(75, 192, 192, 0.2)';
+
+const lostForeColor = 'rgba(255, 99, 132, 1)';
+const lostBackColor = 'rgba(255, 99, 132, 0.2)';
+
+const gridColor = { color: 'rgba(255, 255, 0, 0.3)' };
+const middleLineColor = 'rgba(255, 0, 0, 1)';
+const playerLineColor = 'rgba(255, 255, 0, 1)';
+
+
 // If the Ranking chart already exists, destroy it before creating a new one
 function destroyRankingChart(message) {
     if (rankingChart) {
@@ -83,16 +95,16 @@ function updateMatchesPlayedChart(matchListSummary) {
                     label: 'Won',
                     hidden: hiddenStates[0],
                     data: matchesWon,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: wonForeColor,
                     borderWidth: 1
                 },
                 {
                     label: 'Lost',
                     hidden: hiddenStates[1],
                     data: matchesLost,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: lostBackColor,
+                    borderColor: lostForeColor,
                     borderWidth: 1
                 }
             ]
@@ -126,7 +138,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                                 type: 'line',
                                 xMin: 50, // Y-axis value where the line starts
                                 xMax: 50, // Y-axis value where the line ends
-                                borderColor: 'rgba(255, 0, 0, 1)',
+                                borderColor: middleLineColor,
                                 borderDash: [5, 5],
                                 borderWidth: 2,
                             },
@@ -135,7 +147,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                                 display: playerValue,
                                 xMin: playerValue, // Y-axis value where the line starts
                                 xMax: playerValue, // Y-axis value where the line ends
-                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderColor: playerLineColor,
                                 borderDash: [5, 5],
                                 borderWidth: 2,
                             }
@@ -155,7 +167,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                     ticks: {
                         callback: wholeNumbersOnly
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
@@ -205,8 +217,8 @@ function updateRanglistenChart(matchListSummary) {
                     label: 'Won',
                     hidden: hiddenStates[0],
                     data: punkteWon,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: wonForeColor,
                     borderWidth: 1
                 },
                 {
@@ -221,8 +233,8 @@ function updateRanglistenChart(matchListSummary) {
                     label: 'Lost',
                     hidden: hiddenStates[2],
                     data: punkteLost,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: lostBackColor,
+                    borderColor: lostForeColor,
                     borderWidth: 1
                 }
             ]
@@ -260,7 +272,7 @@ function updateRanglistenChart(matchListSummary) {
                     ticks: {
                         callback: wholeNumbersOnly
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
@@ -327,16 +339,16 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                     label: 'Won',
                     hidden: hiddenStates[0],
                     data: matchesWon,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: wonForeColor,
                     borderWidth: 1
                 },
                 {
                     label: 'Lost',
                     hidden: hiddenStates[1],
                     data: matchesLost,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: lostBackColor,
+                    borderColor: lostForeColor,
                     borderWidth: 1
                 }
             ]
@@ -367,7 +379,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                             type: 'line',
                             xMin: 50, // Y-axis value where the line starts
                             xMax: 50, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderColor: middleLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -375,7 +387,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                             type: 'line',
                             xMin: matchesWon[0], // Y-axis value where the line starts
                             xMax: matchesWon[0], // Y-axis value where the line ends
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         }
@@ -394,7 +406,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                     ticks: {
                         callback: wholeNumbersOnly
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
@@ -461,16 +473,16 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                     label: 'Won',
                     hidden: hiddenStates[0],
                     data: matchesWon,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: wonForeColor,
                     borderWidth: 1
                 },
                 {
                     label: 'Lost',
                     hidden: hiddenStates[1],
                     data: matchesLost,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: lostBackColor,
+                    borderColor: lostForeColor,
                     borderWidth: 1
                 }
             ]
@@ -507,7 +519,7 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                     ticks: {
                         callback: wholeNumbersOnly
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
@@ -643,7 +655,7 @@ function updateRatingListChart(matchListSummary) {
                             type: 'line',
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderColor: middleLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -652,7 +664,7 @@ function updateRatingListChart(matchListSummary) {
                             display: playerValue,
                             xMin: playerValue, // Y-axis value where the line starts
                             xMax: playerValue, // Y-axis value where the line ends
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         }
@@ -670,7 +682,7 @@ function updateRatingListChart(matchListSummary) {
                     ticks: {
                         callback: wholeNumbersOnly
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
@@ -855,7 +867,7 @@ function updatePlayerProgressChart(progressList) {
                             type: 'line',
                             yMin: 1800, // Y-axis value where the line starts
                             yMax: 1800, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderColor: middleLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -864,7 +876,7 @@ function updatePlayerProgressChart(progressList) {
                             display: playerValue,
                             yMin: playerValue, // Y-axis value where the line starts
                             yMax: playerValue, // Y-axis value where the line ends
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -885,12 +897,12 @@ function updatePlayerProgressChart(progressList) {
                     ticks: {
                         callback: wholeNumbersOnly
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' }
+                    grid: gridColor
                 },
                 y: {
                     position: 'right',
                     beginAtZero: false,
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' }
+                    grid: gridColor
                 },
             }
         }
@@ -998,7 +1010,7 @@ function updateScoresChart(scoresSummary) {
                             type: 'line',
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderColor: middleLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -1007,7 +1019,7 @@ function updateScoresChart(scoresSummary) {
                             display: playerValue,
                             xMin: playerValue, // Y-axis value where the line starts
                             xMax: playerValue, // Y-axis value where the line ends
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         }
@@ -1025,7 +1037,7 @@ function updateScoresChart(scoresSummary) {
                     ticks: {
                         callback: wholeNumbersOnly
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
@@ -1106,7 +1118,7 @@ function updateStreakChart(rankingSummary) {
                         type: 'line',
                         xMin: 0, // Y-axis value where the line starts
                         xMax: 0, // Y-axis value where the line ends
-                        borderColor: 'rgba(255, 0, 0, 1)',
+                        borderColor: middleLineColor,
                         borderDash: [5, 5],
                         borderWidth: 2,
                     }
@@ -1124,7 +1136,7 @@ function updateStreakChart(rankingSummary) {
                 ticks: {
                     callback: wholeNumbersOnly
                 },
-                grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                grid: gridColor,
             },
             x2: {
                 position: 'bottom',
@@ -1154,7 +1166,7 @@ function updateStreakChart(rankingSummary) {
                     type: 'line',
                     xMin: 0, // Y-axis value where the line starts
                     xMax: 0, // Y-axis value where the line ends
-                    borderColor: 'rgba(255, 0, 0, 1)',
+                    borderColor: middleLineColor,
                     borderDash: [5, 5],
                     borderWidth: 2,
                 },
@@ -1162,7 +1174,7 @@ function updateStreakChart(rankingSummary) {
                     type: 'line',
                     xMin: playerValue, // Y-axis value where the line starts
                     xMax: playerValue, // Y-axis value where the line ends
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderColor: playerLineColor,
                     borderDash: [5, 5],
                     borderWidth: 2,
                 }
@@ -1180,13 +1192,13 @@ function updateStreakChart(rankingSummary) {
                     data: streak,
                     backgroundColor: function(context) {
                                         const value = context.raw; // Get the raw data value
-                                        if (value > 0) return 'rgba(75, 192, 192, 0.2)';
-                                        else           return 'rgba(255, 99, 132, 0.2)';
+                                        if (value > 0) return wonBackColor;
+                                        else           return lostBackColor;
                                     },
                     borderColor: function(context) {
                                     const value = context.raw; // Get the raw data value
-                                    if (value > 0) return 'rgba(75, 192, 192, 1)';
-                                    else           return 'rgba(255, 99, 132, 1)';
+                                    if (value > 0) return wonForeColor;
+                                    else           return lostForeColor;
                                 },
                     borderWidth: 1
                 },
@@ -1218,8 +1230,8 @@ function updateLastActiveChart(rankingSummary) {
                 {
                     label: 'Last Active Date',
                     data: lastDatesActive,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: playerLineColor,
                     pointHoverRadius: 18,
                     pointHitRadius: 24,
                     borderWidth: 1,
@@ -1268,7 +1280,7 @@ function updateLastActiveChart(rankingSummary) {
                             return new Date(value).toISOString().split('T')[0];
                         }
                     },
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
