@@ -53,7 +53,7 @@ function loadSettings() {
 
     // Expand/Collapse the Replay section depending on the Ranking List Selection
     const replaySection = document.getElementById("replaySection");
-    replaySection.style.display = rankingListSelection === "ratingList" ? "flex" : "none"; // Hide the element
+    replaySection.style.display = rankingListSelection === "ratingList" || rankingListSelection === "winningPercent" ? "flex" : "none"; // Hide the element
 
     // Interval Selection
     loadValueSetting('intervalSelection', 'Daily');

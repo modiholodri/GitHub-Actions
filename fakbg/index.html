@@ -150,6 +150,7 @@
             <div class="input-group">
                 <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionManuallyChanged()">
                     <option class="centered" value="ratingList">Rating List</option>
+                    <option class="centered" value="winningPercent">Winning %</option>
                     <option class="centered" value="rangliste">Rangliste</option>
                     <option class="centered" value="playerProgress">Player Progress</option>
                     <option class="centered" value="highScores">High Scores</option>
@@ -360,6 +361,11 @@
                     ratingSummary = summarizeRatingList(matchList);
                     updateRatingListChart(ratingSummary);
                     createRatingListRankingList('rankingSummary', ratingSummary);
+                    break;
+                case 'winningPercent':
+                    ratingSummary = summarizeRatingList(matchList);
+                    updateWinningPercentChart(ratingSummary);
+                    createWinningPercentRankingList('rankingSummary', ratingSummary);
                     break;
                 case 'rangliste':
                     if(Object.keys(ranglistenSummary).length > 0) {
@@ -635,6 +641,9 @@
                             case 'ratingList':
                                 updateRatingListChart(ratingSummary);
                                 break;
+                            case 'winningPercent':
+                                updateWinningPercentChart(ratingSummary);
+                                break;
                             case 'playerInfoPercent':
                                 updatePlayerInfoPercentChart(playerSummary);
                                 break;
@@ -661,7 +670,7 @@
             playerNameSelection.style.display = this.value === "playerInfoPercent" || this.value === "playerInfoMatches" ? "flex" : "none";
             
             const replaySection = document.getElementById("replaySection");
-            replaySection.style.display = this.value === "ratingList" ? "flex" : "none";
+            replaySection.style.display = this.value === "ratingList" || this.value === "winningPercent"? "flex" : "none";
         });
 
         addToggleListener('rankingChart');

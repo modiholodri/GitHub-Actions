@@ -6,6 +6,7 @@ let rankingChart;
 let hiddenStates;
 let defaultHiddenStates = {
     'ratingList': [false, false],
+    'winningPercent': [false, false],
     'matchesPlayed': [false, false],
     'highScores': [false, false, false],
     'lowScores': [false, false, false],
@@ -563,8 +564,16 @@ function resetPlayingRatingList() {
 function playRatingList() {
     if (remainingReplayTimes > 0) {
         adjustExpectedRatingList(matchList);
-        createRatingListRankingList('rankingSummary', ratingSummary);
-        updateRatingListChart(ratingSummary);
+        
+        if (document.getElementById('rankingListSelection').value === 'ratingList') {
+            createRatingListRankingList('rankingSummary', ratingSummary);
+            updateRatingListChart(ratingSummary);
+        }
+        else if (document.getElementById('rankingListSelection').value === 'winningPercent') {
+            createWinningPercentRankingList('rankingSummary', ratingSummary);
+            updateWinningPercentChart(ratingSummary);
+        }
+        
         remainingReplayTimes--;
         document.getElementById('replayPlayButton').innerText = `▶︎ ${remainingReplayTimes}`;
     }
@@ -573,7 +582,7 @@ function playRatingList() {
     }
 }
 
-// Function to create or update the Ranglisten chart
+// Function to create or update the Rating List chart
 function updateRatingListChart(matchListSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
     const yourName = document.getElementById('yourName').value.trim();
@@ -677,6 +686,139 @@ function updateRatingListChart(matchListSummary) {
                         text: 'Elo Points',
                         display: true,
                     },
+                    beginAtZero: false,
+                    position: 'top',
+                    ticks: {
+                        callback: wholeNumbersOnly
+                    },                            
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: false,
+                    ticks: { autoSkip: false } // show all the names
+                }
+            }
+        }
+    });
+}
+
+// Function to create or update the Winning % chart
+function updateWinningPercentChart(matchListSummary) {
+    const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+    const yourName = document.getElementById('yourName').value.trim();
+
+    // Extract data for the chart
+    const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].expectedMatchesWon - matchListSummary[a].expectedMatchesWon);
+    if (players.length < 1) return;
+    const percentMatchesWon = players.map(player => Math.round(matchListSummary[player].percentMatchesWon)); // rating
+    const expectedMatchesWon = players.map(player => Math.round(matchListSummary[player].expectedMatchesWon)); // future rating
+    
+    // Only destroy and recreate the chart if the number of players changed
+    if (remainingReplayTimes < 1 || manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
+        setRememberedHiddenStates();
+        destroyRankingChart('');
+        optimizeChartCanvasHeight('rankingChartCanvas', players.length);
+    }
+    else if (rankingChart) {
+        // Update data and labels if chart exists
+        rankingChart.data.labels = players;
+        rankingChart.data.datasets[0].data = percentMatchesWon;
+        rankingChart.data.datasets[1].data = expectedMatchesWon;
+
+        // const playerValue = Math.round(matchListSummary[yourName]?.futureRating);
+        // rankingChart.options.plugins.annotation.annotations.playerValueLine.xMin = playerValue;
+        // rankingChart.options.plugins.annotation.annotations.playerValueLine.xMax = playerValue;
+
+        rankingChart.update();
+        return;
+    }
+
+    // const playerValue = Math.round(matchListSummary[yourName]?.futureRating);
+
+    // Create the chart
+    rankingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: players, // Player names
+            datasets: [
+                {
+                    label: '% Matches Won',
+                    data: percentMatchesWon,
+                    type: 'scatter',
+                    pointStyle: 'star',
+                    hidden: hiddenStates[0],
+                    borderColor: 'lime',
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
+                },
+                {
+                    label: '% Expected to Win',
+                    data: expectedMatchesWon,
+                    hidden: hiddenStates[1],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y', // Set the chart to horizontal
+            responsive: true,
+            maintainAspectRatio: false, // Allow the chart to resize freely
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            return ` ${context.raw.toLocaleString()} ${context.dataset.label}`;
+                        }
+                    }
+                },
+                legend: { position: 'bottom' },
+                annotation: {
+                    annotations: {
+                        startingEloLine: {
+                            type: 'line',
+                            xMin: 50, // Y-axis value where the line starts
+                            xMax: 50, // Y-axis value where the line ends
+                            borderColor: middleLineColor,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        },
+                        // playerValueLine: {
+                        //     type: 'line',
+                        //     display: playerValue,
+                        //     xMin: playerValue, // Y-axis value where the line starts
+                        //     xMax: playerValue, // Y-axis value where the line ends
+                        //     borderColor: playerLineColor,
+                        //     borderDash: [5, 5],
+                        //     borderWidth: 2,
+                        // }
+                    }
+                }                    
+            },
+            scales: {
+                x: {
+                    title: {
+                        text: 'Winning %',
+                        display: true,
+                    },
+                    min: 0,
+                    max: 100,
                     beginAtZero: false,
                     position: 'top',
                     ticks: {

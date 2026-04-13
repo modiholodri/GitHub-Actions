@@ -6,16 +6,31 @@ function displayListWithHighlighting(elementName, listContent) {
 
 // Rating List
 function createRatingListRankingList(summaryElement, rankingSummary) {
-    let ratingListList = '|   |   |% Won|% Exp|Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
+    let ratingListList = '|   |   |Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
 
     let rank = 1;
     let totalMatchesPlayed = 0;
     for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].futureRating - a[1].futureRating)) {
         const futureRating = Math.round(stats.futureRating);
         totalMatchesPlayed += stats.matchesPlayed;
-        ratingListList += `|${rank++}|${player}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.rating.toLocaleString()}|${futureRating.toLocaleString()}|${stats.matchesPlayed.toLocaleString()}|${stats.matchesWon.toLocaleString()} - ${stats.matchesLost.toLocaleString()}|\n`;    
+        ratingListList += `|${rank++}|${player}|${stats.rating.toLocaleString()}|${futureRating.toLocaleString()}|${stats.matchesPlayed.toLocaleString()}|${stats.matchesWon.toLocaleString()} - ${stats.matchesLost.toLocaleString()}|\n`;    
     }   
-    ratingListList += `||∑|||||${(totalMatchesPlayed/2).toLocaleString()}||\n`;    
+    ratingListList += `||∑|||${(totalMatchesPlayed/2).toLocaleString()}||\n`;    
+
+    displayListWithHighlighting(summaryElement, ratingListList);
+}
+
+// Winning %
+function createWinningPercentRankingList(summaryElement, rankingSummary) {
+    let ratingListList = '|   |   |% Won|% Exp|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|\n';
+
+    let rank = 1;
+    let totalMatchesPlayed = 0;
+    for (const [player, stats] of Object.entries(rankingSummary).sort((a,b) => b[1].percentMatchesWon - a[1].percentMatchesWon)) {
+        totalMatchesPlayed += stats.matchesPlayed;
+        ratingListList += `|${rank++}|${player}|${stats.percentMatchesWon}|${stats.expectedMatchesWon}|${stats.matchesPlayed.toLocaleString()}|${stats.matchesWon.toLocaleString()} - ${stats.matchesLost.toLocaleString()}|\n`;    
+    }   
+    ratingListList += `||∑|||${(totalMatchesPlayed/2).toLocaleString()}||\n`;    
 
     displayListWithHighlighting(summaryElement, ratingListList);
 }
