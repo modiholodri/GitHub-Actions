@@ -145,22 +145,27 @@ function updateMatchesPlayedChart(matchListSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: chartTitle,
+                        display: true,
+                    },
                     beginAtZero: true,
                     stacked: true,
-                    position: 'top', // Move the axis label to the top
-                    title: {
-                        display: true,
-                        text: chartTitle,
-                    },
+                    position: 'top',
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
+                        callback: function(value) {
                             return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
-                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                x2: {
                     position: 'bottom',
+                    ticks: {
+                        callback: function(value) {
+                            return Number.isInteger(value) ? value.toLocaleString() : null;
+                        }
+                    },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
                         if (xScale) {
@@ -248,21 +253,21 @@ function updateRanglistenChart(matchListSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: 'Punkte',
+                        display: true,
+                    },
                     beginAtZero: true,
                     stacked: true,
                     position: 'top',
-                    title: {
-                        display: true,
-                        text: 'Punkte',
-                    },
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
+                        callback: function(value) { 
                             return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
-                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                x2: {
                     position: 'bottom',
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
@@ -384,21 +389,21 @@ function updatePlayerInfoPercentChart(matchListSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: selectedPlayer + "'s % Matches",
+                        display: true,
+                    },
                     beginAtZero: true,
                     stacked: true,
-                    position: 'top', // Move the axis label to the top
-                    title: {
-                        display: true,
-                        text: selectedPlayer + "'s % Matches",
-                    },
+                    position: 'top',
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
+                        callback: function(value) {
                             return Number.isInteger(value) ? value : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
-                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                x2: {
                     position: 'bottom',
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
@@ -499,22 +504,27 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: selectedPlayer + "'s Matches",
+                        display: true,
+                    },
                     beginAtZero: true,
                     stacked: true,
-                    position: 'top', // Move the axis label to the top
-                    title: {
-                        display: true,
-                        text: selectedPlayer + "'s Matches",
-                    },
+                    position: 'top',
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
+                        callback: function(value) {
                             return Number.isInteger(value) ? value : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
-                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                x2: {
                     position: 'bottom',
+                    ticks: {
+                        callback: function(value) {
+                            return Number.isInteger(value) ? value : null;
+                        }
+                    },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
                         if (xScale) {
@@ -531,6 +541,10 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
             }
         }
     });
+}
+
+function wholeNumbersOnly(value) {
+    return Number.isInteger(value) ? value.toLocaleString() : null;
 }
 
 setInterval(playRatingList, 200);
@@ -658,20 +672,20 @@ function updateRatingListChart(matchListSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: 'Elo Points',
+                        display: true,
+                    },
                     beginAtZero: false,
                     position: 'top',
-                    title: {
-                        display: true,
-                        text: 'Elo Points',
-                    },
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
+                        callback: function(value) {
                             return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
-                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                x2: {
                     position: 'bottom',
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
@@ -873,13 +887,14 @@ function updatePlayerProgressChart(progressList) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: 'Match Number',
+                        display: true,
+                    },
+                    position: 'top',
                     type: 'linear',
                     min: firstMatchInTimeSpan,
                     max: lastMatchInTimeSpan,
-                    title: {
-                        display: true,
-                        text: 'Match Number'
-                    },
                     ticks: {
                         callback: function(value) {  // Show only whole numbers
                             return Number.isInteger(value) ? value.toLocaleString() : null;
@@ -1016,20 +1031,20 @@ function updateScoresChart(scoresSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: 'Elo Points',
+                        display: true,
+                    },
                     beginAtZero: false,
                     position: 'top',
-                    title: {
-                        display: true,
-                        text: 'Elo Points',
-                    },
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
+                        callback: function(value) {
                             return Number.isInteger(value) ? value.toLocaleString() : null;
                         }
                     },                            
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
-                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                x2: {
                     position: 'bottom',
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
@@ -1117,21 +1132,26 @@ function updateStreakChart(rankingSummary) {
         },
         scales: {
             x: {
+                title: {
+                    text: 'Matches',
+                    display: true,
+                },
                 beginAtZero: true,
                 position: 'top',
-                title: {
-                    display: true,
-                    text: 'Matches',
-                },
                 ticks: {
-                    callback: function(value) {  // Show only whole numbers
+                    callback: function(value) {
                         return Number.isInteger(value) ? value : null;
                     }
-                },                            
+                },
                 grid: { color: 'rgba(255, 255, 0, 0.3)' },
             },
-            x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+            x2: {
                 position: 'bottom',
+                ticks: {
+                    callback: function(value) {
+                        return Number.isInteger(value) ? value : null;
+                    }
+                },
                 afterDataLimits(scale) {
                     const xScale = scale.chart.scales.x;
                     if (xScale) {
@@ -1259,11 +1279,11 @@ function updateLastActiveChart(rankingSummary) {
             },
             scales: {
                 x: {
-                    position: 'top',
                     title: {
-                        display: true,
                         text: 'Date',
+                        display: true,
                     },
+                    position: 'top',
                     ticks: {
                         callback: function(value) {
                             return new Date(value).toISOString().split('T')[0];
@@ -1271,7 +1291,7 @@ function updateLastActiveChart(rankingSummary) {
                     },
                     grid: { color: 'rgba(255, 255, 0, 0.3)' },
                 },
-                x2: {  // secondary x-axis to align with the first one, but without ticks and grid
+                x2: {
                     position: 'bottom',
                     ticks: {
                         callback: function(value) {
