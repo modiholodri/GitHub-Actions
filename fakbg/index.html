@@ -435,6 +435,17 @@
         function clubSelectionChanged() {
             destroyRankingChart("Not loaded yet...");
             refreshWebPageTitle();
+
+            const clubSelection = document.getElementById('clubSelection').value;
+            if (clubSelection === 'siambg-ranking-list') {
+                document.getElementById('matchReportSection').style.display = 'none';
+                document.getElementById('tournamentManagementSection').style.display = 'none';
+            }
+            else {
+                document.getElementById('matchReportSection').style.display = 'block';
+                document.getElementById('tournamentManagementSection').style.display = 'block';
+            }
+
             fetchRatingList();
             fetchMatchList();
             clearSubmissionStatus();
