@@ -240,8 +240,9 @@ function updateRanglistenChart(matchListSummary) {
                         },
                         label: function(context) {
                             const totalPunkte = context.chart.data.datasets
+                                .filter(ds => ds.label !== 'Lost')
                                 .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
-                            return [` ${context.dataset.label}: ${context.raw.toLocaleString()} Punkte`, ` Total: ${totalPunkte.toLocaleString()} Punkte`];
+                            return [` ${totalPunkte.toLocaleString()} Punkte`, ` ${context.dataset.label} ${context.raw.toLocaleString()}`];
                         }
                     }
                 },
