@@ -6,7 +6,7 @@ function displayListWithHighlighting(elementName, listContent) {
 
 // Rating List
 function createRatingListRankingList(summaryElement, rankingSummary) {
-    let ratingListList = '|   |   |% Won|% Fut|Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
+    let ratingListList = '|   |   |% Won|% Exp|Rat|fRat|Matches|Result|\n|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|\n';
 
     let rank = 1;
     let totalMatchesPlayed = 0;
