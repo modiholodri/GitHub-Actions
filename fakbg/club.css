@@ -104,7 +104,6 @@ hr.rounded {
     overflow: hidden;
     margin-top: 14px;
     position: relative;
-    border: 1px solid gray;
     z-index: 10;
 
     /* Black theme */
