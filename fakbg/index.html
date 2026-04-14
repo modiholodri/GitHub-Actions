@@ -87,7 +87,7 @@
                 </div>
 
                 <!-- Tournament Director -->
-                <h5 id="tournamentDirectorToggle" type="button" data-toggle="collapse" data-target="#tournamentDirector" aria-expanded="true" aria-controls="tournamentDirector">
+                <h5 id="tournamentDirectorToggle" type="button" data-toggle="collapse" data-target="#tournamentDirector" aria-expanded="false" aria-controls="tournamentDirector">
                     Tournament Director ⇅
                 </h5>
                 <div id="tournamentDirector" class="collapse">
@@ -311,6 +311,16 @@
         // Set playersList inactive when collapsed
         document.getElementById('playersList').addEventListener('collapse', function() {
             this.active = false;
+        });
+
+        // fetch the Read Me when the toggle is clicked the first time
+        let readMeLoaded = false;
+        document.getElementById('readMeToggle').addEventListener('click', function() {
+            if (!readMeLoaded) {
+                fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
+                fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+                readMeLoaded = true;
+            }
         });
 
         // Fetch the Rating List
@@ -620,9 +630,6 @@
                 fetchMatchList();
                 fetchFrequentPlayers();
                 refreshWebPageTitle();
-
-                fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
-                fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
             })();
         });
 
