@@ -683,7 +683,7 @@ function updateRatingListChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Elo Points',
+                        text: 'Elo',
                         display: true,
                     },
                     beginAtZero: false,
@@ -1171,7 +1171,7 @@ function updateScoresChart(scoresSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Elo Points',
+                        text: 'Elo',
                         display: true,
                     },
                     beginAtZero: false,
