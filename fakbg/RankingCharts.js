@@ -712,7 +712,7 @@ function updateRatingListChart(matchListSummary) {
     });
 }
 
-// Function to create or update the Winning % chart
+// Create or update the Winning % chart
 function updateWinningPercentChart(matchListSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
     const yourName = document.getElementById('yourName').value.trim();
@@ -735,15 +735,15 @@ function updateWinningPercentChart(matchListSummary) {
         rankingChart.data.datasets[0].data = percentMatchesWon;
         rankingChart.data.datasets[1].data = expectedMatchesWon;
 
-        // const playerValue = Math.round(matchListSummary[yourName]?.futureRating);
-        // rankingChart.options.plugins.annotation.annotations.playerValueLine.xMin = playerValue;
-        // rankingChart.options.plugins.annotation.annotations.playerValueLine.xMax = playerValue;
+        const playerValue = Math.round(matchListSummary[yourName]?.expectedMatchesWon);
+        rankingChart.options.plugins.annotation.annotations.playerValueLine.xMin = playerValue;
+        rankingChart.options.plugins.annotation.annotations.playerValueLine.xMax = playerValue;
 
         rankingChart.update();
         return;
     }
 
-    // const playerValue = Math.round(matchListSummary[yourName]?.futureRating);
+    const playerValue = Math.round(matchListSummary[yourName]?.expectedMatchesWon);
 
     // Create the chart
     rankingChart = new Chart(ctx, {
@@ -799,15 +799,15 @@ function updateWinningPercentChart(matchListSummary) {
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
-                        // playerValueLine: {
-                        //     type: 'line',
-                        //     display: playerValue,
-                        //     xMin: playerValue, // Y-axis value where the line starts
-                        //     xMax: playerValue, // Y-axis value where the line ends
-                        //     borderColor: playerLineColor,
-                        //     borderDash: [5, 5],
-                        //     borderWidth: 2,
-                        // }
+                        playerValueLine: {
+                            type: 'line',
+                            display: playerValue,
+                            xMin: playerValue, // Y-axis value where the line starts
+                            xMax: playerValue, // Y-axis value where the line ends
+                            borderColor: playerLineColor,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        }
                     }
                 }                    
             },
