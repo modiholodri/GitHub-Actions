@@ -252,7 +252,12 @@ function fetchMatchList() {
 // Fetch the All Match List
 function fetchAllMatchLists() {
     const repoNames = clubRepos.map(club => club.repo);
-    matchRecords = [];
+
+    // add the header for the match list
+    matchRecords = ["|Date|Winner|Loser|Points|"];
+    matchRecords.push("|---|---|---|---|");
+
+    totalMatchList = ""; // reset totalMatchList before fetching
 
     Promise.all(repoNames.filter(repoName => repoName !== 'siambg-ranking-list').map(repoName => {
         // filter out the Siam Backgammon repo
@@ -292,9 +297,6 @@ function fetchAllMatchLists() {
         })
         .catch(() => []);
     })).then(results => {
-        // add the header for the match list
-        matchRecords = ["|Date|Winner|Loser|Points|"];
-        matchRecords.push("|---|---|---|---|");
 
         // Flatten the results, sort descending by date, then push them
         const flatResults = results.flat();
@@ -355,6 +357,9 @@ function setPlayerListFromPlayerRating() {
 
 // Calculate the Player Rating
 function calculatePlayerRating(matchRecords) {
+    // reset playerRating before calculating
+    Object.keys(playerRating).forEach(key => delete playerRating[key]);
+
     // Start from the third line (skip headers), process in chronological order
     for (let i = 2; i < matchRecords.length; i++) {
         if (matchRecords[i].length > 0) {
