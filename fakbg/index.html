@@ -24,7 +24,7 @@
                     <span id="winnerLabel" class="input-group-text" style="color: green;">Winner</span>
                     <select id="winnerName" title="Winner Name" class="form-select" style="flex: 0 0 60%;">
                         <option value="Select or edit">Select</option>
-                        <option value="Winner">Winner</option>
+                        <option value="Not loaded...">Not loaded...</option>
                     </select>
                     <input id="winnerNameTyped" title="Winner Name" type="text" class="form-control">
                 </div>
@@ -33,7 +33,7 @@
                     <span class="input-group-text" style="color: red;">Loser</span>
                     <select id="loserName" title="Loser Name" class="form-select" style="flex: 0 0 64%;">
                         <option value="Select or edit">Select</option>
-                        <option value="Loser">Loser</option>
+                        <option value="Not loaded...">Not loaded...</option>
                     </select>
                     <input id="loserNameTyped" title="Loser Name" type="text" class="form-control">
                 </div>
@@ -78,11 +78,11 @@
                 <div class="d-flex justify-content-center gap-4">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="showPastMatches" onchange="beautifyTournament()">
-                        <label class="form-check-label" for="showPastMatches">Past</label>
+                        <label class="form-check-label" for="showPastMatches" style="color: gray;">Past</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="showFutureMatches" onchange="beautifyTournament()">
-                        <label class="form-check-label" for="showFutureMatches">Future</label>
+                        <label class="form-check-label" for="showFutureMatches" style="color: gray;">Future</label>
                     </div>
                 </div>
 
@@ -92,7 +92,7 @@
                 </h5>
                 <div id="tournamentDirector" class="collapse">
                     <div class="input-group">
-                        <span class="input-group-text">Type</span>
+                        <span class="input-group-text" style="color: gray;">Type</span>
                         <select id="tournamentType" title="Tournament Type" class="form-select">
                             <option class="centered" value="Double Elimination">Double Elimination</option>
                             <option class="centered" value="Add Last Chance">Add Last Chance</option>
@@ -110,26 +110,25 @@
                         <button id="finishTournamentButton" type="button" title = "Finish Tournament" class="btn btn-primary float-right">Finish</button>
 
                         <div class="input-group w-100 mt-2">
-                            <span class="input-group-text" id="tournamentPlayersLabel">Tournament Players</span>
+                            <span class="input-group-text" id="tournamentPlayersLabel" style="color: gray;">Tournament Players</span>
                             <select id="playersList" title="Players List" class="multiple_select" multiple aria-describedby="tournamentPlayersLabel">
-                                <option value="Winner">Winner</option>
-                                <option value="Loser">Loser</option>
+                                <option value="Not loaded...">Not loaded...</option>
                             </select>
                             <input id="bloodySpacer" type="text" title="Bloody Spacer" class="form-control centered" readonly>
                         </div>
 
                         <div class="input-group w-100 mt-2">
-                            <span class="input-group-text" id="maximumTournamentPlayersLabel">Maximum Tournament Players</span>
+                            <span class="input-group-text" id="maximumTournamentPlayersLabel" style="color: gray;">Maximum Tournament Players</span>
                             <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered" aria-describedby="maximumTournamentPlayersLabel">
                         </div>
                         <div class="input-group w-100 mt-2">
-                            <span class="input-group-text" id="matchLengthsLabel">Match Lengths</span>
+                            <span class="input-group-text" id="matchLengthsLabel" style="color: gray;">Match Lengths</span>
                             <input id="matchLengths" value="5 5 5 5 5" type="text" title="Match Lengths" class="form-control centered" aria-describedby="matchLengthsLabel">
                         </div>
                         <div class="input-group w-100 mt-2">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="forfeitSubmittedMatches">
-                                <label class="form-check-label" for="forfeitSubmittedMatches">Forfeit Submitted Matches</label>
+                                <label class="form-check-label" for="forfeitSubmittedMatches" style="color: gray;">Forfeit Submitted Matches</label>
                             </div>
                         </div>
                     </div>
@@ -195,7 +194,7 @@
 
             <!-- Replay Section -->
             <div id="replaySection" title="Replay Section" class="input-group">
-                <span class="input-group-text">Replay</span>
+                <span class="input-group-text" style="color: gray;">Replay</span>
                 <select id="replayTimes" title="Replay Times" class="form-select">
                     <option class="centered" value="1">1 x</option>
                     <option class="centered" value="10">10 x</option>
