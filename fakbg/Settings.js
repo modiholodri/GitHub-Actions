@@ -62,7 +62,6 @@ function loadSettings() {
     loadToggleSetting('rankingChart');
     loadToggleSetting('rankingSummary');
     loadToggleSetting('matchList');
-    loadToggleSetting('readMe');
 
     // Club Selection
     const clubSelectionElement = document.getElementById('clubSelection');
@@ -128,7 +127,6 @@ function saveSettings() {
     saveToggleSetting('rankingChart');
     saveToggleSetting('rankingSummary');
     saveToggleSetting('matchList');
-    saveToggleSetting('readMe');
-
+    
     saveValueSetting('clubSelection');
 }
