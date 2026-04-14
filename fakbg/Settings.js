@@ -25,6 +25,7 @@ function loadSettings() {
     loadToggleSetting('matchReportForm');
 
     loadToggleSetting('tournamentManagement');
+    loadToggleSetting('tournamentDirector');
 
     // Tournament Management
     loadCheckedSetting('showPastMatches', 'true');
@@ -101,7 +102,8 @@ function saveSettings() {
     saveToggleSetting('matchReportForm');
 
     saveToggleSetting('tournamentManagement');
-    
+    saveToggleSetting('tournamentDirector');
+
     saveCheckedSetting('showPastMatches');
     saveCheckedSetting('showFutureMatches');
 
