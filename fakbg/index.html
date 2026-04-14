@@ -108,17 +108,23 @@
                         <input id="debugMode" type="text" title="Debug Mode" class="form-control centered">
                         <button id="startTournamentButton" type="submit" title="Start Tournament" class="btn btn-primary float-right">Start</button>
                         <button id="finishTournamentButton" type="button" title = "Finish Tournament" class="btn btn-primary float-right">Finish</button>
-                        <select id="playersList" title="Players List" class="multiple_select" multiple>
-                            <option value="Winner">Winner</option>
-                            <option value="Loser">Loser</option>
-                        </select>
+
                         <div class="input-group w-100 mt-2">
-                            <span class="input-group-text" id="maximumTournamentPlayersLabel">Maximum Round Robin Players</span>
-                            <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered" aria-label="Maximum Round Robin Players" aria-describedby="maximumTournamentPlayersLabel">
+                            <span class="input-group-text" id="tournamentPlayersLabel">Tournament Players</span>
+                            <select id="playersList" title="Players List" class="multiple_select" multiple aria-describedby="tournamentPlayersLabel">
+                                <option value="Winner">Winner</option>
+                                <option value="Loser">Loser</option>
+                            </select>
+                            <input id="bloodySpacer" type="text" title="Bloody Spacer" class="form-control centered" readonly>
+                        </div>
+
+                        <div class="input-group w-100 mt-2">
+                            <span class="input-group-text" id="maximumTournamentPlayersLabel">Maximum Tournament Players</span>
+                            <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered" aria-describedby="maximumTournamentPlayersLabel">
                         </div>
                         <div class="input-group w-100 mt-2">
                             <span class="input-group-text" id="matchLengthsLabel">Match Lengths</span>
-                            <input id="matchLengths" type="text" title="Match Lengths" class="form-control centered" aria-label="Match Lengths" aria-describedby="matchLengthsLabel" value="5 5 5 5 5">
+                            <input id="matchLengths" value="5 5 5 5 5" type="text" title="Match Lengths" class="form-control centered" aria-describedby="matchLengthsLabel">
                         </div>
                         <div class="input-group w-100 mt-2">
                             <div class="form-check">
