@@ -50,7 +50,7 @@ function generateTournament(selectedPlayers) {
 function tournamentInfo() {
     const today = new Date().toISOString().slice(0, 10);
     const byTournamentDirector = 'by ' + document.getElementById('yourName').value.trim();
-    return `<p id="today" style="text-align: center">${today} ${byTournamentDirector}</p>\n`;
+    return `<p id="today" style="text-align: center; color: gray;">${today} ${byTournamentDirector}</p>\n`;
 }
 
 function generateConsultingDouble(selectedPlayers) {
