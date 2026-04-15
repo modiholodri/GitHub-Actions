@@ -753,9 +753,9 @@ function updateWinningPercentChart(matchListSummary) {
     // Extract data for the chart
     const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].expectedMatchesWon - matchListSummary[a].expectedMatchesWon);
     if (players.length < 1) return;
-    const percentMatchesWon = players.map(player => Math.round(matchListSummary[player].percentMatchesWon)); // rating
-    const expectedMatchesWon = players.map(player => Math.round(matchListSummary[player].expectedMatchesWon)); // future rating
-    
+    const percentMatchesWon = players.map(player => matchListSummary[player].percentMatchesWon.toFixed(1));
+    const expectedMatchesWon = players.map(player => matchListSummary[player].expectedMatchesWon.toFixed(1));
+
     // Only destroy and recreate the chart if the number of players changed
     if (remainingReplayTimes < 1 || manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
         setRememberedHiddenStates();
@@ -817,7 +817,7 @@ function updateWinningPercentChart(matchListSummary) {
                             return ` #${rank} ${context[0].label}`;
                         },
                         label: function(context) {
-                            return ` ${context.raw.toLocaleString()} ${context.dataset.label}`;
+                            return ` ${context.raw} ${context.dataset.label}`;
                         }
                     }
                 },
