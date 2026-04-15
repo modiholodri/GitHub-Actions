@@ -268,7 +268,7 @@ function updateRanglistenChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Punkte',
+                        text: 'Ranglisten Punkte',
                         display: true,
                     },
                     beginAtZero: true,
@@ -407,7 +407,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: selectedPlayer + "'s % Matches",
+                        text: selectedPlayer + "'s % Matches Won/Lost",
                         display: true,
                     },
                     beginAtZero: true,
@@ -525,7 +525,7 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: selectedPlayer + "'s Matches",
+                        text: selectedPlayer + "'s Matches Won/Lost",
                         display: true,
                     },
                     beginAtZero: true,
@@ -699,7 +699,7 @@ function updateRatingListChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Elo',
+                        text: 'Rating List Elo',
                         display: true,
                     },
                     beginAtZero: false,
@@ -835,7 +835,7 @@ function updateWinningPercentChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Winning %',
+                        text: 'Match Winning %',
                         display: true,
                     },
                     min: 0,
@@ -1055,7 +1055,7 @@ function updatePlayerProgressChart(progressList) {
             scales: {
                 x: {
                     title: {
-                        text: 'Match Number',
+                        text: 'Player Progress - Match Number',
                         display: true,
                     },
                     position: 'top',
@@ -1089,13 +1089,16 @@ function updateScoresChart(scoresSummary) {
     const yourName = document.getElementById('yourName').value.trim();
 
     // Extract data for the chart
-
+    let scoresChartTitle = '';
     let players;
     if (rankingListSelection === 'highScores') {
+        scoresChartTitle = 'High Scores - Elo';
         players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].highScore - scoresSummary[a].highScore);
     } else if (rankingListSelection === 'lowScores') {
+        scoresChartTitle = 'Low Scores - Elo';
         players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[a].lowScore - scoresSummary[b].lowScore);
     } else {
+        scoresChartTitle = 'Current Scores - Elo';
         players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].currentScore - scoresSummary[a].currentScore);
     }
     if (players.length < 1) return;
@@ -1202,7 +1205,7 @@ function updateScoresChart(scoresSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Elo',
+                        text: scoresChartTitle,
                         display: true,
                     },
                     beginAtZero: false,
@@ -1306,7 +1309,7 @@ function updateStreakChart(rankingSummary) {
         scales: {
             x: {
                 title: {
-                    text: 'Matches',
+                    text: title + ' Matches',
                     display: true,
                 },
                 beginAtZero: true,
@@ -1451,7 +1454,7 @@ function updateLastActiveChart(rankingSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Date',
+                        text: 'Days Inactive - Date',
                         display: true,
                     },
                     position: 'top',
