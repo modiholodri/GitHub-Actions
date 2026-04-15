@@ -1,12 +1,30 @@
+// default colors
+const wonForeColor = 'rgba(75, 192, 192, 1)';
+const wonBackColor = 'rgba(75, 192, 192, 0.2)';
+
+const lostForeColor = 'rgba(255, 99, 132, 1)';
+const lostBackColor = 'rgba(255, 99, 132, 0.2)';
+
+const gridColor = { color: 'rgba(255, 255, 0, 0.3)' };
+const chartColor = 'rgba(255, 255, 0, 0.7)';
+const middleLineColor = 'rgba(255, 0, 0, 1)';
+const playerLineColor = 'rgba(255, 255, 0, 1)';
+
 Chart.defaults.color = 'white';  // default text color
 Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
-Chart.defaults.plugins.legend.labels.color = '#61e7ff';
+Chart.defaults.plugins.legend.labels.color = chartColor;
+Chart.defaults.scale.title.font = { size: 16, weight: 'bold' };
+Chart.defaults.scale.title.color = chartColor;
+
 
 let rankingChart;
+
 let hiddenStates;
 let defaultHiddenStates = {
     'ratingList': [false, false],
+    'winningPercent': [false, false],
     'matchesPlayed': [false, false],
+    'currentScores': [false, false, false],
     'highScores': [false, false, false],
     'lowScores': [false, false, false],
     'percentMatchesWon': [false, false],
@@ -14,6 +32,16 @@ let defaultHiddenStates = {
     'playerInfoPercent': [false, false],
     'playerInfoMatches': [false, false],
 };
+
+// get the selected time span and puts it in a format so that it can be added to the chart title
+function getSelectedTimeInterval() {
+    const timeSpanSelectionElement = document.getElementById("timeSpanSelection");
+    const selectedIndex = timeSpanSelectionElement.selectedIndex;
+    const timeSpanSelection = timeSpanSelectionElement.options[selectedIndex].text;
+
+    if (timeSpanSelection === '') return ' (Eternally)';
+    return ' (' + timeSpanSelection + ')';
+}
 
 // If the Ranking chart already exists, destroy it before creating a new one
 function destroyRankingChart(message) {
@@ -83,16 +111,16 @@ function updateMatchesPlayedChart(matchListSummary) {
                     label: 'Won',
                     hidden: hiddenStates[0],
                     data: matchesWon,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: wonForeColor,
                     borderWidth: 1
                 },
                 {
                     label: 'Lost',
                     hidden: hiddenStates[1],
                     data: matchesLost,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: lostBackColor,
+                    borderColor: lostForeColor,
                     borderWidth: 1
                 }
             ]
@@ -102,6 +130,22 @@ function updateMatchesPlayedChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            if (matchesPlayedRankingList) { // show the real matches won/lost   
+                                const totalMatches = context.chart.data.datasets
+                                    .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
+                                return [` ${totalMatches} matches`, ` ${context.dataset.label} ${context.raw}`];
+                            }
+                            return [` ${context.dataset.label} ${context.raw.toFixed(1)}%`, ` of matches`];
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
                 ...(matchesPlayedRankingList ? {} : {
                     annotation: {
@@ -110,7 +154,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                                 type: 'line',
                                 xMin: 50, // Y-axis value where the line starts
                                 xMax: 50, // Y-axis value where the line ends
-                                borderColor: 'rgba(255, 0, 0, 1)',
+                                borderColor: middleLineColor,
                                 borderDash: [5, 5],
                                 borderWidth: 2,
                             },
@@ -119,7 +163,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                                 display: playerValue,
                                 xMin: playerValue, // Y-axis value where the line starts
                                 xMax: playerValue, // Y-axis value where the line ends
-                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderColor: playerLineColor,
                                 borderDash: [5, 5],
                                 borderWidth: 2,
                             }
@@ -129,19 +173,32 @@ function updateMatchesPlayedChart(matchListSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: chartTitle + getSelectedTimeInterval(),
+                        display: true,
+                    },
                     beginAtZero: true,
                     stacked: true,
-                    position: 'top', // Move the axis label to the top
-                    title: {
-                        display: true,
-                        text: chartTitle,
-                    },
+                    position: 'top',
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: true,
@@ -178,8 +235,8 @@ function updateRanglistenChart(matchListSummary) {
                     label: 'Won',
                     hidden: hiddenStates[0],
                     data: punkteWon,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: wonForeColor,
                     borderWidth: 1
                 },
                 {
@@ -194,8 +251,8 @@ function updateRanglistenChart(matchListSummary) {
                     label: 'Lost',
                     hidden: hiddenStates[2],
                     data: punkteLost,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: lostBackColor,
+                    borderColor: lostForeColor,
                     borderWidth: 1
                 }
             ]
@@ -205,23 +262,50 @@ function updateRanglistenChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            const totalPunkte = context.chart.data.datasets
+                                .filter(ds => ds.label !== 'Lost')
+                                .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
+                            return [` ${totalPunkte.toLocaleString()} Punkte`, ` ${context.dataset.label} ${context.raw.toLocaleString()}`];
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
             },
             scales: {
                 x: {
+                    title: {
+                        text: 'Ranglisten Punkte' + getSelectedTimeInterval(),
+                        display: true,
+                    },
                     beginAtZero: true,
                     stacked: true,
                     position: 'top',
-                    title: {
-                        display: true,
-                        text: 'Punkte',
-                    },
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: true,
@@ -278,16 +362,16 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                     label: 'Won',
                     hidden: hiddenStates[0],
                     data: matchesWon,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: wonForeColor,
                     borderWidth: 1
                 },
                 {
                     label: 'Lost',
                     hidden: hiddenStates[1],
                     data: matchesLost,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: lostBackColor,
+                    borderColor: lostForeColor,
                     borderWidth: 1
                 }
             ]
@@ -297,6 +381,20 @@ function updatePlayerInfoPercentChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex;
+                            if (rank === 0) {
+                                return `${context[0].label}`;
+                            }
+                            return ` #${rank} Opponent ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            return [` ${selectedPlayer} ${context.dataset.label} ${context.raw.toFixed(1)}%`, ` of matches`];
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },                
                 annotation: {
                     annotations: {
@@ -304,7 +402,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                             type: 'line',
                             xMin: 50, // Y-axis value where the line starts
                             xMax: 50, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderColor: middleLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -312,7 +410,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                             type: 'line',
                             xMin: matchesWon[0], // Y-axis value where the line starts
                             xMax: matchesWon[0], // Y-axis value where the line ends
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         }
@@ -321,19 +419,32 @@ function updatePlayerInfoPercentChart(matchListSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: selectedPlayer + "'s % Matches Won/Lost" + getSelectedTimeInterval(),
+                        display: true,
+                    },
                     beginAtZero: true,
                     stacked: true,
-                    position: 'top', // Move the axis label to the top
-                    title: {
-                        display: true,
-                        text: selectedPlayer + "'s % Matches",
-                    },
+                    position: 'top',
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: true,
@@ -390,16 +501,16 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                     label: 'Won',
                     hidden: hiddenStates[0],
                     data: matchesWon,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: wonForeColor,
                     borderWidth: 1
                 },
                 {
                     label: 'Lost',
                     hidden: hiddenStates[1],
                     data: matchesLost,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: lostBackColor,
+                    borderColor: lostForeColor,
                     borderWidth: 1
                 }
             ]
@@ -409,23 +520,49 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} Opponent ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            const totalMatches = context.chart.data.datasets
+                                .reduce((sum, ds) => sum + Number(ds.data[context.dataIndex] || 0), 0);
+                            return [` ${selectedPlayer} ${context.dataset.label} ${context.raw}`, ` of ${totalMatches} matches`];
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
             },
             scales: {
                 x: {
+                    title: {
+                        text: selectedPlayer + "'s Matches Won/Lost" + getSelectedTimeInterval(),
+                        display: true,
+                    },
                     beginAtZero: true,
                     stacked: true,
-                    position: 'top', // Move the axis label to the top
-                    title: {
-                        display: true,
-                        text: selectedPlayer + "'s Matches",
-                    },
+                    position: 'top',
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: true,
@@ -435,6 +572,10 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
             }
         }
     });
+}
+
+function wholeNumbersOnly(value) {
+    return Number.isInteger(value) ? value.toLocaleString() : null;
 }
 
 setInterval(playRatingList, 200);
@@ -452,8 +593,16 @@ function resetPlayingRatingList() {
 function playRatingList() {
     if (remainingReplayTimes > 0) {
         adjustExpectedRatingList(matchList);
-        createRatingListRankingList('rankingSummary', ratingSummary);
-        updateRatingListChart(ratingSummary);
+        
+        if (document.getElementById('rankingListSelection').value === 'ratingList') {
+            createRatingListRankingList('rankingSummary', ratingSummary);
+            updateRatingListChart(ratingSummary);
+        }
+        else if (document.getElementById('rankingListSelection').value === 'winningPercent') {
+            createWinningPercentRankingList('rankingSummary', ratingSummary);
+            updateWinningPercentChart(ratingSummary);
+        }
+        
         remainingReplayTimes--;
         document.getElementById('replayPlayButton').innerText = `▶︎ ${remainingReplayTimes}`;
     }
@@ -462,7 +611,7 @@ function playRatingList() {
     }
 }
 
-// Function to create or update the Ranglisten chart
+// Function to create or update the Rating List chart
 function updateRatingListChart(matchListSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
     const yourName = document.getElementById('yourName').value.trim();
@@ -526,6 +675,17 @@ function updateRatingListChart(matchListSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            return ` ${context.dataset.label} ${context.raw.toLocaleString()} Elo`;
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
@@ -533,7 +693,7 @@ function updateRatingListChart(matchListSummary) {
                             type: 'line',
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderColor: middleLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -542,7 +702,7 @@ function updateRatingListChart(matchListSummary) {
                             display: playerValue,
                             xMin: playerValue, // Y-axis value where the line starts
                             xMax: playerValue, // Y-axis value where the line ends
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         }
@@ -551,18 +711,169 @@ function updateRatingListChart(matchListSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: 'Rating List Elo' + getSelectedTimeInterval(),
+                        display: true,
+                    },
                     beginAtZero: false,
                     position: 'top',
-                    title: {
-                        display: true,
-                        text: 'Elo Points',
-                    },
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: false,
+                    ticks: { autoSkip: false } // show all the names
+                }
+            }
+        }
+    });
+}
+
+// Create or update the Winning % chart
+function updateWinningPercentChart(matchListSummary) {
+    const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+    const yourName = document.getElementById('yourName').value.trim();
+
+    // Extract data for the chart
+    const players = Object.keys(matchListSummary).sort((a, b) => matchListSummary[b].expectedMatchesWon - matchListSummary[a].expectedMatchesWon);
+    if (players.length < 1) return;
+    const percentMatchesWon = players.map(player => matchListSummary[player].percentMatchesWon.toFixed(1));
+    const expectedMatchesWon = players.map(player => matchListSummary[player].expectedMatchesWon.toFixed(1));
+
+    // Only destroy and recreate the chart if the number of players changed
+    if (remainingReplayTimes < 1 || manuallyChangedChart || !rankingChart || rankingChart.data.labels.length !== players.length) {
+        setRememberedHiddenStates();
+        destroyRankingChart('');
+        optimizeChartCanvasHeight('rankingChartCanvas', players.length);
+    }
+    else if (rankingChart) {
+        // Update data and labels if chart exists
+        rankingChart.data.labels = players;
+        rankingChart.data.datasets[0].data = percentMatchesWon;
+        rankingChart.data.datasets[1].data = expectedMatchesWon;
+
+        const playerValue = Math.round(matchListSummary[yourName]?.expectedMatchesWon);
+        rankingChart.options.plugins.annotation.annotations.playerValueLine.xMin = playerValue;
+        rankingChart.options.plugins.annotation.annotations.playerValueLine.xMax = playerValue;
+
+        rankingChart.update();
+        return;
+    }
+
+    const playerValue = Math.round(matchListSummary[yourName]?.expectedMatchesWon);
+
+    // Create the chart
+    rankingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: players, // Player names
+            datasets: [
+                {
+                    label: '% Matches Won',
+                    data: percentMatchesWon,
+                    type: 'scatter',
+                    pointStyle: 'star',
+                    hidden: hiddenStates[0],
+                    borderColor: 'lime',
+                    pointHoverRadius: 18,
+                    pointHitRadius: 24,
+                    borderWidth: 1,
+                },
+                {
+                    label: '% Expected to Win',
+                    data: expectedMatchesWon,
+                    hidden: hiddenStates[1],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                },
+            ]
+        },
+        options: {
+            indexAxis: 'y', // Set the chart to horizontal
+            responsive: true,
+            maintainAspectRatio: false, // Allow the chart to resize freely
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            return ` ${context.raw} ${context.dataset.label}`;
+                        }
+                    }
+                },
+                legend: { position: 'bottom' },
+                annotation: {
+                    annotations: {
+                        startingEloLine: {
+                            type: 'line',
+                            xMin: 50, // Y-axis value where the line starts
+                            xMax: 50, // Y-axis value where the line ends
+                            borderColor: middleLineColor,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        },
+                        playerValueLine: {
+                            type: 'line',
+                            display: playerValue,
+                            xMin: playerValue, // Y-axis value where the line starts
+                            xMax: playerValue, // Y-axis value where the line ends
+                            borderColor: playerLineColor,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        }
+                    }
+                }                    
+            },
+            scales: {
+                x: {
+                    title: {
+                        text: 'Match Winning %' + getSelectedTimeInterval(),
+                        display: true,
+                    },
+                    min: 0,
+                    max: 100,
+                    beginAtZero: false,
+                    position: 'top',
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: false,
@@ -679,6 +990,30 @@ function updatePlayerProgressChart(progressList) {
             };
         });
 
+    const playerAnnotations = {};
+    const activeSortedPlayers = sortedPlayers.filter(player => activePlayers.has(player));
+
+    // create the aannotations for the players who played in the last 14 days
+    activeSortedPlayers.forEach((player, idx) => {
+        const lastPlayedDate = playerProgress[player][playerProgress[player].length - 1].date;
+        const daysSinceLastPlayed = Math.floor((new Date() - new Date(lastPlayedDate)) / (1000 * 60 * 60 * 24));
+        if (daysSinceLastPlayed > 14) return;
+
+        const lastRating = playerProgress[player][playerProgress[player].length - 1].rating;
+        
+        playerAnnotations[`player_${idx}`] = {
+            type: 'label',
+            xValue: lastMatchInTimeSpan + 2,
+            yValue: lastRating + 5,
+            position: 'start',
+            content: [player],
+            color: datasets[idx].borderColor,
+            font: { size: 12 },
+            padding: 2,
+            borderRadius: 4
+        };
+    });
+
     destroyRankingChart('');
     document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.6 + sortedPlayers.length * 10; // Adjust height based on number of players
 
@@ -691,14 +1026,29 @@ function updatePlayerProgressChart(progressList) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return ` Current #${context[0].dataset.label}`;
+                        },
+                        label: function(context) {
+                            const elo = context.parsed.y.toFixed(1);
+                            const matchNumber = context.parsed.x;
+                            const date = progressList.find(entry => entry.match === matchNumber)?.date || '';
+                            return [` ${parseFloat(elo).toLocaleString()} Elo`, ` ${date}`];
+                        }
+
+                    }
+                },
                 legend: { position: 'bottom' },
                 annotation: {
+                    clip: false,
                     annotations: {
                         startingEloLine: {
                             type: 'line',
                             yMin: 1800, // Y-axis value where the line starts
                             yMax: 1800, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderColor: middleLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -707,34 +1057,39 @@ function updatePlayerProgressChart(progressList) {
                             display: playerValue,
                             yMin: playerValue, // Y-axis value where the line starts
                             yMax: playerValue, // Y-axis value where the line ends
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
-                        }
+                        },
+                        ...playerAnnotations,
                     }
                 }
             },
             scales: {
                 x: {
+                    title: {
+                        text: 'Player Progress - Match # - Elo' + getSelectedTimeInterval(),
+                        display: true,
+                    },
+                    position: 'top',
                     type: 'linear',
                     min: firstMatchInTimeSpan,
                     max: lastMatchInTimeSpan,
-                    title: {
-                        display: true,
-                        text: 'Match Number'
-                    },
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' }
+                    grid: gridColor
                 },
                 y: {
                     position: 'right',
                     beginAtZero: false,
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' }
-                }
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    grid: gridColor
+                },
             }
         }
     });
@@ -747,13 +1102,16 @@ function updateScoresChart(scoresSummary) {
     const yourName = document.getElementById('yourName').value.trim();
 
     // Extract data for the chart
-
+    let scoresChartTitle = '';
     let players;
     if (rankingListSelection === 'highScores') {
+        scoresChartTitle = 'High Scores - Elo';
         players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].highScore - scoresSummary[a].highScore);
     } else if (rankingListSelection === 'lowScores') {
+        scoresChartTitle = 'Low Scores - Elo';
         players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[a].lowScore - scoresSummary[b].lowScore);
     } else {
+        scoresChartTitle = 'Current Scores - Elo';
         players = Object.keys(scoresSummary).sort((a, b) => scoresSummary[b].currentScore - scoresSummary[a].currentScore);
     }
     if (players.length < 1) return;
@@ -823,6 +1181,17 @@ function updateScoresChart(scoresSummary) {
             responsive: true,
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            return ` ${context.dataset.label} ${parseFloat(context.raw).toLocaleString()} Elo`;
+                        }
+                    }
+                },
                 legend: { position: 'bottom' },
                 annotation: {
                     annotations: {
@@ -830,7 +1199,7 @@ function updateScoresChart(scoresSummary) {
                             type: 'line',
                             xMin: 1800, // Y-axis value where the line starts
                             xMax: 1800, // Y-axis value where the line ends
-                            borderColor: 'rgba(255, 0, 0, 0.7)',
+                            borderColor: middleLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
@@ -839,7 +1208,7 @@ function updateScoresChart(scoresSummary) {
                             display: playerValue,
                             xMin: playerValue, // Y-axis value where the line starts
                             xMax: playerValue, // Y-axis value where the line ends
-                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         }
@@ -848,18 +1217,31 @@ function updateScoresChart(scoresSummary) {
             },
             scales: {
                 x: {
+                    title: {
+                        text: scoresChartTitle + getSelectedTimeInterval(),
+                        display: true,
+                    },
                     beginAtZero: false,
                     position: 'top',
-                    title: {
-                        display: true,
-                        text: 'Elo Points',
-                    },
                     ticks: {
-                        callback: function(value) {  // Show only whole numbers
-                            return Number.isInteger(value) ? value : null;
-                        }
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
                     },                            
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: false,
@@ -912,6 +1294,17 @@ function updateStreakChart(rankingSummary) {
         responsive: true,
         maintainAspectRatio: false, // Allow the chart to resize freely
         plugins: {
+            tooltip: {
+                callbacks: {
+                    title: function(context) {
+                        const rank = context[0].dataIndex + 1;
+                        return ` #${rank} ${context[0].label}`;
+                    },
+                    label: function(context) {
+                        return `${context.dataset.label} ${context.raw}`;
+                    }
+                }
+            },
             legend: { position: 'bottom' },
             annotation: {
                 annotations: {
@@ -919,7 +1312,7 @@ function updateStreakChart(rankingSummary) {
                         type: 'line',
                         xMin: 0, // Y-axis value where the line starts
                         xMax: 0, // Y-axis value where the line ends
-                        borderColor: 'rgba(255, 0, 0, 1)',
+                        borderColor: middleLineColor,
                         borderDash: [5, 5],
                         borderWidth: 2,
                     }
@@ -928,18 +1321,31 @@ function updateStreakChart(rankingSummary) {
         },
         scales: {
             x: {
+                title: {
+                    text: title + ' Matches' + getSelectedTimeInterval(),
+                    display: true,
+                },
                 beginAtZero: true,
                 position: 'top',
-                title: {
-                    display: true,
-                    text: 'Matches',
-                },
                 ticks: {
-                    callback: function(value) {  // Show only whole numbers
-                        return Number.isInteger(value) ? value : null;
-                    }
+                    color: chartColor,
+                    callback: wholeNumbersOnly,
                 },                            
-                grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                grid: gridColor,
+            },
+            x2: {
+                position: 'bottom',
+                ticks: {
+                    color: chartColor,
+                    callback: wholeNumbersOnly,
+                },                            
+                afterDataLimits(scale) {
+                    const xScale = scale.chart.scales.x;
+                    if (xScale) {
+                        scale.min = xScale.min;
+                        scale.max = xScale.max;
+                    }
+                }
             },
             y: {
                 beginAtZero: true,
@@ -956,7 +1362,7 @@ function updateStreakChart(rankingSummary) {
                     type: 'line',
                     xMin: 0, // Y-axis value where the line starts
                     xMax: 0, // Y-axis value where the line ends
-                    borderColor: 'rgba(255, 0, 0, 1)',
+                    borderColor: middleLineColor,
                     borderDash: [5, 5],
                     borderWidth: 2,
                 },
@@ -964,7 +1370,7 @@ function updateStreakChart(rankingSummary) {
                     type: 'line',
                     xMin: playerValue, // Y-axis value where the line starts
                     xMax: playerValue, // Y-axis value where the line ends
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderColor: playerLineColor,
                     borderDash: [5, 5],
                     borderWidth: 2,
                 }
@@ -982,13 +1388,13 @@ function updateStreakChart(rankingSummary) {
                     data: streak,
                     backgroundColor: function(context) {
                                         const value = context.raw; // Get the raw data value
-                                        if (value > 0) return 'rgba(75, 192, 192, 0.2)';
-                                        else           return 'rgba(255, 99, 132, 0.2)';
+                                        if (value > 0) return wonBackColor;
+                                        else           return lostBackColor;
                                     },
                     borderColor: function(context) {
                                     const value = context.raw; // Get the raw data value
-                                    if (value > 0) return 'rgba(75, 192, 192, 1)';
-                                    else           return 'rgba(255, 99, 132, 1)';
+                                    if (value > 0) return wonForeColor;
+                                    else           return lostForeColor;
                                 },
                     borderWidth: 1
                 },
@@ -1020,8 +1426,8 @@ function updateLastActiveChart(rankingSummary) {
                 {
                     label: 'Last Active Date',
                     data: lastDatesActive,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: wonBackColor,
+                    borderColor: playerLineColor,
                     pointHoverRadius: 18,
                     pointHitRadius: 24,
                     borderWidth: 1,
@@ -1034,20 +1440,60 @@ function updateLastActiveChart(rankingSummary) {
             maintainAspectRatio: false, // Allow the chart to resize freely
             plugins: {
                 legend: { position: 'bottom' },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return ` #${rank} ${context.dataset.label} ${context.raw}`;
+                    }
+                }
+            },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            const rank = context[0].dataIndex + 1;
+                            return ` #${rank} ${context[0].label}`;
+                        },
+                        label: function(context) {
+                            const date = new Date(context.raw);
+                            const today = new Date();
+                            const diffTime = Math.abs(today - date);
+                            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                            const diffDaysString = diffDays === 0 ? 'today' : (diffDays === 1 ? '1 day ago' : `${diffDays} days ago`);
+                            return [` ${diffDaysString}`, ` ${date.toISOString().split('T')[0]}`];
+                        }
+                    }
+                }
             },
             scales: {
                 x: {
-                    position: 'top',
                     title: {
+                        text: 'Days Inactive - Date' + getSelectedTimeInterval(),
                         display: true,
-                        text: 'Date',
                     },
+                    position: 'top',
                     ticks: {
+                        color: chartColor,
                         callback: function(value) {
                             return new Date(value).toISOString().split('T')[0];
                         }
                     },
-                    grid: { color: 'rgba(255, 255, 0, 0.3)' },
+                    grid: gridColor,
+                },
+                x2: {
+                    position: 'bottom',
+                    ticks: {
+                        color: chartColor,
+                        callback: function(value) {
+                            return new Date(value).toISOString().split('T')[0];
+                        }
+                    },
+                    afterDataLimits(scale) {
+                        const xScale = scale.chart.scales.x;
+                        if (xScale) {
+                            scale.min = xScale.min;
+                            scale.max = xScale.max;
+                        }
+                    }
                 },
                 y: {
                     beginAtZero: false,

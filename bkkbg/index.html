@@ -24,7 +24,7 @@
                     <span id="winnerLabel" class="input-group-text" style="color: green;">Winner</span>
                     <select id="winnerName" title="Winner Name" class="form-select" style="flex: 0 0 60%;">
                         <option value="Select or edit">Select</option>
-                        <option value="Winner">Winner</option>
+                        <option value="Not loaded...">Not loaded...</option>
                     </select>
                     <input id="winnerNameTyped" title="Winner Name" type="text" class="form-control">
                 </div>
@@ -33,7 +33,7 @@
                     <span class="input-group-text" style="color: red;">Loser</span>
                     <select id="loserName" title="Loser Name" class="form-select" style="flex: 0 0 64%;">
                         <option value="Select or edit">Select</option>
-                        <option value="Loser">Loser</option>
+                        <option value="Not loaded...">Not loaded...</option>
                     </select>
                     <input id="loserNameTyped" title="Loser Name" type="text" class="form-control">
                 </div>
@@ -57,7 +57,7 @@
                 <!-- Submission Status -->
                 <h5 id="updateSubmissionStatus" type="button">Submission Status ⟳</h5>
                 <div id="statuses">
-                    <p id="submissionStatus" style="text-align: center"></p>
+                    <p id="submissionStatus" style="text-align: center; color: gray;"></p>
                     <h5 id="runsInfo"></h5>
                 </div>
             </form>
@@ -78,21 +78,21 @@
                 <div class="d-flex justify-content-center gap-4">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="showPastMatches" onchange="beautifyTournament()">
-                        <label class="form-check-label" for="showPastMatches">Past</label>
+                        <label class="form-check-label" for="showPastMatches" style="color: gray;">Past</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="" id="showFutureMatches" onchange="beautifyTournament()">
-                        <label class="form-check-label" for="showFutureMatches">Future</label>
+                        <label class="form-check-label" for="showFutureMatches" style="color: gray;">Future</label>
                     </div>
                 </div>
 
                 <!-- Tournament Director -->
-                <h5 id="tournamentDirectorToggle" type="button" data-toggle="collapse" data-target="#tournamentDirector" aria-expanded="true" aria-controls="tournamentDirector">
+                <h5 id="tournamentDirectorToggle" type="button" data-toggle="collapse" data-target="#tournamentDirector" aria-expanded="false" aria-controls="tournamentDirector">
                     Tournament Director ⇅
                 </h5>
                 <div id="tournamentDirector" class="collapse">
                     <div class="input-group">
-                        <span class="input-group-text">Type</span>
+                        <span class="input-group-text" style="color: gray;">Type</span>
                         <select id="tournamentType" title="Tournament Type" class="form-select">
                             <option class="centered" value="Double Elimination">Double Elimination</option>
                             <option class="centered" value="Add Last Chance">Add Last Chance</option>
@@ -108,22 +108,26 @@
                         <input id="debugMode" type="text" title="Debug Mode" class="form-control centered">
                         <button id="startTournamentButton" type="submit" title="Start Tournament" class="btn btn-primary float-right">Start</button>
                         <button id="finishTournamentButton" type="button" title = "Finish Tournament" class="btn btn-primary float-right">Finish</button>
-                        <select id="playersList" title="Players List" class="multiple_select" multiple>
-                            <option value="Winner">Winner</option>
-                            <option value="Loser">Loser</option>
-                        </select>
+
                         <div class="input-group w-100 mt-2">
-                            <span class="input-group-text" id="maximumTournamentPlayersLabel">Maximum Round Robin Players</span>
-                            <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered" aria-label="Maximum Round Robin Players" aria-describedby="maximumTournamentPlayersLabel">
+                            <span class="input-group-text" id="tournamentPlayersLabel" style="color: gray;">Tournament Players</span>
+                            <select id="playersList" title="Players List" class="multiple_select" multiple aria-describedby="tournamentPlayersLabel">
+                                <option value="Not loaded...">Not loaded...</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group w-100 mt-2">
+                            <span class="input-group-text" id="maximumTournamentPlayersLabel" style="color: gray;">Maximum Tournament Players</span>
+                            <input id="maximumTournamentPlayers" type="text" title="Maximum Tournament Players" class="form-control centered" aria-describedby="maximumTournamentPlayersLabel">
                         </div>
                         <div class="input-group w-100 mt-2">
-                            <span class="input-group-text" id="matchLengthsLabel">Match Lengths</span>
-                            <input id="matchLengths" type="text" title="Match Lengths" class="form-control centered" aria-label="Match Lengths" aria-describedby="matchLengthsLabel" value="5 5 5 5 5">
+                            <span class="input-group-text" id="matchLengthsLabel" style="color: gray;">Match Lengths</span>
+                            <input id="matchLengths" value="5 5 5 5 5" type="text" title="Match Lengths" class="form-control centered" aria-describedby="matchLengthsLabel">
                         </div>
                         <div class="input-group w-100 mt-2">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="forfeitSubmittedMatches">
-                                <label class="form-check-label" for="forfeitSubmittedMatches">Forfeit Submitted Matches</label>
+                                <label class="form-check-label" for="forfeitSubmittedMatches" style="color: gray;">Forfeit Submitted Matches</label>
                             </div>
                         </div>
                     </div>
@@ -150,8 +154,10 @@
             <div class="input-group">
                 <select id="rankingListSelection" title="Ranking List Selection" class="form-select" onchange="rankingListSelectionManuallyChanged()">
                     <option class="centered" value="ratingList">Rating List</option>
+                    <option class="centered" value="winningPercent">Winning %</option>
                     <option class="centered" value="rangliste">Rangliste</option>
                     <option class="centered" value="playerProgress">Player Progress</option>
+                    <option class="centered" value="currentScores">Current Scores</option>
                     <option class="centered" value="highScores">High Scores</option>
                     <option class="centered" value="lowScores">Low Scores</option>
                     <option class="centered" value="matchesPlayed">Matches Played</option>
@@ -182,13 +188,13 @@
                     <option class="centered" value="ET">ET</option>
                 </select>
                 <select id="timeSpanSelection" title="Played Time Span Selection" class="form-select" style="flex: 0 0 60%;" onchange="playedTimeSpanSelectionChanged()">
-                    <option class="centered" value="Fetch Matches">Fetch Matches</option>
+                    <option class="centered" value="Not yet set...">Not yet set...</option>
                 </select>
             </div>
 
             <!-- Replay Section -->
             <div id="replaySection" title="Replay Section" class="input-group">
-                <span class="input-group-text">Replay</span>
+                <span class="input-group-text" style="color: gray;">Replay</span>
                 <select id="replayTimes" title="Replay Times" class="form-select">
                     <option class="centered" value="1">1 x</option>
                     <option class="centered" value="10">10 x</option>
@@ -226,7 +232,7 @@
         </div>
 
 
-        <!-- Additional Stuff / Rating Formula  / Reporting Guidelines-->
+        <!-- Read Me -->
         <hr class="rounded">
         <h3 id="readMeToggle" type="button" data-toggle="collapse" data-target="#readMe" aria-expanded="false" aria-controls="readMe">
             Read Me! ⇅
@@ -267,7 +273,7 @@
 
 
         <footer class="text-center mt-4 mb-2" style="color: gray;">
-            <small>&copy; 2026 Reinhold Lauer. All rights reserved.</small>
+            <small>2026-04-15 &copy; Modiholodri</small>
         </footer>
     </div>
 
@@ -308,9 +314,19 @@
             this.active = false;
         });
 
+        // fetch the Read Me when the toggle is clicked the first time
+        let readMeLoaded = false;
+        document.getElementById('readMeToggle').addEventListener('click', function() {
+            if (!readMeLoaded) {
+                fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
+                fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
+                readMeLoaded = true;
+            }
+        });
+
         // Fetch the Rating List
         function fetchRatingList() {
-            const ratingList = fetchMarkDownFromRepoSync('RatingList', 'ratingList');  
+            const ratingList = fetchMarkDownFromRepoSync('RatingList', 'ratingList');
             populatePlayerRating(ratingList);
         }
 
@@ -361,6 +377,11 @@
                     updateRatingListChart(ratingSummary);
                     createRatingListRankingList('rankingSummary', ratingSummary);
                     break;
+                case 'winningPercent':
+                    ratingSummary = summarizeRatingList(matchList);
+                    updateWinningPercentChart(ratingSummary);
+                    createWinningPercentRankingList('rankingSummary', ratingSummary);
+                    break;
                 case 'rangliste':
                     if(Object.keys(ranglistenSummary).length > 0) {
                         ranglistenSummary = summarizeMatchList(ranglistenMatchList);
@@ -382,6 +403,7 @@
                         createPlayerProgressList('rankingSummary', playerProgressList);
                     }
                     break;
+                case 'currentScores':
                 case 'highScores':
                 case 'lowScores':
                     if (totalMatchList !== '') {
@@ -435,6 +457,17 @@
         function clubSelectionChanged() {
             destroyRankingChart("Not loaded yet...");
             refreshWebPageTitle();
+
+            const clubSelection = document.getElementById('clubSelection').value;
+            if (clubSelection === 'siambg-ranking-list') {
+                document.getElementById('matchReportSection').style.display = 'none';
+                document.getElementById('tournamentManagementSection').style.display = 'none';
+            }
+            else {
+                document.getElementById('matchReportSection').style.display = 'block';
+                document.getElementById('tournamentManagementSection').style.display = 'block';
+            }
+
             fetchRatingList();
             fetchMatchList();
             clearSubmissionStatus();
@@ -482,13 +515,9 @@
         const playersList = document.getElementById("playersList");
         if (playersList) {
             playersList.addEventListener('change', function() {
-                // const selected = Array.from(playersList.selectedOptions).map(opt => opt.value).join(', ');
                 const selected = playersList.selectedOptions.length;
-                const document_style = document.documentElement.style;
-                if (selected > 0)
-                    document_style.setProperty('--text', "'" + selected + " Players Selected...'");
-                else
-                    document_style.setProperty('--text', "'Select Tournament Players...'");
+                const stringOfSelectedPlayers = selected === 0 ? "No Player" : selected === 1 ? "1 Player" : selected + " Players";
+                document.documentElement.style.setProperty('--text', "'" + stringOfSelectedPlayers + " Selected...'");
             });
         }
     </script>
@@ -599,9 +628,6 @@
                 fetchMatchList();
                 fetchFrequentPlayers();
                 refreshWebPageTitle();
-
-                fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
-                fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
             })();
         });
 
@@ -623,6 +649,9 @@
                                 break;
                             case 'ratingList':
                                 updateRatingListChart(ratingSummary);
+                                break;
+                            case 'winningPercent':
+                                updateWinningPercentChart(ratingSummary);
                                 break;
                             case 'playerInfoPercent':
                                 updatePlayerInfoPercentChart(playerSummary);
@@ -650,7 +679,7 @@
             playerNameSelection.style.display = this.value === "playerInfoPercent" || this.value === "playerInfoMatches" ? "flex" : "none";
             
             const replaySection = document.getElementById("replaySection");
-            replaySection.style.display = this.value === "ratingList" ? "flex" : "none";
+            replaySection.style.display = this.value === "ratingList" || this.value === "winningPercent"? "flex" : "none";
         });
 
         addToggleListener('rankingChart');

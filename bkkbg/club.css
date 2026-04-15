@@ -101,31 +101,31 @@ hr.rounded {
 }
 .multiple_select {
     height: 36px;
-    width: 100%;
     overflow: hidden;
     margin-top: 14px;
     position: relative;
-    border: none;
     z-index: 10;
 
     /* Black theme */
+    background-color: #000000;
     outline: none;
     padding: 6px 10px;
-    background-color: #121212;
-    color: #ffffff;
 
     /* Center text vertically */
-    display: flex;
     align-items: center;
-    justify-content: center; /* Added to center text horizontally */
+    justify-content: center;
 }
 
-/* Ensure options match the black theme where possible */
 .multiple_select option {
     display: none;
-    background-color: #121212;
+    background-color: #000000;
     height: 36px;
     padding: 6px 10px;
+}
+
+.multiple_select option:checked { /* does not work!!! */
+    background-color: #1eff29;
+    color: #000000;
 }
 .multiple_select::before
 {
@@ -142,10 +142,5 @@ hr.rounded {
 }
 .multiple_select_active option
 {
-    background-color: #121212 !important;
 	display: block;
-}
-.multiple_select_active option:checked {
-    background-color: #ffffff;
-    color: #121212 !important;
 }

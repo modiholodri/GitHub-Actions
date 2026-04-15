@@ -259,7 +259,7 @@ function adjustExpectedRatingList(matchList) {
     const matchLengthRoot = Math.sqrt(Number(document.getElementById('matchLength').value));
 
     for (const [player] of Object.entries(ratingSummary)) {
-            ratingSummary[player].expectedMatchesWon = Math.round(100 * (1 / (1 + Math.pow(10, -(ratingSummary[player].futureRating - initialRating) * matchLengthRoot / 2000))));
+            ratingSummary[player].expectedMatchesWon = Math.round(1000 * (1 / (1 + Math.pow(10, -(ratingSummary[player].futureRating - initialRating) * matchLengthRoot / 2000))))/10;
     }   
 }
 
