@@ -24,6 +24,7 @@ let defaultHiddenStates = {
     'ratingList': [false, false],
     'winningPercent': [false, false],
     'matchesPlayed': [false, false],
+    'currentScores': [false, false, false],
     'highScores': [false, false, false],
     'lowScores': [false, false, false],
     'percentMatchesWon': [false, false],
