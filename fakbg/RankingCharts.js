@@ -1,8 +1,22 @@
+// default colors
+const wonForeColor = 'rgba(75, 192, 192, 1)';
+const wonBackColor = 'rgba(75, 192, 192, 0.2)';
+
+const lostForeColor = 'rgba(255, 99, 132, 1)';
+const lostBackColor = 'rgba(255, 99, 132, 0.2)';
+
+const gridColor = { color: 'rgba(255, 255, 0, 0.3)' };
+const tickColor = 'rgba(255, 255, 0, 0.5)';
+const middleLineColor = 'rgba(255, 0, 0, 1)';
+const playerLineColor = 'rgba(255, 255, 0, 1)';
+
 Chart.defaults.color = 'white';  // default text color
 Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
 Chart.defaults.plugins.legend.labels.color = '#61e7ff';
 
+
 let rankingChart;
+
 let hiddenStates;
 let defaultHiddenStates = {
     'ratingList': [false, false],
@@ -15,18 +29,6 @@ let defaultHiddenStates = {
     'playerInfoPercent': [false, false],
     'playerInfoMatches': [false, false],
 };
-
-// default colors
-const wonForeColor = 'rgba(75, 192, 192, 1)';
-const wonBackColor = 'rgba(75, 192, 192, 0.2)';
-
-const lostForeColor = 'rgba(255, 99, 132, 1)';
-const lostBackColor = 'rgba(255, 99, 132, 0.2)';
-
-const gridColor = { color: 'rgba(255, 255, 0, 0.3)' };
-const middleLineColor = 'rgba(255, 0, 0, 1)';
-const playerLineColor = 'rgba(255, 255, 0, 1)';
-
 
 // If the Ranking chart already exists, destroy it before creating a new one
 function destroyRankingChart(message) {
@@ -166,14 +168,16 @@ function updateMatchesPlayedChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
@@ -271,12 +275,17 @@ function updateRanglistenChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
+                    ticks: {
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
+                    },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
                         if (xScale) {
@@ -405,12 +414,17 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
+                    ticks: {
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
+                    },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
                         if (xScale) {
@@ -518,14 +532,16 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
@@ -689,12 +705,17 @@ function updateRatingListChart(matchListSummary) {
                     beginAtZero: false,
                     position: 'top',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
+                    ticks: {
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
+                    },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
                         if (xScale) {
@@ -822,12 +843,17 @@ function updateWinningPercentChart(matchListSummary) {
                     beginAtZero: false,
                     position: 'top',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
+                    ticks: {
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
+                    },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
                         if (xScale) {
@@ -1037,13 +1063,18 @@ function updatePlayerProgressChart(progressList) {
                     min: firstMatchInTimeSpan,
                     max: lastMatchInTimeSpan,
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor
                 },
                 y: {
                     position: 'right',
                     beginAtZero: false,
+                    ticks: {
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
+                    },                            
                     grid: gridColor
                 },
             }
@@ -1177,12 +1208,17 @@ function updateScoresChart(scoresSummary) {
                     beginAtZero: false,
                     position: 'top',
                     ticks: {
-                        callback: wholeNumbersOnly
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
                 },
                 x2: {
                     position: 'bottom',
+                    ticks: {
+                        color: tickColor,
+                        callback: wholeNumbersOnly,
+                    },                            
                     afterDataLimits(scale) {
                         const xScale = scale.chart.scales.x;
                         if (xScale) {
@@ -1276,15 +1312,17 @@ function updateStreakChart(rankingSummary) {
                 beginAtZero: true,
                 position: 'top',
                 ticks: {
-                    callback: wholeNumbersOnly
-                },
+                    color: tickColor,
+                    callback: wholeNumbersOnly,
+                },                            
                 grid: gridColor,
             },
             x2: {
                 position: 'bottom',
                 ticks: {
-                    callback: wholeNumbersOnly
-                },
+                    color: tickColor,
+                    callback: wholeNumbersOnly,
+                },                            
                 afterDataLimits(scale) {
                     const xScale = scale.chart.scales.x;
                     if (xScale) {
@@ -1418,6 +1456,7 @@ function updateLastActiveChart(rankingSummary) {
                     },
                     position: 'top',
                     ticks: {
+                        color: tickColor,
                         callback: function(value) {
                             return new Date(value).toISOString().split('T')[0];
                         }
@@ -1427,6 +1466,7 @@ function updateLastActiveChart(rankingSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
+                        color: tickColor,
                         callback: function(value) {
                             return new Date(value).toISOString().split('T')[0];
                         }
