@@ -32,6 +32,16 @@ let defaultHiddenStates = {
     'playerInfoMatches': [false, false],
 };
 
+// get the selected time span and puts it in a format so that it can be added to the chart title
+function getSelectedTimeInterval() {
+    const timeSpanSelectionElement = document.getElementById("timeSpanSelection");
+    const selectedIndex = timeSpanSelectionElement.selectedIndex;
+    const timeSpanSelection = timeSpanSelectionElement.options[selectedIndex].text;
+
+    if (timeSpanSelection === '') return ' (Eternally)';
+    return ' (' + timeSpanSelection + ')';
+}
+
 // If the Ranking chart already exists, destroy it before creating a new one
 function destroyRankingChart(message) {
     if (rankingChart) {
@@ -163,7 +173,7 @@ function updateMatchesPlayedChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: chartTitle,
+                        text: chartTitle + getSelectedTimeInterval(),
                         display: true,
                     },
                     beginAtZero: true,
@@ -270,7 +280,7 @@ function updateRanglistenChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Ranglisten Punkte',
+                        text: 'Ranglisten Punkte' + getSelectedTimeInterval(),
                         display: true,
                     },
                     beginAtZero: true,
@@ -409,7 +419,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: selectedPlayer + "'s % Matches Won/Lost",
+                        text: selectedPlayer + "'s % Matches Won/Lost" + getSelectedTimeInterval(),
                         display: true,
                     },
                     beginAtZero: true,
@@ -527,7 +537,7 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: selectedPlayer + "'s Matches Won/Lost",
+                        text: selectedPlayer + "'s Matches Won/Lost" + getSelectedTimeInterval(),
                         display: true,
                     },
                     beginAtZero: true,
@@ -701,7 +711,7 @@ function updateRatingListChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Rating List Elo',
+                        text: 'Rating List Elo' + getSelectedTimeInterval(),
                         display: true,
                     },
                     beginAtZero: false,
@@ -837,7 +847,7 @@ function updateWinningPercentChart(matchListSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Match Winning %',
+                        text: 'Match Winning %' + getSelectedTimeInterval(),
                         display: true,
                     },
                     min: 0,
@@ -1057,7 +1067,7 @@ function updatePlayerProgressChart(progressList) {
             scales: {
                 x: {
                     title: {
-                        text: 'Player Progress - Match # - Elo',
+                        text: 'Player Progress - Match # - Elo' + getSelectedTimeInterval(),
                         display: true,
                     },
                     position: 'top',
@@ -1207,7 +1217,7 @@ function updateScoresChart(scoresSummary) {
             scales: {
                 x: {
                     title: {
-                        text: scoresChartTitle,
+                        text: scoresChartTitle + getSelectedTimeInterval(),
                         display: true,
                     },
                     beginAtZero: false,
@@ -1311,7 +1321,7 @@ function updateStreakChart(rankingSummary) {
         scales: {
             x: {
                 title: {
-                    text: title + ' Matches',
+                    text: title + ' Matches' + getSelectedTimeInterval(),
                     display: true,
                 },
                 beginAtZero: true,
@@ -1456,7 +1466,7 @@ function updateLastActiveChart(rankingSummary) {
             scales: {
                 x: {
                     title: {
-                        text: 'Days Inactive - Date',
+                        text: 'Days Inactive - Date' + getSelectedTimeInterval(),
                         display: true,
                     },
                     position: 'top',
