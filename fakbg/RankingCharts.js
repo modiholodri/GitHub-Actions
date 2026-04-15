@@ -6,13 +6,15 @@ const lostForeColor = 'rgba(255, 99, 132, 1)';
 const lostBackColor = 'rgba(255, 99, 132, 0.2)';
 
 const gridColor = { color: 'rgba(255, 255, 0, 0.3)' };
-const tickColor = 'rgba(255, 255, 0, 0.5)';
+const chartColor = 'rgba(255, 255, 0, 0.7)';
 const middleLineColor = 'rgba(255, 0, 0, 1)';
 const playerLineColor = 'rgba(255, 255, 0, 1)';
 
 Chart.defaults.color = 'white';  // default text color
 Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
-Chart.defaults.plugins.legend.labels.color = '#61e7ff';
+Chart.defaults.plugins.legend.labels.color = chartColor;
+Chart.defaults.scale.title.font = { size: 16, weight: 'bold' };
+Chart.defaults.scale.title.color = chartColor;
 
 
 let rankingChart;
@@ -168,7 +170,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
@@ -176,7 +178,7 @@ function updateMatchesPlayedChart(matchListSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
@@ -275,7 +277,7 @@ function updateRanglistenChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
@@ -283,7 +285,7 @@ function updateRanglistenChart(matchListSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
@@ -414,7 +416,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
@@ -422,7 +424,7 @@ function updatePlayerInfoPercentChart(matchListSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
@@ -532,7 +534,7 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                     stacked: true,
                     position: 'top',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
@@ -540,7 +542,7 @@ function updatePlayerInfoMatchesChart(matchListSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
@@ -705,7 +707,7 @@ function updateRatingListChart(matchListSummary) {
                     beginAtZero: false,
                     position: 'top',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
@@ -713,7 +715,7 @@ function updateRatingListChart(matchListSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
@@ -843,7 +845,7 @@ function updateWinningPercentChart(matchListSummary) {
                     beginAtZero: false,
                     position: 'top',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
@@ -851,7 +853,7 @@ function updateWinningPercentChart(matchListSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
@@ -1055,7 +1057,7 @@ function updatePlayerProgressChart(progressList) {
             scales: {
                 x: {
                     title: {
-                        text: 'Player Progress - Match Number',
+                        text: 'Player Progress - Match # - Elo',
                         display: true,
                     },
                     position: 'top',
@@ -1063,7 +1065,7 @@ function updatePlayerProgressChart(progressList) {
                     min: firstMatchInTimeSpan,
                     max: lastMatchInTimeSpan,
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor
@@ -1072,7 +1074,7 @@ function updatePlayerProgressChart(progressList) {
                     position: 'right',
                     beginAtZero: false,
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor
@@ -1211,7 +1213,7 @@ function updateScoresChart(scoresSummary) {
                     beginAtZero: false,
                     position: 'top',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     grid: gridColor,
@@ -1219,7 +1221,7 @@ function updateScoresChart(scoresSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: wholeNumbersOnly,
                     },                            
                     afterDataLimits(scale) {
@@ -1315,7 +1317,7 @@ function updateStreakChart(rankingSummary) {
                 beginAtZero: true,
                 position: 'top',
                 ticks: {
-                    color: tickColor,
+                    color: chartColor,
                     callback: wholeNumbersOnly,
                 },                            
                 grid: gridColor,
@@ -1323,7 +1325,7 @@ function updateStreakChart(rankingSummary) {
             x2: {
                 position: 'bottom',
                 ticks: {
-                    color: tickColor,
+                    color: chartColor,
                     callback: wholeNumbersOnly,
                 },                            
                 afterDataLimits(scale) {
@@ -1459,7 +1461,7 @@ function updateLastActiveChart(rankingSummary) {
                     },
                     position: 'top',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: function(value) {
                             return new Date(value).toISOString().split('T')[0];
                         }
@@ -1469,7 +1471,7 @@ function updateLastActiveChart(rankingSummary) {
                 x2: {
                     position: 'bottom',
                     ticks: {
-                        color: tickColor,
+                        color: chartColor,
                         callback: function(value) {
                             return new Date(value).toISOString().split('T')[0];
                         }
