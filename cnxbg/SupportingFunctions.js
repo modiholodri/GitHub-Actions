@@ -169,8 +169,10 @@ function fetchMarkDownFromRepoSync(fileName, elementName) {
         const data = JSON.parse(xhr.responseText);
         if (data.content) {
             const fileContent = decodeURIComponent(escape(window.atob(data.content)));
-            const highlightedContent = highlightYourNameInTable(fileContent);
-            document.getElementById(elementName).innerHTML = marked.parse(highlightedContent);
+            const element = document.getElementById(elementName);
+            if (element) {
+                element.innerHTML = marked.parse(highlightYourNameInTable(fileContent));
+            }
             return fileContent;
         }
     }
@@ -195,7 +197,10 @@ function fetchMarkDownFromRepo(fileName, elementName) {
     .then(data => {
         if (data.content) {
             const fileContent = decodeURIComponent(escape(window.atob( data.content )));
-            document.getElementById(elementName).innerHTML = marked.parse(fileContent);
+            const element = document.getElementById(elementName);
+            if (element) {
+                element.innerHTML = marked.parse(fileContent);
+            }
             return fileContent;
         } else {
             console.log(`Failed to fetch file ${fileName}.md!`);
@@ -251,8 +256,15 @@ function fetchMatchList() {
 
 // Fetch the All Match List
 function fetchAllMatchLists() {
+    const doublePlayersList = fetchMarkDownFromRepoSync('DoublePlayers');
+
     const repoNames = clubRepos.map(club => club.repo);
-    matchRecords = [];
+
+    // add the header for the match list
+    matchRecords = ["|Date|Winner|Loser|Points|"];
+    matchRecords.push("|---|---|---|---|");
+
+    totalMatchList = ""; // reset totalMatchList before fetching
 
     Promise.all(repoNames.filter(repoName => repoName !== 'siambg-ranking-list').map(repoName => {
         // filter out the Siam Backgammon repo
@@ -270,18 +282,23 @@ function fetchAllMatchLists() {
 
                 // prepare the replacement map and regex for the player names
                 const suffix = repoName.substring(0, 3);
-                const nameMap = {
-                    'John': `John ${suffix}`,
-                    'Tom': `Tom ${suffix}`,
-                    'Brian': `Brian ${suffix}`
-                };
-                const regex = new RegExp(`^(${Object.keys(nameMap).join('|')})$`);
+
+                // add a suffix to all double players                
+                const doublePlayersMap = {};
+                doublePlayersList.split('\n').forEach(name => {
+                    const trimmedName = name.trim();
+                    if (trimmedName) {
+                        doublePlayersMap[trimmedName] = `${trimmedName} ${suffix}`;
+                    }
+                });
+
+                const regex = new RegExp(`^(${Object.keys(doublePlayersMap).join('|')})$`);
 
                 const modifiedLines = matchList.split("\n").slice(2).map(line => {
                     if (line.length > 0) {
                         const parts = line.split('|');
-                        parts[2] = parts[2].replace(regex, match => nameMap[match]);
-                        parts[3] = parts[3].replace(regex, match => nameMap[match]);
+                        parts[2] = parts[2].replace(regex, match => doublePlayersMap[match]);
+                        parts[3] = parts[3].replace(regex, match => doublePlayersMap[match]);
                         return parts.join('|');
                     }
                     return line;
@@ -292,9 +309,6 @@ function fetchAllMatchLists() {
         })
         .catch(() => []);
     })).then(results => {
-        // add the header for the match list
-        matchRecords = ["|Date|Winner|Loser|Points|"];
-        matchRecords.push("|---|---|---|---|");
 
         // Flatten the results, sort descending by date, then push them
         const flatResults = results.flat();
@@ -355,6 +369,9 @@ function setPlayerListFromPlayerRating() {
 
 // Calculate the Player Rating
 function calculatePlayerRating(matchRecords) {
+    // reset playerRating before calculating
+    Object.keys(playerRating).forEach(key => delete playerRating[key]);
+
     // Start from the third line (skip headers), process in chronological order
     for (let i = 2; i < matchRecords.length; i++) {
         if (matchRecords[i].length > 0) {
