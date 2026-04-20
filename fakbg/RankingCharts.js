@@ -1095,6 +1095,259 @@ function updatePlayerProgressChart(progressList) {
     });
 }
 
+
+function applyLens(x, center=1800, radius=100, X=3.0) {
+    const dist = Math.abs(x - center);
+    if (dist >= radius) return x;
+    
+    // Calculate local magnification factor
+    // This fades from X (at center) to 1.0 (at radius)
+    const interpolation = 1 - (dist / radius);
+    const currentMagnification = 1 + (X - 1) * interpolation;
+    
+    return center + (x - center) * currentMagnification;
+}
+
+function reverseLensTwo(y, center = 1800, radius = 100, X = 3.0) {
+    const distY = Math.abs(y - center);
+    
+    // The maximum displacement the lens can produce is radius * X
+    // If it's outside this transformed range, it's outside the original radius
+    if (distY >= radius * X) return y;
+
+    const sign = Math.sign(y - center);
+    const R = radius;
+    const k = X - 1;
+
+    /**
+     * Solving the quadratic: y = c + d * (1 + k * (1 - |d|/R))
+     * For d > 0: y - c = d + kd - (k/R)d^2
+     * (k/R)d^2 - (1+k)d + (y-c) = 0
+     */
+    const a = k / R;
+    const b = -(1 + k);
+    const c = distY;
+
+    // Use quadratic formula: d = (-b - sqrt(b^2 - 4ac)) / 2a
+    // We subtract the discriminant because we need the solution within [0, radius]
+    const d = (-b - Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+
+    return center + (d * sign);
+}
+
+function reverseLensToAxis(value) {
+    const axisValue = reverseLensTwo(value);
+    const formatedvalue = axisValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
+    return formatedvalue;
+}
+
+function updatePlayerPositionChart(progressList) {
+    const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+
+    const maximumSlots = 5;
+
+    // figure out the time span to display and the active players in that time span
+    // the time span is defined by the selected option in the time span selection dropdown
+    let timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
+    let foundTimeSpan = false;
+    let activePlayers = new Set(); 
+    for (let i = progressList.length-1; i > 1; i--) {
+        if (timeSpanRegex.test(progressList[i].date)) {
+            if (!foundTimeSpan) {
+                foundTimeSpan = true;
+            }
+            activePlayers.add(progressList[i].player); 
+        }
+        else if (foundTimeSpan) {
+            break;
+        }
+    }
+
+    // Group progress by player
+    const playerProgress = {};
+    let matchSlot = 1;
+    progressList.reverse().forEach(entry => {
+        if (!playerProgress[entry.player]) {
+            playerProgress[entry.player] = [];
+            playerProgress[entry.player].push({ matchNumber: matchSlot, date: entry.date, rating: entry.rating });
+            matchSlot++;
+            if (matchSlot > maximumSlots) matchSlot = 1;
+        }
+    });
+
+    // Prepare datasets for Chart.js
+    // Sort players by their last rating (highest first)
+    const sortedPlayers = Object.keys(playerProgress).sort((a, b) => {
+        const aLast = playerProgress[a][playerProgress[a].length - 1].rating;
+        const bLast = playerProgress[b][playerProgress[b].length - 1].rating;
+        return bLast - aLast;
+    });
+
+    matchSlot = 1;
+    sortedPlayers.filter(player => activePlayers.has(player)).forEach(player => {   
+        playerProgress[player][0].matchNumber = matchSlot;
+        matchSlot++;
+        if (matchSlot > maximumSlots) matchSlot = 1;
+    });
+
+    // get your current player value
+    const yourName = document.getElementById('yourName').value.trim();
+    const playerValue = Math.round(playerProgress[yourName]?.[playerProgress[yourName].length-1].rating);
+
+    // Only include datasets for players active in the selected time span
+    const datasets = sortedPlayers
+        .filter(player => activePlayers.has(player))
+        .map((player, idx) => {
+            let data = [];
+            playerProgress[player].forEach(entry => {
+                data.push({x: Number(entry.matchNumber), y: applyLens(entry.rating)});
+            });
+
+            // Assign a color (simple palette)
+            const colors = [
+                'rgba(255,0,0,1)',      // bright red
+                'rgba(0,0,255,1)',      // bright blue
+                'rgba(255,215,0,1)',    // gold
+                'rgba(128,0,255,1)',    // vivid purple
+                'rgba(255,140,0,1)',    // deep orange
+                'rgba(0,255,0,1)',      // bright green
+                'rgba(255,20,147,1)',   // deep pink
+                'rgba(75,0,130,1)',     // indigo
+                'rgba(0,0,139,1)',      // dark blue
+                'rgba(255,69,0,1)',     // red-orange
+                'rgba(139,0,0,1)',      // dark red
+                'rgba(0,206,209,1)',    // dark turquoise
+                'rgba(128,128,0,1)',    // olive
+                'rgba(220,20,60,1)',    // crimson
+                'rgba(0,128,0,1)',      // dark green
+                'rgba(0,255,255,1)',    // cyan
+                'rgba(255,255,0,1)'     // yellow
+            ];
+            const color = colors[idx % colors.length];
+
+            // Rank starts at 1
+            const rank = idx + 1;
+            return {
+                label: rank + " " + player,
+                hidden: false,
+                data: data,
+                borderColor: color,
+                backgroundColor: color.replace('1)', '0.6)'),
+                fill: false,
+                spanGaps: false,
+                tension: 0.2,
+                pointRadius: 3,
+                pointBorderWidth: 0,
+                pointHoverRadius: 4,
+                pointHitRadius: 8,
+                borderWidth: 2,
+            };
+        });
+
+    const playerAnnotations = {};
+    const activeSortedPlayers = sortedPlayers.filter(player => activePlayers.has(player));
+
+    // create the aannotations for the players who played in the last 14 days
+    activeSortedPlayers.forEach((player, idx) => {
+        const lastPlayedDate = playerProgress[player][playerProgress[player].length - 1].date;
+        const daysSinceLastPlayed = Math.floor((new Date() - new Date(lastPlayedDate)) / (1000 * 60 * 60 * 24));
+        // if (daysSinceLastPlayed > 60) return;
+
+        const lastRating = applyLens(playerProgress[player][playerProgress[player].length - 1].rating);
+        
+        playerAnnotations[`player_${idx}`] = {
+            type: 'label',
+            xValue: playerProgress[player][0].matchNumber,
+            yValue: lastRating,
+            position: 'center',
+            content: [player],
+            color: datasets[idx].borderColor,
+            font: { size: 12 },
+        };
+    });
+
+    destroyRankingChart('');
+    document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.6 + sortedPlayers.length * 10; // Adjust height based on number of players
+
+    rankingChart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: datasets,
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return ` Current #${context[0].dataset.label}`;
+                        },
+                        label: function(context) {
+                            const player = context.dataset.label.split(" ").slice(1).join(" ");
+                            const elo = playerProgress[player][0].rating;
+                            return [` ${parseFloat(elo).toLocaleString('en-US', { maximumFractionDigits: 1 })} Elo`, `${player}`];
+                        }
+
+                    }
+                },
+                legend: { position: 'bottom' },
+                annotation: {
+                    clip: false,
+                    annotations: {
+                        startingEloLine: {
+                            type: 'line',
+                            yMin: 1800, // Y-axis value where the line starts
+                            yMax: 1800, // Y-axis value where the line ends
+                            borderColor: middleLineColor,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        },
+                        playerValueLine: {
+                            type: 'line',
+                            display: playerValue,
+                            yMin: playerValue, // Y-axis value where the line starts
+                            yMax: playerValue, // Y-axis value where the line ends
+                            borderColor: playerLineColor,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        },
+                        ...playerAnnotations,
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        text: 'Player Position - Elo' + getSelectedTimeInterval(),
+                        display: true,
+                    },
+                    position: 'top',
+                    type: 'linear',
+                    min: 0,
+                    max: maximumSlots + 1,
+                    ticks: {
+                        color: chartColor,
+                        callback: wholeNumbersOnly,
+                    },                            
+                    grid: gridColor
+                },
+                y: {
+                    position: 'right',
+                    beginAtZero: false,
+                    ticks: {
+                        color: chartColor,
+                        callback: reverseLensToAxis,
+                    },                            
+                    grid: gridColor
+                },
+            }
+        }
+    });
+}
+
+
+
 // Function to create or update the Scores chart
 function updateScoresChart(scoresSummary) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
