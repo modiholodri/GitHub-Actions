@@ -1215,8 +1215,8 @@ function updatePlayerPositionChart(progressList) {
                 'rgba(255,140,0,1)',    // deep orange
                 'rgba(0,255,0,1)',      // bright green
                 'rgba(255,20,147,1)',   // deep pink
-                'rgba(75,0,130,1)',     // indigo
-                'rgba(0,0,139,1)',      // dark blue
+                'rgba(111,0,199,1)',     // indigo
+                'rgba(0,0,222,1)',      // dark blue
                 'rgba(255,69,0,1)',     // red-orange
                 'rgba(139,0,0,1)',      // dark red
                 'rgba(0,206,209,1)',    // dark turquoise
