@@ -1095,8 +1095,8 @@ function updatePlayerProgressChart(progressList) {
     });
 }
 
-
-function applyLens(x, center=1800, radius=100, X=3.0) {
+// apply a lens effect around 1800 so that the players are easier to read
+function applyLens(x, center=1800, radius=100, X = 2.0) {
     const dist = Math.abs(x - center);
     if (dist >= radius) return x;
     
@@ -1108,12 +1108,13 @@ function applyLens(x, center=1800, radius=100, X=3.0) {
     return center + (x - center) * currentMagnification;
 }
 
-function reverseLensTwo(y, center = 1800, radius = 100, X = 3.0) {
+// reverse the lens effect to get the original value from the transformed value
+function reverseLens(y, center = 1800, radius = 100, X = 2.0) {
     const distY = Math.abs(y - center);
     
     // The maximum displacement the lens can produce is radius * X
     // If it's outside this transformed range, it's outside the original radius
-    if (distY >= radius * X) return y;
+    if (distY > radius) return y;
 
     const sign = Math.sign(y - center);
     const R = radius;
@@ -1136,11 +1137,12 @@ function reverseLensTwo(y, center = 1800, radius = 100, X = 3.0) {
 }
 
 function reverseLensToAxis(value) {
-    const axisValue = reverseLensTwo(value);
+    const axisValue = reverseLens(value);
     const formatedvalue = axisValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
     return formatedvalue;
 }
 
+// Create or update the Player Progress chart
 function updatePlayerPositionChart(progressList) {
     const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
 
@@ -1165,13 +1167,10 @@ function updatePlayerPositionChart(progressList) {
 
     // Group progress by player
     const playerProgress = {};
-    let matchSlot = 1;
     progressList.reverse().forEach(entry => {
         if (!playerProgress[entry.player]) {
             playerProgress[entry.player] = [];
-            playerProgress[entry.player].push({ matchNumber: matchSlot, date: entry.date, rating: entry.rating });
-            matchSlot++;
-            if (matchSlot > maximumSlots) matchSlot = 1;
+            playerProgress[entry.player].push({ date: entry.date, rating: entry.rating });
         }
     });
 
@@ -1183,11 +1182,15 @@ function updatePlayerPositionChart(progressList) {
         return bLast - aLast;
     });
 
-    matchSlot = 1;
+    let matchSlot = 1;
+    let round = 1;
     sortedPlayers.filter(player => activePlayers.has(player)).forEach(player => {   
-        playerProgress[player][0].matchNumber = matchSlot;
+        playerProgress[player][0].matchNumber = matchSlot + 0.5 * (round%2);
         matchSlot++;
-        if (matchSlot > maximumSlots) matchSlot = 1;
+        if (matchSlot > maximumSlots) {
+            matchSlot = 1;
+            round++;
+        }
     });
 
     // get your current player value
@@ -1236,7 +1239,7 @@ function updatePlayerPositionChart(progressList) {
                 fill: false,
                 spanGaps: false,
                 tension: 0.2,
-                pointRadius: 3,
+                pointRadius: 1,
                 pointBorderWidth: 0,
                 pointHoverRadius: 4,
                 pointHitRadius: 8,
@@ -1249,8 +1252,8 @@ function updatePlayerPositionChart(progressList) {
 
     // create the aannotations for the players who played in the last 14 days
     activeSortedPlayers.forEach((player, idx) => {
-        const lastPlayedDate = playerProgress[player][playerProgress[player].length - 1].date;
-        const daysSinceLastPlayed = Math.floor((new Date() - new Date(lastPlayedDate)) / (1000 * 60 * 60 * 24));
+        // const lastPlayedDate = playerProgress[player][playerProgress[player].length - 1].date;
+        // const daysSinceLastPlayed = Math.floor((new Date() - new Date(lastPlayedDate)) / (1000 * 60 * 60 * 24));
         // if (daysSinceLastPlayed > 60) return;
 
         const lastRating = applyLens(playerProgress[player][playerProgress[player].length - 1].rating);
@@ -1286,7 +1289,8 @@ function updatePlayerPositionChart(progressList) {
                         label: function(context) {
                             const player = context.dataset.label.split(" ").slice(1).join(" ");
                             const elo = playerProgress[player][0].rating;
-                            return [` ${parseFloat(elo).toLocaleString('en-US', { maximumFractionDigits: 1 })} Elo`, `${player}`];
+                            const date = playerProgress[player][0].date;
+                            return [` ${parseFloat(elo).toLocaleString('en-US', { maximumFractionDigits: 1 })} Elo`, ` ${date}`];
                         }
 
                     }
@@ -1324,11 +1328,11 @@ function updatePlayerPositionChart(progressList) {
                     },
                     position: 'top',
                     type: 'linear',
-                    min: 0,
-                    max: maximumSlots + 1,
+                    min: 0.5,
+                    max: maximumSlots + 0.5,
                     ticks: {
                         color: chartColor,
-                        callback: wholeNumbersOnly,
+                        callback: function(value) {return null;}
                     },                            
                     grid: gridColor
                 },
