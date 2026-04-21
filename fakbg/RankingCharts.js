@@ -15,6 +15,7 @@ Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default gr
 Chart.defaults.plugins.legend.labels.color = chartColor;
 Chart.defaults.scale.title.font = { size: 16, weight: 'bold' };
 Chart.defaults.scale.title.color = chartColor;
+Chart.defaults.layout.padding.top = 7;
 
 
 let rankingChart;
