@@ -157,6 +157,7 @@
                     <option class="centered" value="winningPercent">Winning %</option>
                     <option class="centered" value="rangliste">Rangliste</option>
                     <option class="centered" value="playerProgress">Player Progress</option>
+                    <option class="centered" value="playerPosition">Player Position</option>
                     <option class="centered" value="currentScores">Current Scores</option>
                     <option class="centered" value="highScores">High Scores</option>
                     <option class="centered" value="lowScores">Low Scores</option>
@@ -213,7 +214,7 @@
                 Ranking Chart ⇅
             </h5>
             <div id="rankingChart" class="collapse container-fluid">
-                <canvas id="rankingChartCanvas"></canvas>
+                <canvas id="rankingChartCanvas" style="background-color: black;"></canvas>
                 <p id="rankingChartMessage" class="centered">Not loaded yet...</p>
             </div>
 
@@ -403,6 +404,16 @@
                         createPlayerProgressList('rankingSummary', playerProgressList);
                     }
                     break;
+                case 'playerPosition':
+                    if (totalMatchList !== '') {
+                        if (!playerProgressCalculated) {
+                            playerProgressList = summarizePlayerProgress(totalMatchList);
+                            playerProgressCalculated = true;
+                        }
+                        updatePlayerPositionChart(playerProgressList);
+                        // createPlayerProgressList('rankingSummary', playerProgressList);
+                    }
+                    break;
                 case 'currentScores':
                 case 'highScores':
                 case 'lowScores':
@@ -472,9 +483,6 @@
             fetchMatchList();
             clearSubmissionStatus();
             fetchFrequentPlayers();
-
-            fetchMarkDownFromRepo('ReportingGuidelines', 'reportingGuidelines');
-            fetchMarkDownFromRepo('ReportMatchOnTheWeb', 'reportMatchOnTheWeb');
         }
 
     </script>

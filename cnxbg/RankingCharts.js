@@ -1,20 +1,21 @@
 // default colors
 const wonForeColor = 'rgba(75, 192, 192, 1)';
-const wonBackColor = 'rgba(75, 192, 192, 0.2)';
+const wonBackColor = 'rgba(75, 192, 192, 0.3)';
 
 const lostForeColor = 'rgba(255, 99, 132, 1)';
-const lostBackColor = 'rgba(255, 99, 132, 0.2)';
+const lostBackColor = 'rgba(255, 99, 132, 0.3)';
 
 const gridColor = { color: 'rgba(255, 255, 0, 0.3)' };
 const chartColor = 'rgba(255, 255, 0, 0.7)';
-const middleLineColor = 'rgba(255, 0, 0, 1)';
-const playerLineColor = 'rgba(255, 255, 0, 1)';
+const middleLineColor = 'rgba(255, 0, 0, 0.5)';
+const playerLineColor = 'rgba(255, 255, 0, 0.5)';
 
 Chart.defaults.color = 'white';  // default text color
 Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
 Chart.defaults.plugins.legend.labels.color = chartColor;
 Chart.defaults.scale.title.font = { size: 16, weight: 'bold' };
 Chart.defaults.scale.title.color = chartColor;
+Chart.defaults.layout.padding.top = 7;
 
 
 let rankingChart;
@@ -986,6 +987,7 @@ function updatePlayerProgressChart(progressList) {
                 pointBorderWidth: 0,
                 pointHoverRadius: 18,
                 pointHitRadius: 24,
+                hoverBorderWidth: 2,
                 borderWidth: 1,
             };
         });
@@ -1094,6 +1096,253 @@ function updatePlayerProgressChart(progressList) {
         }
     });
 }
+
+// apply a lens effect around 1800 so that the players are easier to read
+function applyLens(x, center=1800, radius=100, X = 2.0) {
+    const dist = Math.abs(x - center);
+    if (dist >= radius) return x;
+    
+    // Calculate local magnification factor
+    // This fades from X (at center) to 1.0 (at radius)
+    const interpolation = 1 - (dist / radius);
+    const currentMagnification = 1 + (X - 1) * interpolation;
+    
+    return center + (x - center) * currentMagnification;
+}
+
+// reverse the lens effect to get the original value from the transformed value
+function reverseLens(y, center = 1800, radius = 100, X = 2.0) {
+    const distY = Math.abs(y - center);
+    
+    // The maximum displacement the lens can produce is radius * X  // Modi: I don't think so
+    // If it's outside this transformed range, it's outside the original radius
+    if (distY > radius) return y;
+
+    const sign = Math.sign(y - center);
+    const k = X - 1;
+
+    /**
+     * Solving the quadratic: y = c + d * (1 + k * (1 - |d|/R))
+     * For d > 0: y - c = d + kd - (k/R)d^2
+     * (k/R)d^2 - (1+k)d + (y-c) = 0
+     */
+    const a = k / radius;
+    const b = -(1 + k);
+
+    // Use quadratic formula: d = (-b - sqrt(b^2 - 4ac)) / 2a
+    // We subtract the discriminant because we need the solution within [0, radius]
+    const d = (-b - Math.sqrt(b * b - 4 * a * distY)) / (2 * a);
+
+    return center + (d * sign);
+}
+
+function reverseLensToAxis(value) {
+    const axisValue = reverseLens(value);
+    const formatedvalue = axisValue.toLocaleString('en-US', { maximumFractionDigits: 0 })
+    return formatedvalue;
+}
+
+// Create or update the Player Progress chart
+function updatePlayerPositionChart(progressList) {
+    const ctx = document.getElementById('rankingChartCanvas').getContext('2d');
+
+    const maximumSlots = 5;
+
+    // figure out the time span to display and the active players in that time span
+    // Group progress by player
+    let timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
+    let foundTimeSpan = false;
+    const playerProgress = {};
+    for (let i = progressList.length-1; i > 1; i--) {
+        if (timeSpanRegex.test(progressList[i].date)) {
+            if (!foundTimeSpan) {
+                foundTimeSpan = true;
+            }
+            if (!playerProgress[progressList[i].player]) {
+                playerProgress[progressList[i].player] = [];
+                playerProgress[progressList[i].player].push({ date: progressList[i].date, rating: progressList[i].rating });
+            }
+        }
+        else if (foundTimeSpan) {
+            break;
+        }
+    }
+
+    // Sort players by their rating (highest first)
+    const sortedPlayers = Object.keys(playerProgress).sort((a, b) => {
+        return playerProgress[b][0].rating - playerProgress[a][0].rating;;
+    });
+
+    // put the players into slots so that they are distributed nicely
+    let playerSlot = 1;
+    let round = 1;
+    let lastPlayerElo = 10000;
+    let lastPlayer = '';
+    let wasCenteredPlayer = false;
+    sortedPlayers.forEach(player => {
+        // shift the player a little to the left if there is another player following
+        const currentPlayerElo = playerProgress[player][0].rating;
+        if (Math.abs(currentPlayerElo - lastPlayerElo) > 5) {
+            wasCenteredPlayer = true;
+            playerSlot = 3;
+            round = 1;
+        }
+        else if (wasCenteredPlayer) {
+            playerSlot = 2;
+            playerProgress[lastPlayer][0].slotNumber = playerSlot++ + 0.5 * (round%2);    
+            wasCenteredPlayer = false;
+        }
+        lastPlayerElo = currentPlayerElo;
+        lastPlayer = player;
+
+        // just shift the player in sequence
+        playerProgress[player][0].slotNumber = playerSlot++ + 0.5 * (round%2);
+        if (playerSlot > maximumSlots) {
+            playerSlot = 1;
+            round++;
+        }
+    });
+
+    // Only include datasets for players active in the selected time span
+    const datasets = sortedPlayers
+        .map((player, idx) => {
+            let data = [];
+            playerProgress[player].forEach(entry => {
+                data.push({x: Number(entry.slotNumber) - 0.25, y: applyLens(entry.rating)});
+            });
+
+            // Assign a color (simple palette)
+            const colors = [
+                'rgba(255,0,0,1)',      // bright red
+                'rgba(0,0,255,1)',      // bright blue
+                'rgba(255,215,0,1)',    // gold
+                'rgba(128,0,255,1)',    // vivid purple
+                'rgba(255,140,0,1)',    // deep orange
+                'rgba(0,255,0,1)',      // bright green
+                'rgba(255,20,147,1)',   // deep pink
+                'rgba(111,0,199,1)',     // indigo
+                'rgba(0,0,222,1)',      // dark blue
+                'rgba(255,69,0,1)',     // red-orange
+                'rgba(139,0,0,1)',      // dark red
+                'rgba(0,206,209,1)',    // dark turquoise
+                'rgba(128,128,0,1)',    // olive
+                'rgba(220,20,60,1)',    // crimson
+                'rgba(0,128,0,1)',      // dark green
+                'rgba(0,255,255,1)',    // cyan
+                'rgba(255,255,0,1)'     // yellow
+            ];
+            const color = colors[idx % colors.length];
+
+            // Rank starts at 1
+            const rank = idx + 1;
+            return {
+                label: rank + " " + player,  // not used at the moment
+                data: data,
+                borderColor: color,
+                backgroundColor: color.replace('1)', '0.2)'),
+                tension: 0.2,
+                pointRadius: 0,
+                pointBorderWidth: 1,
+                pointHoverRadius: 2,
+                pointHitRadius: 8,
+                borderWidth: 1,
+            };
+        });
+
+    const playerAnnotations = {};
+
+    // create the aannotations for the players who played in the last 14 days
+    sortedPlayers.forEach((player, idx) => {
+        // const lastPlayedDate = playerProgress[player][playerProgress[player].length - 1].date;
+        // const daysSinceLastPlayed = Math.floor((new Date() - new Date(lastPlayedDate)) / (1000 * 60 * 60 * 24));
+        // if (daysSinceLastPlayed > 60) return;
+
+        const lastRating = applyLens(playerProgress[player][0].rating);
+        
+        playerAnnotations[`player_${idx}`] = {
+            type: 'label',
+            xValue: playerProgress[player][0].slotNumber - 0.25,
+            yValue: lastRating,
+            position: 'center',
+            content: [player],
+            color: datasets[idx].borderColor,
+            font: { size: 12 },
+        };
+    });
+
+    destroyRankingChart('');
+    document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.7;
+
+    rankingChart = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: datasets,
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return ` #${context[0].dataset.label}`;
+                        },
+                        label: function(context) {
+                            const player = context.dataset.label.split(" ").slice(1).join(" ");
+                            const elo = playerProgress[player][0].rating;
+                            const date = playerProgress[player][0].date;
+                            return [` ${parseFloat(elo).toLocaleString('en-US', { maximumFractionDigits: 1 })} Elo`, ` ${date}`];
+                        }
+
+                    }
+                },
+                legend: { display: false },
+                annotation: {
+                    clip: false,
+                    annotations: {
+                        startingEloLine: {
+                            type: 'line',
+                            yMin: 1800, // Y-axis value where the line starts
+                            yMax: 1800, // Y-axis value where the line ends
+                            borderColor: middleLineColor,
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                        },
+                        ...playerAnnotations,
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        text: 'Player Position - Elo' + getSelectedTimeInterval(),
+                        display: true,
+                    },
+                    position: 'top',
+                    type: 'linear',
+                    min: 0.5,
+                    max: maximumSlots + 0.5,
+                    ticks: {
+                        color: chartColor,
+                        callback: function(value) {return null;}
+                    },                            
+                    grid: gridColor
+                },
+                y: {
+                    position: 'right',
+                    beginAtZero: false,
+                    ticks: {
+                        color: chartColor,
+                        callback: reverseLensToAxis,
+                    },                            
+                    grid: gridColor
+                },
+            }
+        }
+    });
+}
+
+
 
 // Function to create or update the Scores chart
 function updateScoresChart(scoresSummary) {
