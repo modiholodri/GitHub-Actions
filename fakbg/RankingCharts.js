@@ -1212,10 +1212,6 @@ function updatePlayerPositionChart(progressList) {
         }
     });
 
-    // get your current player value
-    const yourName = document.getElementById('yourName').value.trim();
-    const playerValue = Math.round(playerProgress[yourName]?.[playerProgress[yourName].length-1].rating);
-
     // Only include datasets for players active in the selected time span
     const datasets = sortedPlayers
         .filter(player => activePlayers.has(player))
@@ -1320,15 +1316,6 @@ function updatePlayerPositionChart(progressList) {
                             yMin: 1800, // Y-axis value where the line starts
                             yMax: 1800, // Y-axis value where the line ends
                             borderColor: middleLineColor,
-                            borderDash: [5, 5],
-                            borderWidth: 2,
-                        },
-                        playerValueLine: {
-                            type: 'line',
-                            display: playerValue,
-                            yMin: playerValue, // Y-axis value where the line starts
-                            yMax: playerValue, // Y-axis value where the line ends
-                            borderColor: playerLineColor,
                             borderDash: [5, 5],
                             borderWidth: 2,
                         },
