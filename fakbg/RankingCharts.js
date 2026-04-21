@@ -1149,37 +1149,28 @@ function updatePlayerPositionChart(progressList) {
     const maximumSlots = 5;
 
     // figure out the time span to display and the active players in that time span
+    // Group progress by player
     let timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
     let foundTimeSpan = false;
-    let activePlayers = new Set(); 
+    const playerProgress = {};
     for (let i = progressList.length-1; i > 1; i--) {
         if (timeSpanRegex.test(progressList[i].date)) {
             if (!foundTimeSpan) {
                 foundTimeSpan = true;
             }
-            activePlayers.add(progressList[i].player); 
+            if (!playerProgress[progressList[i].player]) {
+                playerProgress[progressList[i].player] = [];
+                playerProgress[progressList[i].player].push({ date: progressList[i].date, rating: progressList[i].rating });
+            }
         }
         else if (foundTimeSpan) {
             break;
         }
     }
 
-    // Group progress by player
-    const playerProgress = {};
-    let tempProgressList = [...progressList];
-    tempProgressList.reverse().forEach(entry => {
-        if (!playerProgress[entry.player]) {
-            playerProgress[entry.player] = [];
-            playerProgress[entry.player].push({ date: entry.date, rating: entry.rating });
-        }
-    });
-
-    // Prepare datasets for Chart.js
-    // Sort players by their last rating (highest first)
+    // Sort players by their rating (highest first)
     const sortedPlayers = Object.keys(playerProgress).sort((a, b) => {
-        const aLast = playerProgress[a][playerProgress[a].length - 1].rating;
-        const bLast = playerProgress[b][playerProgress[b].length - 1].rating;
-        return bLast - aLast;
+        return playerProgress[b][0].rating - playerProgress[a][0].rating;;
     });
 
     // put the players into slots so that they are distributed nicely
@@ -1188,7 +1179,7 @@ function updatePlayerPositionChart(progressList) {
     let lastPlayerElo = 10000;
     let lastPlayer = '';
     let wasCenteredPlayer = false;
-    sortedPlayers.filter(player => activePlayers.has(player)).forEach(player => {
+    sortedPlayers.forEach(player => {
         // shift the player a little to the left if there is another player following
         const currentPlayerElo = playerProgress[player][0].rating;
         if (Math.abs(currentPlayerElo - lastPlayerElo) > 5) {
@@ -1214,7 +1205,6 @@ function updatePlayerPositionChart(progressList) {
 
     // Only include datasets for players active in the selected time span
     const datasets = sortedPlayers
-        .filter(player => activePlayers.has(player))
         .map((player, idx) => {
             let data = [];
             playerProgress[player].forEach(entry => {
@@ -1246,7 +1236,7 @@ function updatePlayerPositionChart(progressList) {
             // Rank starts at 1
             const rank = idx + 1;
             return {
-                label: rank + " " + player,
+                label: rank + " " + player,  // not used at the moment
                 data: data,
                 borderColor: color,
                 backgroundColor: color.replace('1)', '0.2)'),
@@ -1260,15 +1250,14 @@ function updatePlayerPositionChart(progressList) {
         });
 
     const playerAnnotations = {};
-    const activeSortedPlayers = sortedPlayers.filter(player => activePlayers.has(player));
 
     // create the aannotations for the players who played in the last 14 days
-    activeSortedPlayers.forEach((player, idx) => {
+    sortedPlayers.forEach((player, idx) => {
         // const lastPlayedDate = playerProgress[player][playerProgress[player].length - 1].date;
         // const daysSinceLastPlayed = Math.floor((new Date() - new Date(lastPlayedDate)) / (1000 * 60 * 60 * 24));
         // if (daysSinceLastPlayed > 60) return;
 
-        const lastRating = applyLens(playerProgress[player][playerProgress[player].length - 1].rating);
+        const lastRating = applyLens(playerProgress[player][0].rating);
         
         playerAnnotations[`player_${idx}`] = {
             type: 'label',
