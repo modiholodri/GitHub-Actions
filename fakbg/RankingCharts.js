@@ -1275,7 +1275,7 @@ function updatePlayerPositionChart(progressList) {
         
         playerAnnotations[`player_${idx}`] = {
             type: 'label',
-            xValue: playerProgress[player][0].slotNumber,
+            xValue: playerProgress[player][0].slotNumber -0.25,
             yValue: lastRating,
             position: 'center',
             content: [player],
