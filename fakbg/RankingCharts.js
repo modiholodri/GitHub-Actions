@@ -1286,7 +1286,7 @@ function updatePlayerPositionChart(progressList) {
     });
 
     destroyRankingChart('');
-    document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.6 + sortedPlayers.length * 10; // Adjust height based on number of players
+    document.getElementById('rankingChartCanvas').height = window.innerHeight * 0.7;
 
     rankingChart = new Chart(ctx, {
         type: 'scatter',
@@ -1311,7 +1311,7 @@ function updatePlayerPositionChart(progressList) {
 
                     }
                 },
-                legend: { position: 'bottom' },
+                legend: { display: false },
                 annotation: {
                     clip: false,
                     annotations: {
