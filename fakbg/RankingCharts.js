@@ -1232,18 +1232,15 @@ function updatePlayerPositionChart(progressList) {
             const rank = idx + 1;
             return {
                 label: rank + " " + player,
-                hidden: false,
                 data: data,
                 borderColor: color,
-                backgroundColor: color.replace('1)', '0.6)'),
-                fill: false,
-                spanGaps: false,
+                backgroundColor: color.replace('1)', '0.2)'),
                 tension: 0.2,
-                pointRadius: 1,
-                pointBorderWidth: 0,
-                pointHoverRadius: 4,
+                pointRadius: 0,
+                pointBorderWidth: 1,
+                pointHoverRadius: 2,
                 pointHitRadius: 8,
-                borderWidth: 2,
+                borderWidth: 1,
             };
         });
 
@@ -1284,7 +1281,7 @@ function updatePlayerPositionChart(progressList) {
                 tooltip: {
                     callbacks: {
                         title: function(context) {
-                            return ` Current #${context[0].dataset.label}`;
+                            return ` #${context[0].dataset.label}`;
                         },
                         label: function(context) {
                             const player = context.dataset.label.split(" ").slice(1).join(" ");
