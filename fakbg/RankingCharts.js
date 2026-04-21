@@ -1,14 +1,14 @@
 // default colors
 const wonForeColor = 'rgba(75, 192, 192, 1)';
-const wonBackColor = 'rgba(75, 192, 192, 0.2)';
+const wonBackColor = 'rgba(75, 192, 192, 0.3)';
 
 const lostForeColor = 'rgba(255, 99, 132, 1)';
-const lostBackColor = 'rgba(255, 99, 132, 0.2)';
+const lostBackColor = 'rgba(255, 99, 132, 0.3)';
 
 const gridColor = { color: 'rgba(255, 255, 0, 0.3)' };
 const chartColor = 'rgba(255, 255, 0, 0.7)';
-const middleLineColor = 'rgba(255, 0, 0, 1)';
-const playerLineColor = 'rgba(255, 255, 0, 1)';
+const middleLineColor = 'rgba(255, 0, 0, 0.5)';
+const playerLineColor = 'rgba(255, 255, 0, 0.5)';
 
 Chart.defaults.color = 'white';  // default text color
 Chart.defaults.borderColor = 'rgba(0, 0, 0, 0.0)';  // don't show the default grid
@@ -986,6 +986,7 @@ function updatePlayerProgressChart(progressList) {
                 pointBorderWidth: 0,
                 pointHoverRadius: 18,
                 pointHitRadius: 24,
+                hoverBorderWidth: 2,
                 borderWidth: 1,
             };
         });
@@ -1112,12 +1113,11 @@ function applyLens(x, center=1800, radius=100, X = 2.0) {
 function reverseLens(y, center = 1800, radius = 100, X = 2.0) {
     const distY = Math.abs(y - center);
     
-    // The maximum displacement the lens can produce is radius * X
+    // The maximum displacement the lens can produce is radius * X  // Modi: I don't think so
     // If it's outside this transformed range, it's outside the original radius
     if (distY > radius) return y;
 
     const sign = Math.sign(y - center);
-    const R = radius;
     const k = X - 1;
 
     /**
@@ -1125,13 +1125,12 @@ function reverseLens(y, center = 1800, radius = 100, X = 2.0) {
      * For d > 0: y - c = d + kd - (k/R)d^2
      * (k/R)d^2 - (1+k)d + (y-c) = 0
      */
-    const a = k / R;
+    const a = k / radius;
     const b = -(1 + k);
-    const c = distY;
 
     // Use quadratic formula: d = (-b - sqrt(b^2 - 4ac)) / 2a
     // We subtract the discriminant because we need the solution within [0, radius]
-    const d = (-b - Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+    const d = (-b - Math.sqrt(b * b - 4 * a * distY)) / (2 * a);
 
     return center + (d * sign);
 }
@@ -1182,13 +1181,32 @@ function updatePlayerPositionChart(progressList) {
         return bLast - aLast;
     });
 
-    let matchSlot = 1;
+    // put the players into slots so that they are distributed nicely
+    let playerSlot = 1;
     let round = 1;
-    sortedPlayers.filter(player => activePlayers.has(player)).forEach(player => {   
-        playerProgress[player][0].matchNumber = matchSlot + 0.5 * (round%2);
-        matchSlot++;
-        if (matchSlot > maximumSlots) {
-            matchSlot = 1;
+    let lastPlayerElo = 10000;
+    let lastPlayer = '';
+    let wasCenteredPlayer = false;
+    sortedPlayers.filter(player => activePlayers.has(player)).forEach(player => {
+        // shift the player a little to the left if there is another player following
+        const currentPlayerElo = playerProgress[player][0].rating;
+        if (Math.abs(currentPlayerElo - lastPlayerElo) > 5) {
+            wasCenteredPlayer = true;
+            playerSlot = 3;
+            round = 1;
+        }
+        else if (wasCenteredPlayer) {
+            playerSlot = 2;
+            playerProgress[lastPlayer][0].slotNumber = playerSlot++ + 0.5 * (round%2);    
+            wasCenteredPlayer = false;
+        }
+        lastPlayerElo = currentPlayerElo;
+        lastPlayer = player;
+
+        // just shift the player in sequence
+        playerProgress[player][0].slotNumber = playerSlot++ + 0.5 * (round%2);
+        if (playerSlot > maximumSlots) {
+            playerSlot = 1;
             round++;
         }
     });
@@ -1203,7 +1221,7 @@ function updatePlayerPositionChart(progressList) {
         .map((player, idx) => {
             let data = [];
             playerProgress[player].forEach(entry => {
-                data.push({x: Number(entry.matchNumber), y: applyLens(entry.rating)});
+                data.push({x: Number(entry.slotNumber), y: applyLens(entry.rating)});
             });
 
             // Assign a color (simple palette)
@@ -1257,7 +1275,7 @@ function updatePlayerPositionChart(progressList) {
         
         playerAnnotations[`player_${idx}`] = {
             type: 'label',
-            xValue: playerProgress[player][0].matchNumber,
+            xValue: playerProgress[player][0].slotNumber,
             yValue: lastRating,
             position: 'center',
             content: [player],
