@@ -1149,7 +1149,6 @@ function updatePlayerPositionChart(progressList) {
     const maximumSlots = 5;
 
     // figure out the time span to display and the active players in that time span
-    // the time span is defined by the selected option in the time span selection dropdown
     let timeSpanRegex = new RegExp (document.getElementById("timeSpanSelection").value);
     let foundTimeSpan = false;
     let activePlayers = new Set(); 
@@ -1167,7 +1166,8 @@ function updatePlayerPositionChart(progressList) {
 
     // Group progress by player
     const playerProgress = {};
-    progressList.reverse().forEach(entry => {
+    let tempProgressList = [...progressList];
+    tempProgressList.reverse().forEach(entry => {
         if (!playerProgress[entry.player]) {
             playerProgress[entry.player] = [];
             playerProgress[entry.player].push({ date: entry.date, rating: entry.rating });
@@ -1222,7 +1222,7 @@ function updatePlayerPositionChart(progressList) {
         .map((player, idx) => {
             let data = [];
             playerProgress[player].forEach(entry => {
-                data.push({x: Number(entry.slotNumber), y: applyLens(entry.rating)});
+                data.push({x: Number(entry.slotNumber) - 0.25, y: applyLens(entry.rating)});
             });
 
             // Assign a color (simple palette)
@@ -1276,7 +1276,7 @@ function updatePlayerPositionChart(progressList) {
         
         playerAnnotations[`player_${idx}`] = {
             type: 'label',
-            xValue: playerProgress[player][0].slotNumber -0.25,
+            xValue: playerProgress[player][0].slotNumber - 0.25,
             yValue: lastRating,
             position: 'center',
             content: [player],
