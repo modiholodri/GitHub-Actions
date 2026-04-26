@@ -23,6 +23,9 @@ function generateTournament(selectedPlayers) {
         case 'Round Robin':
             generateRoundRobins(selectedPlayers);
             break;
+        case 'Rigid Robin':
+            generateRigidRobins(selectedPlayers);
+            break;
         case 'Single Elimination':
             generateSingleElimination(selectedPlayers);
             break;
@@ -442,6 +445,81 @@ function generateRoundRobinTournament(groupName, selectedPlayers, length) {
     return html;
 }
 
+function generateRigidRobins(selectedPlayers) {
+    let maximumPlayers = document.getElementById('maximumTournamentPlayers').value;
+    if (isNaN(maximumPlayers) || maximumPlayers < 3) {
+        alert('Invalid maximum players per group!\nNot a number or less than 3.');
+        return;
+    }
+
+    let html = tournamentInfo();
+    
+    const players = fisherYatesShuffle(selectedPlayers);
+    let tournamentPlayer = players.length;
+
+    let groups = Math.floor(tournamentPlayer / maximumPlayers);
+    if (groups * maximumPlayers < tournamentPlayer) groups += 1;
+
+    let groupPlayers = Math.ceil(tournamentPlayer / groups);
+
+    const matchLengths = getMatchLengths();
+
+    let start = 0;
+    let remainingPlayers = tournamentPlayer;
+    let remainingGroups = groups;
+    for (let group = 1; group < groups + 1; group++) {
+        let end = start + groupPlayers;
+        if (group === groups) end = tournamentPlayer + 1; 
+        const idx = group - 1;
+        const length = matchLengths[idx] !== undefined ? matchLengths[idx] : '';
+        html += generateRigidRobinTournament(group, players.slice(start, end), length);
+
+        start += groupPlayers;
+
+        remainingPlayers -= groupPlayers;
+        remainingGroups -= 1;
+        groupPlayers = Math.ceil(remainingPlayers / remainingGroups);
+    }
+
+    setTournamentData(html);
+    tournamentGenerated = true;
+}
+
+function generateRigidRobinTournament(groupName, selectedPlayers, length) {
+    const rounds = [];
+    const players = fisherYatesShuffle(selectedPlayers);
+    if (players.length % 2 !== 0) {
+        players.push('Bye');
+    }
+    const numRounds = players.length - 1;
+    const half = players.length / 2;
+
+    for (let round = 0; round < numRounds; round++) {
+        const separator = round === 0 ? '#' : '_'; // sleeping or not, that's the question
+        const matches = [];
+        for (let i = 0; i < half; i++) {
+            const home = players[i];
+            const away = players[players.length - 1 - i];
+            matches.push(`${home} ${separator} - ${separator} ${away}`);
+        }
+        rounds.push(matches);
+        // Rotate players except the first one
+        players.splice(1, 0, players.pop());
+    }
+
+    // generate the HTML for the tournament
+    let html = `<h5>Round Robin ${groupName} - ${length} points</h5>\n`;
+    rounds.forEach((matches) => {
+        html += `<p>\n`;
+        matches.forEach(match => {
+            html += `${match}<br>\n`;
+        });
+        html += `</p>\n`;
+    });
+
+    return html;
+}
+
 function generateWinsSortedTable(winCounts, lossCounts, eloPoints) {
     // Convert to array and sort by wins descending
     const sorted = Object.entries(winCounts).sort((a, b) => {
@@ -813,22 +891,21 @@ function highlightTodaysMatches() {
 function resolveByes() {
     const tournamentLines = tournamentData.split('\n');
     // fix the Byes
-    const doubleEliminationMatchRegex = new RegExp(`^(.+) [#_] (\\d+) [#_] (.+)\\b`, 'i');
+    const doubleEliminationMatchRegex = new RegExp(`^(.+) [#_] ((\\d+)|-) [#_] (.+)<br>`, 'i');
     for (let j = 0; j < tournamentLines.length; j++) {
         if (tournamentLines[j].includes('Bye')) {
+            const byeMatch = tournamentLines[j];
             if (tournamentLines[j].match(doubleEliminationMatchRegex)) {
                 const playerA = tournamentLines[j].match(doubleEliminationMatchRegex)[1]; // Get player A
                 const matchNumber = tournamentLines[j].match(doubleEliminationMatchRegex)[2]; // Get the match number
-                let playerB = tournamentLines[j].match(doubleEliminationMatchRegex)[3]; // Get player B
-                
-                playerB = playerB.slice(0, -3);  // TODO: fix this hack to remove <br
+                let playerB = tournamentLines[j].match(doubleEliminationMatchRegex)[4]; // Get player B
                 
                 const winner = playerA === 'Bye' ? playerB : playerA;
                 const loser = 'Bye';
 
                 tournamentLines[j] = tournamentLines[j].replace(
                     doubleEliminationMatchRegex,
-                    `<span style="color: green;">${winner}</span> &lt; 0 &gt; <span style="color: gray;">${loser}</span><br`
+                    `<span style="color: green;">${winner}</span> &lt; 0 &gt; <span style="color: gray;">${loser}</span><br>`
                 );
 
                 const winnerRegex = new RegExp(`~W${matchNumber}~`, 'g');
@@ -837,7 +914,7 @@ function resolveByes() {
                     tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
                     tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
                     if (!tournamentLines[k].includes("~")) { // replace future matches with current matches if there is no placeholder
-                        tournamentLines[k] = tournamentLines[k].replace(/_/g, '#');
+                        // tournamentLines[k] = tournamentLines[k].replace(/_/g, '#');
                     }
                 }
             }
