@@ -1065,12 +1065,13 @@ function make16PlayersDoubleElimination() {
 function extractFirstActiveMatchPlayers() {
     const tournamentLines = tournamentData.split('\n');
 //    const combinedMatchRegex = /(\w+)\s*#\s*(?:-|\d+)\s*#\s*(\w+)/i;
-    const combinedMatchRegex = /(\w+)\s*#[ A-Z]*(?:-|\d+)[ A-Z]*#\s*(\w+)/i;
+//    const combinedMatchRegex = /(\w+)\s*#[ A-Za-z]*(?:-|\d+)[ A-Za-z]*#\s*(\w+)/i;
+    const combinedMatchRegex = /^([^#]+)\s*#[ A-Z](?:-|\d+)[ A-Z]#\s*([^#]+)<br>/i; // don;t understand that one but it works better than the others for some reason, maybe because it captures the whole player name with spaces and special characters instead of just the first word?
 
     for (let line of tournamentLines) {
         if (line.match(combinedMatchRegex)) {
             const players = line.match(combinedMatchRegex);
-            return { player1: players[1], player2: players[2] };
+            return { player1: players[1].trim(), player2: players[2].trim() };
         } 
     }
     return null; // No active matches found
@@ -1134,7 +1135,8 @@ function autoMode() {
         }
 
         // increment simple counter and update the button text
-        const count = (parseInt(btn.dataset.counter, 10) || 0) + 1;
+        const currentCounter = parseInt(btn.dataset.counter, 10);
+        const count = Number.isFinite(currentCounter) ? Math.max(0, currentCounter) + 1 : 1;
         btn.dataset.counter = count.toString();
         btn.textContent = count.toString();
     } catch (err) {
@@ -1155,6 +1157,7 @@ if (autoModeButton) {
             // stop auto mode
             clearInterval(autoModeIntervalId);
             autoModeIntervalId = null;
+            autoModeButton.dataset.counter = '0';
             autoModeButton.dataset.autostate = 'off';
             autoModeButton.classList.remove('active');
         }
