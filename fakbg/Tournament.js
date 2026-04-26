@@ -488,19 +488,29 @@ function generateRigidRobins(selectedPlayers) {
 function generateRigidRobinTournament(groupName, selectedPlayers, length) {
     const rounds = [];
     const players = fisherYatesShuffle(selectedPlayers);
+    let haveBye = false;
     if (players.length % 2 !== 0) {
         players.push('Bye');
+        haveBye = true;
     }
     const numRounds = players.length - 1;
     const half = players.length / 2;
 
     for (let round = 0; round < numRounds; round++) {
-        const separator = round === 0 ? '#' : '_'; // sleeping or not, that's the question
+        const firstRound = round === 0; // sleeping or not, that's the question
         const matches = [];
         for (let i = 0; i < half; i++) {
             const home = players[i];
             const away = players[players.length - 1 - i];
-            matches.push(`${home} ${separator} - ${separator} ${away}`);
+            if (firstRound) {
+                matches.push(`${home} # - # ${away}`);
+            }
+            else {
+                const homePlayer = home === 'Bye' ? 'Bye' : haveBye ? `${home}` : `*${home}*`;  // tricky stuff to assign the first bye
+                haveBye = false; // only assign the first bye, the rest should be treated as normal players
+                const awayPlayer = away === 'Bye' ? 'Bye' : haveBye ? `${away}` : `*${away}*`;
+                matches.push(`${homePlayer} _ - _ ${awayPlayer}`);
+            }
         }
         rounds.push(matches);
         // Rotate players except the first one
@@ -805,11 +815,35 @@ function highlightTodaysMatches() {
                     continue; // skip HTML tags - info and completed matches
                 }
                 
-                if (tournamentLines[j].match(roundRobinMatchRegex)) { // Round Robin match
+                if (tournamentLines[j].match(roundRobinMatchRegex)) { // Round/Rigid Robin match
                     tournamentLines[j] = tournamentLines[j].replace(
                         roundRobinMatchRegex,
                         `<span style="color: green;">${winner}</span> &lt; ${matchLength} &gt; <span style="color: red;">${loser}</span><br>`
                     );
+
+                    // Replace Loser and Winner references in the rest of the tournament
+                    const winnerRegex = new RegExp(`[*]${winner}[*]`);
+                    const loserRegex = new RegExp(`[*]${loser}[*]`);
+                    let foundWinner = false;
+                    let foundLoser = false;
+                    for (let k = 0; k < tournamentLines.length; k++) { 
+                        if (!tournamentLines[k].includes("Bye") && tournamentLines[k][0] === '<') continue; // skip HTML tags - info and completed matches
+
+                        if (!foundWinner && tournamentLines[k].match(winnerRegex)) {
+                            if (!tournamentLines[k].match(`Bye`)) foundWinner = true; // only count it if it was not a Bye
+                            tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
+                        }
+                        if (!foundLoser && tournamentLines[k].match(loserRegex)) {
+                            if (!tournamentLines[k].match(`Bye`)) foundLoser = true; // only count it if it was not a Bye
+                            tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
+                        }
+                        if (!tournamentLines[k].includes("*")) { // replace future matches with current matches if there is no placeholder
+                            tournamentLines[k] = tournamentLines[k].replace(/_/g, '#');
+                        }
+
+                        if (foundWinner && foundLoser) break;
+                    }
+
                     break; // Exit the inner loop once a match is found and replaced
                 }
                 else if (tournamentLines[j].match(doubleEliminationMatchRegex)) { // Double Elimination match
@@ -915,10 +949,6 @@ function resolveByes() {
                 for (let k = 0; k < tournamentLines.length; k++) { 
                     tournamentLines[k] = tournamentLines[k].replace(winnerRegex, winner);
                     tournamentLines[k] = tournamentLines[k].replace(loserRegex, loser);
-//                    if (!tournamentLines[k].includes("~")) { // replace future matches with current matches if there is no placeholder
-                        // tournamentLines[k] = tournamentLines[k].replace(/_/g, '#'); 
-                        // ToDo not sure if it is needed at all
-//                  }
                 }
             }
         }
