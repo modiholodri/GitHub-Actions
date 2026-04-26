@@ -94,11 +94,68 @@ hr.rounded {
     text-align: center;
 }
 
-
-:root
-{
-	--text: "Select Tournament Players...";
+/* Theme Variables */
+:root {
+    --text: "Select Tournament Players...";
+    --bg-primary: #0d0d0d;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-accent: #bb86fc;
+    --border-accent: #bb86fc;
+    --button-primary: #6200ee;
 }
+
+body.light-theme {
+    --bg-primary: #0d0064;
+    --bg-secondary: #1600a8;
+    --text-primary: #ffffff;
+    --text-accent: #61e7ff;
+    --border-accent: #1eff29;
+    --button-primary: #0004fd;
+}
+
+/* Apply theme variables */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-accent);
+}
+
+th {
+    background-color: var(--bg-primary);
+    color: var(--text-accent);
+}
+
+tr:nth-child(odd) {
+    background-color: var(--bg-secondary);
+}
+
+.btn-primary {
+    background-color: var(--button-primary);
+    border-color: var(--border-accent);
+}
+
+.btn-secondary {
+    background-color: var(--bg-primary);
+    border-color: var(--border-accent);
+}
+
+.multiple_select {
+    background-color: var(--bg-primary);
+}
+
+.multiple_select option {
+    background-color: var(--bg-primary);
+}
+
+.multiple_select option:checked {
+    background-color: var(--border-accent);
+    color: var(--bg-primary);
+}
+
 .multiple_select {
     height: 36px;
     overflow: hidden;

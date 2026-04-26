@@ -405,3 +405,7 @@ function calculatePlayerRating(matchRecords) {
     }
 }
 
+function themeSelectionChanged() {
+    const theme = document.getElementById('themeSelection').value;
+    document.body.classList.toggle('light-theme', theme.toLowerCase() === 'light-theme');
+}

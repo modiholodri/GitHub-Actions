@@ -76,6 +76,10 @@ function loadSettings() {
         document.getElementById('matchReportSection').style.display = 'none';
         document.getElementById('tournamentManagementSection').style.display = 'none';
     }
+
+    // Theme Selection
+    loadValueSetting('themeSelection', 'dark-theme');
+    themeSelectionChanged();
 }
 
 // save the settings of a toggle element to localStorage
@@ -98,8 +102,10 @@ function saveCheckedSetting(elementName) {
 
 // Save settings to localStorage
 function saveSettings() {
+    // Match Report Form
     saveToggleSetting('matchReportForm');
 
+    // Tournament Management
     saveToggleSetting('tournamentManagement');
     saveToggleSetting('tournamentDirector');
 
@@ -117,16 +123,19 @@ function saveSettings() {
         localStorage.setItem('playersListSelection', JSON.stringify(selectedValues));
     }
 
+    // Rating/Ranking List Selection
     saveToggleSetting('ratingList');
     saveToggleSetting('rankingLists');
 
     saveValueSetting('rankingListSelection');
-    saveValueSetting('yourName');
     saveValueSetting('intervalSelection');
 
     saveToggleSetting('rankingChart');
     saveToggleSetting('rankingSummary');
     saveToggleSetting('matchList');
-    
+
+    // Settings
+    saveValueSetting('yourName');
     saveValueSetting('clubSelection');
+    saveValueSetting('themeSelection');
 }

@@ -253,8 +253,8 @@
             <h3 id="settingsToggle" type="button" data-toggle="collapse" data-target="#settings" aria-expanded="false" aria-controls="settings">
                 ⚙ Settings ⇅
             </h3>
-            <!-- You Name -->
             <div id="settings" class="collapse">
+                <!-- Your Name -->
                 <div class="input-group">
                     <span class="input-group-text" style="color: gray;">Your Name</span>
                     <label for="yourName"></label><input id="yourName" type="text" class="form-control centered" placeholder="Enter your name">
@@ -264,6 +264,14 @@
                     <span class="input-group-text" style="color: gray;">Club</span>
                     <select id="clubSelection" title="Backgammon Club Selection" class="form-select" onchange="clubSelectionChanged()">
                         <option class="centered" value="GitHub-Actions">Fake Backgammon</option>
+                    </select>
+                </div>
+                <!-- Theme Selection -->
+                <div class="input-group">
+                    <span class="input-group-text" style="color: gray;">Theme</span>
+                    <select id="themeSelection" title="Theme Selection" class="form-select" onchange="themeSelectionChanged()">
+                        <option class="centered" value="dark-theme">Dark</option>
+                        <option class="centered" value="light-theme">Light</option>
                     </select>
                 </div>
                 <p class="mt-3" style="color: gray;">Note: The settings are saved locally on your device. 
