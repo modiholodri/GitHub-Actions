@@ -97,12 +97,12 @@ hr.rounded {
 /* Theme Variables */
 :root {
     --text: "Select Tournament Players...";
-    --bg-primary: #0d0d0d;
+    --bg-primary: #080808;
     --bg-secondary: #2d2d2d;
     --text-primary: #e0e0e0;
-    --text-accent: #bb86fc;
-    --border-accent: #bb86fc;
-    --button-primary: #6200ee;
+    --text-accent: #61e7ff;
+    --border-accent: #1eff29;
+    --button-primary: #0004fd;
 }
 
 body.light-theme {

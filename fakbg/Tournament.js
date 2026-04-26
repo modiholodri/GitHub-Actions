@@ -1104,7 +1104,7 @@ async function uploadTournament() {
                 'Accept': 'application/vnd.github.v3+json',
             },
             body: JSON.stringify({ 
-                event_type: 'start_tournament', 
+                event_type: 'upload_tournament', 
                 client_payload: { 
                     tournament_html: `${tournamentData}`,
                 } 
