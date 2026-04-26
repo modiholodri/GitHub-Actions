@@ -419,7 +419,8 @@
                             playerProgressCalculated = true;
                         }
                         updatePlayerPositionChart(playerProgressList);
-                        // createPlayerProgressList('rankingSummary', playerProgressList);
+                        // set the ranking summary same same rating list
+                        document.getElementById('rankingSummary').innerHTML = document.getElementById('ratingList').innerHTML;
                     }
                     break;
                 case 'currentScores':
