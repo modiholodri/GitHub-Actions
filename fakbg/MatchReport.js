@@ -42,12 +42,6 @@ function showSubmissionStatus() {
     }
 }
 
-function getElementValue (emptyValue, elementId, elementFallbackId) {
-    let value = document.getElementById(elementId).value;
-    if (value === emptyValue) value = document.getElementById(elementFallbackId).value;
-    return value;
-}
-
 // Submit a match report
 let lastSubmitTime = Date.now();
 document.getElementById('matchReportForm').addEventListener('submit', async (e) => {
@@ -66,17 +60,17 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
         return;
     }
 
-    let winnerName = getElementValue('Select','winnerName','winnerNameTyped');
-    let loserName = getElementValue('Select','loserName','loserNameTyped');
-    let matchLength = getElementValue('', 'matchLengthTyped','matchLength');
+    let winnerName = document.getElementById('winnerName').value;
+    let loserName = document.getElementById('loserName').value;
+    let matchLength = document.getElementById('matchLength').value;
 
     const repoName = document.getElementById('clubSelection').value;
 
-    if (!winnerName) {
-        alert('Select or edit the Winner name!');
+    if (winnerName === 'Select') {
+        alert('Select the Winner name!');
     }
-    else if (!loserName) {
-        alert('Select or edit the Loser name!');
+    else if (loserName === 'Select') {
+        alert('Select the Loser name!');
     }
     else if (!githubToken) {
         alert('Add a valid GitHub token!');
@@ -117,11 +111,8 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
             document.getElementById("finishTournamentButton").disabled = true;
 
             // reset the inputs
-            document.getElementById('winnerName').value = 'Select or edit';
-            document.getElementById('winnerNameTyped').value = '';
-            
-            document.getElementById('loserName').value = 'Select or edit';
-            document.getElementById('loserNameTyped').value = '';
+            document.getElementById('winnerName').value = 'Select';
+            document.getElementById('loserName').value = 'Select';
         } 
         catch (error) { 
             // Error triggering GitHub Action: Failed to execute 'json' on 'Response': Unexpected end of JSON input
@@ -211,17 +202,15 @@ document.getElementById("updateSubmissionStatus").addEventListener("click", asyn
 
 
 function submitFakeMatchReport() {
-    let winnerName = getElementValue('Select','winnerName','winnerNameTyped');
-    let loserName = getElementValue('Select','loserName','loserNameTyped');
-    let matchLength = getElementValue('', 'matchLengthTyped','matchLength');
+    let winnerName = document.getElementById('winnerName').value;
+    let loserName = document.getElementById('loserName').value;
+    let matchLength = document.getElementById('matchLength').value;
 
-    // const repoName = document.getElementById('clubSelection').value;
-
-    if (!winnerName) {
-        alert('Select or edit the Winner name!');
+    if (winnerName === 'Select') {
+        alert('Select the Winner name!');
     }
-    else if (!loserName) {
-        alert('Select or edit the Loser name!');
+    else if (loserName === 'Select') {
+        alert('Select the Loser name!');
     }
     else {
         const datetime = new Date();
