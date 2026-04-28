@@ -60,8 +60,9 @@ function generateConsultingDouble(selectedPlayers) {
     const rounds = [];
     const players = fisherYatesShuffle(selectedPlayers);
     const length = document.getElementById('matchLengths').value.split(/\s+/)[0] || '5';
-    if (players.length % 2 !== 0) {
-        players.push('Bye');
+    if (players.length % 4 !== 0) {
+        alert('Invalid number of players for Consulting Double!\nMust be a multiple of 4.');
+        return;
     }
 
     const numTeams = players.length / 2;
