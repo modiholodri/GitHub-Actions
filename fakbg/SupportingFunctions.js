@@ -144,7 +144,7 @@ function fetchFrequentPlayers() {
                 if (selected > 0)
                     document_style.setProperty('--text', "'" + selected + " Players Selected...'");
                 else
-                    document_style.setProperty('--text', "'Select Tournament Players...'");
+                    document_style.setProperty('--text', "'Select Players...'");
 
             }
 
