@@ -6,7 +6,7 @@ window.addEventListener('beforeunload', saveSettings);
 
 // load the toggle settings of a specific toggle element
 function loadToggleSetting(elementName) {
-    const toggleState = localStorage.getItem(elementName + 'State') || 'expanded';
+    const toggleState = localStorage.getItem(elementName + 'State') || 'collapsed';
     const element = document.getElementById(elementName);
     toggleState === 'expanded' ? element.classList.add('show') : element.classList.remove('show');
 }
