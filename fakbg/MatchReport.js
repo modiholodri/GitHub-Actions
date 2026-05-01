@@ -77,7 +77,7 @@ document.getElementById('matchReportForm').addEventListener('submit', async (e) 
     }
     else {
         await refreshRunsStatus();
-        setSubmissionStatus(`Submitting match...\n ${winnerName} > ${loserName} -> ${matchLength}`);
+        setSubmissionStatus(`Submitting ${winnerName} <> ${loserName} -> ${matchLength}`);
         setRunsInfo('Hold on a sec...');
         previousRunID = latestRunID;
         if ( latestRunStatus === 'Submitting' || latestRunStatus === 'Queued' || latestRunStatus === 'In Progress') {
@@ -193,14 +193,7 @@ function clearSubmissionStatus() {
     document.getElementById('runsInfo').innerHTML = '';
 }
 
-// Update the Submission Status
-document.getElementById("updateSubmissionStatus").addEventListener("click", async () => {
-    await refreshRunsStatus();
-    setSubmissionStatus(`Last Submission:\n${latestRunID}: ${latestRunUpdatedAt}`);
-    setRunsInfo(`${latestRunStatus} -> ${latestRunConclusion}`);
-});
-
-
+// Submit a fake match report (for debug purposes)
 function submitFakeMatchReport() {
     let winnerName = document.getElementById('winnerName').value;
     let loserName = document.getElementById('loserName').value;
@@ -217,7 +210,7 @@ function submitFakeMatchReport() {
         const dateString = datetime.toISOString().split('T')[0];
         const fakeMatch = `|${dateString}|${winnerName}|${loserName}|${matchLength}|`;
 
-        setSubmissionStatus(`Forfeiting match...\n ${winnerName} > ${loserName} -> ${matchLength}`);
+        setSubmissionStatus(`Forfeiting ${winnerName} <> ${loserName} -> ${matchLength}`);
         matchRecords.push(fakeMatch);
         getTodaysMatches(matchRecords);
         highlightTodaysMatches();

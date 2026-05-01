@@ -1112,7 +1112,7 @@ function autoMode() {
             const dateString = datetime.toISOString().split('T')[0];
             const autoMatch = `|${dateString}|${winnerName}|${loserName}|${matchLength}|`;
 
-            setSubmissionStatus(`Auto match...\n ${autoMatch}`);
+            setSubmissionStatus(`Auto ${autoMatch}`);
             matchRecords.push(autoMatch);
 
             getTodaysMatches(matchRecords);
