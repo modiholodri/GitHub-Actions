@@ -170,6 +170,7 @@ function setRunsInfo (runsInfo) {
     document.getElementById("runsInfo").innerText = runsInfo;
     if (runsInfo.includes('Success')) {
         setSubmissionStatus(document.getElementById("submissionStatus").innerText.replace('Submitting', 'Submitted'));
+        setTimeout(clearSubmissionStatus, 20000);
     }
     document.getElementById("runsInfo").style.color = runsInfo.includes('Success') ? 'green' : runsInfo.includes('Failure') ? 'red' : 'white';
 }
