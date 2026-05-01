@@ -405,7 +405,17 @@ function calculatePlayerRating(matchRecords) {
     }
 }
 
+//* Theme Handling
+
+// Theme Selection Changed
 function themeSelectionChanged() {
-    const theme = document.getElementById('themeSelection').value;
-    document.body.classList.toggle('light-theme', theme.toLowerCase() === 'light-theme');
+    let theme = document.getElementById('themeSelection').value;
+
+    if (theme === 'system-theme') { // Check the system theme
+        const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
+        if (isLightMode) theme = 'light-theme';
+        else theme = 'dark-theme';
+    }
+    document.body.classList.toggle('light-theme', theme === 'light-theme');
 }
+
