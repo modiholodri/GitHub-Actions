@@ -14,10 +14,8 @@
 
         <!-- Submission Status -->
         <section id="submissionStatusSection">
-            <div id="statuses">
-                <p id="submissionStatus" style="text-align: center; color: gray;"></p>
-                <h6 id="runsInfo"></h6>
-            </div>
+            <p id="submissionStatus" style="text-align: center; color: gray;"></p>
+            <h6 id="runsInfo"></h6>
         </section>  
 
         <!-- Match Report -->
@@ -580,10 +578,55 @@
             })();
         });
 
+        // Auto-collapse other sections when one section is shown
+        function autoCollapse(elementName) {
+            // Other sections: matchReportForm, tournamentManagement, ratingList, rankingLists, readMe, settings
+            switch (elementName) {
+                case 'matchReportForm':
+                    collapseElements(['ratingList', 'rankingLists', 'readMe', 'settings']);
+                    break;
+                case 'tournamentManagement':
+                    collapseElements(['matchReportForm', 'ratingList', 'rankingLists', 'readMe', 'settings']);
+                    break;
+                case 'ratingList':
+                    collapseElements(['matchReportForm', 'tournamentManagement', 'rankingLists', 'readMe', 'settings']);
+                    break;
+                case 'rankingLists':
+                    collapseElements(['matchReportForm', 'tournamentManagement', 'ratingList', 'readMe', 'settings']);
+                    break;
+                case 'readMe':
+                    collapseElements(['matchReportForm', 'tournamentManagement', 'ratingList', 'rankingLists', 'settings']);
+                    break;
+                case 'settings':
+                    collapseElements(['matchReportForm', 'tournamentManagement', 'ratingList', 'rankingLists', 'readMe']);
+                    break;
+            }
+        }
+
+        function collapseElement(elementName) {
+            const element = document.getElementById(elementName);
+            if (element) element.classList.remove('show');
+        }
+
+        function collapseElements(elements) {
+            if (!Array.isArray(elements)) return;
+            elements.forEach(collapseElement);
+        }
+
+        function showElement(elementName) {
+            const element = document.getElementById(elementName);
+            if (element) element.classList.add('show');
+        }
+
+        // Add click event listeners to all toggle elements, so that the sections can be shown/hidden
         function addToggleListener(elementName) {
             document.getElementById(elementName + 'Toggle').addEventListener('click', function() {
                 const collapseElement = document.getElementById(elementName);
                 collapseElement.classList.toggle('show');
+                const elementJustShown = collapseElement.classList.contains('show');
+                if (elementJustShown) {
+                    autoCollapse(elementName);
+                }
                 
                 if (elementName === 'rankingChart') {  // refresh the ranking chart if it is made visible
                     const rankingCharJustShown = document.getElementById(elementName).classList.contains('show');
@@ -634,8 +677,8 @@
         addToggleListener('rankingChart');
         addToggleListener('rankingSummary');
         addToggleListener('matchList');
-        addToggleListener('settings'); 
         addToggleListener('readMe');
+        addToggleListener('settings'); 
     </script>
         
     <script src="ClubRepo.js"></script>
